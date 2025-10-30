@@ -1,6 +1,7 @@
 :root {
     /* set color-scheme to switch between light or dark */
     color-scheme: light dark;
+
     --light-bg: white;
     --light-color: black;
     --dark-bg: black;
@@ -11,7 +12,7 @@ html {
     margin: 0;
     padding: 0;
 }
-  
+
 * {
     background-color: light-dark(var(--light-bg), var(--dark-bg));
     color: light-dark(var(--light-color), var(--dark-color));
