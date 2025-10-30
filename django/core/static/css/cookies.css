@@ -1,17 +1,14 @@
 div#cookie-message-popup {
     text-align: center;
     z-index: 10000;
-    background: black;
     width: 96vw;
     padding: 1em;
-    color: white;
     position: fixed;
     bottom: 2vw;
     right: 2vw;
 }
 
 div#cookie-message-popup a {
-    color: white;
     text-decoration: underline;
 }
 
