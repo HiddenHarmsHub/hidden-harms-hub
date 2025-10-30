@@ -1,0 +1,111 @@
+[project]
+name = "django-template"
+version = "1.0.0"
+requires-python = ">=3.10"
+description = "This is our template for all new Django projects."
+authors = [
+    {name = "Mike Allaway", email = "m.j.allaway@bham.ac.uk"},
+    {name = "Simon Branford", email = "s.j.branford@bham.ac.uk"},
+    {name = "Andrew Edmondson", email = "a.c.edmondson@bham.ac.uk"}]
+dependencies = [
+	"Django~=5.2.0",
+]
+
+[project.optional-dependencies]
+test = [
+	"coverage",
+]
+lint = [
+	"curlylint",
+	"ruff>=0.9",
+]
+
+[tool.setuptools]
+packages = []
+
+[tool.ruff]
+exclude = [
+   	"migrations",
+   	"local_settings.*"
+]
+preview = true
+line-length = 120
+indent-width = 4
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+   	"F",   # Pyflakes
+   	"E",   # pycodestyle error
+   	"W",   # pycodestyle warning
+   	"A",   # flake8-builtins
+   	"S",   # flake8-bandit
+	"DJ",  # flake8-django
+   	"N",   # pep8-naming
+   	"B",   # flake8-bugbear
+   	"C4",  # flake8-comprehensions
+	"D",   # flake8-docstrings
+	"DOC", # pydoclint
+	"I",   # isort
+	"G",   # flake8-logging-format
+]
+ignore = [
+   	"DJ001",  # django-nullable-model-string-field
+   	"DJ008",  # django-model-without-dunder-str
+	"D100",   # missing docstring in public module
+	"D104",   # missing docstring in public package
+	"D107",   # missing docstring in __init__,  se use the convention of putting the
+		  # __init__ args at the class level
+	"D105",   # missing docstring in magic method
+	"D106",   # missing docstring in public nested class, i.e. "Meta" for a model
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"test_*.py" = [
+   	"D101",  # missing docstring in public class
+	"D102",  # missing docstring in public method
+	"D103",  # missing docstring in public function
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.pydoclint]
+ignore-one-line-docstrings = true  # FIXME: This skips one line docstrings, when there is time
+                                   # we should remove this
+
+[tool.ruff.lint.isort]
+known-third-party = ["django"]
+
+[tool.typos.default.extend-words]
+# We use TYP and typ where we cannot use type
+typ = "typ"
+
+[tool.curlylint]
+exclude = '\.json'
+
+[tool.curlylint.rules]
+# All role attributes must be valid.
+# See https://www.curlylint.org/docs/rules/aria_role.
+aria_role = true
+# Forms cannot be rendered with as_table, as_ul, or as_p
+# See https://www.curlylint.org/docs/rules/django_forms_rendering.
+django_forms_rendering = true
+# The `lang` attribute must be present.
+# See https://www.curlylint.org/docs/rules/html_has_lang.
+html_has_lang = true
+# The `alt` attribute must be present.
+# See https://www.curlylint.org/docs/rules/image_alt.
+image_alt = true
+# Use 4 spaces
+# See https://www.curlylint.org/docs/rules/indent.
+indent = 4
+# `user-scalable=no` must not be used, and `maximum-scale` should be 2 or above.
+# See https://www.curlylint.org/docs/rules/meta_viewport.
+meta_viewport = true
+# The `autofocus` attribute must not be used.
+# See https://www.curlylint.org/docs/rules/no_autofocus.
+no_autofocus = true
+# Avoid positive `tabindex` values, change the order of elements on the page instead.
+# See https://www.curlylint.org/docs/rules/tabindex_no_positive.
+tabindex_no_positive = true

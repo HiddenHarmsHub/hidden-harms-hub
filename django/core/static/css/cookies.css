@@ -1,0 +1,26 @@
+div#cookie-message-popup {
+    text-align: center;
+    z-index: 10000;
+    background: black;
+    width: 96vw;
+    padding: 1em;
+    color: white;
+    position: fixed;
+    bottom: 2vw;
+    right: 2vw;
+}
+
+div#cookie-message-popup a {
+    color: white;
+    text-decoration: underline;
+}
+
+button#cookie-message-popup-accept {
+    display: inline-block;
+    background: white;
+    color: black;
+    padding: 0.4em 1.7em;
+    margin-left: 1em;
+    cursor: pointer;
+    vertical-align: middle;
+}

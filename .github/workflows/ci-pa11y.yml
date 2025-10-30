@@ -1,0 +1,39 @@
+name: ci-accessibility-tests
+
+on: [pull_request]
+
+jobs:
+  accessibility_tests:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.12]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ".[test]"
+    - name: Install node dependencies
+      run: |
+        npm install jest jest-environment-node puppeteer pa11y
+        npx puppeteer browsers install chrome
+    - name: Run Tests
+      run: |
+        cd django
+        mv core/local_settings.test.py core/local_settings.py
+        python manage.py migrate
+        python manage.py runserver & sleep 5
+        npx jest pa11y.test.js

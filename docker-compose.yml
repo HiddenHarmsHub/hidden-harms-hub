@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    volumes:
+      - ./django:/django
+    working_dir: /django
+    command: >
+      bash -c "python manage.py migrate &&
+               python manage.py check &&
+               python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8001:8000
