@@ -54,8 +54,7 @@ ignore = [
    	"DJ008",  # django-model-without-dunder-str
 	"D100",   # missing docstring in public module
 	"D104",   # missing docstring in public package
-	"D107",   # missing docstring in __init__,  se use the convention of putting the
-		  # __init__ args at the class level
+	"D107",   # missing docstring in __init__, see use the convention of putting the __init__ args at the class level
 	"D105",   # missing docstring in magic method
 	"D106",   # missing docstring in public nested class, i.e. "Meta" for a model
 ]
@@ -69,10 +68,6 @@ ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[tool.ruff.lint.pydoclint]
-ignore-one-line-docstrings = true  # FIXME: This skips one line docstrings, when there is time
-                                   # we should remove this
 
 [tool.ruff.lint.isort]
 known-third-party = ["django"]
