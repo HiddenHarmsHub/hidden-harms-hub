@@ -2,10 +2,12 @@
     /* set color-scheme to switch between light or dark */
     color-scheme: light dark;
 
-    --light-bg: white;
+    --light-bg: snow;
     --light-color: black;
+    --light-header-bg: #9fc8c5;
     --dark-bg: black;
-    --dark-color: white;
+    --dark-color: snow;
+    --dark-header-bg: #41716e;
 }
 
 html {
@@ -26,10 +28,20 @@ html {
     color-scheme: dark;
 }
 
-body {
-    font-family: Roboto, sans-serif;
-    font-weight: bolder;
-    padding: 10vh 5vw 15vh;
+header,
+header * {
+    background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
+}
+
+header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+header #header-title {
+    font-size: 2em;
+    margin-left: 20px;
 }
 
 footer {
@@ -44,13 +56,139 @@ footer a {
     margin: 0.5em;
 }
 
-h1 {
-    font-size: 4em;
+div#content {
+    display: flex;
+    align-items: left;
 }
 
-p,
-ul {
-    font-size: 1.7em;
-    margin-bottom: 2em;
-    line-height: 1.3em;
+main {
+    padding:10px;
+}
+
+#menu {
+    background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
+    padding-top: 1em;
+}
+
+#menu a {
+    border: none;
+    padding: 0.6em 0.6em 0.6em 0.6em;
+    color: light-dark(var(--light-color), var(--dark-color));
+    background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
+}
+
+/*
+Remove all background/borders, since we are applying them to #menu.
+*/
+ #menu .pure-menu,
+ #menu .pure-menu ul {
+    border: none;
+    background: transparent;
+}
+
+/*
+Add that light border to separate items into groups.
+*/
+#menu .pure-menu ul,
+#menu .pure-menu .menu-item-divided {
+    border-top: 1px solid #333;
+}
+
+/*
+Change color of the anchor links on hover/focus.
+*/
+#menu .pure-menu li a:hover,
+#menu .pure-menu li a:focus {
+    background: #333;
+}
+
+/*
+This styles the selected menu item `<li>`.
+*/
+#menu .pure-menu-selected,
+#menu .pure-menu-heading {
+    background: #1f8dd6;
+}
+
+/*
+This styles a link within a selected menu item `<li>`.
+*/
+#menu .pure-menu-selected a {
+    color: #fff;
+}
+
+
+/* */
+
+.menu-link {
+    display: block; /* show this only on small screens */
+    background: #000;
+    background: rgba(0,0,0,0.7);
+    font-size: 10px; /* change this value to increase/decrease button size */
+    z-index: 10;
+    width: 2em;
+    padding: 2.1em 1.6em;
+    margin-left: 10px;
+}
+
+.menu-link:hover,
+.menu-link:focus {
+    background: #000;
+}
+
+.menu-link span {
+    position: relative;
+    display: block;
+}
+
+.menu-link span,
+.menu-link span:before,
+.menu-link span:after {
+    background-color: #fff;
+    pointer-events: none;
+    width: 100%;
+    height: 0.2em;
+}
+
+.menu-link span:before,
+.menu-link span:after {
+    position: absolute;
+    margin-top: -0.6em;
+    content: " ";
+}
+
+.menu-link span:after {
+    margin-top: 0.6em;
+}
+
+div#content.active {
+    display: block;
+}
+
+div#content.active #menu {
+    display: block;
+    top: 0;
+    width: 100%;
+}
+
+@media (min-width: 48em) {
+
+    .menu-link {
+        position: fixed;
+        left: 150px;
+        display: none;
+    }
+
+}
+
+@media (max-width: 48em) {
+
+    #menu {
+        display: none;
+    }
+
+    #logo {
+        display: none;
+    }
+
 }
