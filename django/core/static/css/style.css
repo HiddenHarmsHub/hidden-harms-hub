@@ -39,7 +39,6 @@ body {
 
 div#content {
     display: flex;
-    align-items: left;
     flex-grow: 1;
 }
 
@@ -67,7 +66,6 @@ header #header-title {
 }
 
 footer {
-    /* margin-top: 0.5em; */
     font-size: 0.8em;
     border-top: 1px solid light-dark(var(--light-color), var(--dark-color));
     text-align: center;
@@ -79,7 +77,7 @@ footer a {
 }
 
 main {
-    padding:10px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -115,54 +113,10 @@ button.menu-button i {
 
 #menu a {
     border: none;
-    padding: 0.6em 0.6em 0.6em 0.6em;
+    padding: 0.6em;
     color: light-dark(var(--light-color), var(--dark-color));
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
-
-/*
-Remove all background/borders, since we are applying them to #menu.
-*/
- #menu .pure-menu,
- #menu .pure-menu ul {
-    border: none;
-    background: transparent;
-}
-
-/*
-Add that light border to separate items into groups.
-*/
-#menu .pure-menu ul,
-#menu .pure-menu .menu-item-divided {
-    border-top: 1px solid #333;
-}
-
-/*
-Change color of the anchor links on hover/focus.
-*/
-#menu .pure-menu li a:hover,
-#menu .pure-menu li a:focus {
-    background: #333;
-}
-
-/*
-This styles the selected menu item `<li>`.
-*/
-#menu .pure-menu-selected,
-#menu .pure-menu-heading {
-    background: #1f8dd6;
-}
-
-/*
-This styles a link within a selected menu item `<li>`.
-*/
-#menu .pure-menu-selected a {
-    color: #fff;
-}
-
-
-/* */
-
 
 div#content.active {
     display: block;
@@ -201,5 +155,4 @@ div#content.active {
         display: flex;
         flex-direction: column;
     }
-
 }
