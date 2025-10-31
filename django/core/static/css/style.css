@@ -111,11 +111,16 @@ button.menu-button i {
     padding-top: 1em;
 }
 
+#menu ul {
+    background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
+}
+
 #menu a {
     border: none;
     padding: 0.6em;
     color: light-dark(var(--light-color), var(--dark-color));
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
+    margin-bottom: 2px;
 }
 
 div#content.active {
