@@ -7,11 +7,6 @@
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <link rel="stylesheet"
-                  href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
-                  integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
-                  crossorigin="anonymous"
-            >
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <link rel="stylesheet" href="{% static 'css/style.css' %}">
             <link rel="stylesheet" href="{% static 'css/cookies.css' %}">
@@ -30,16 +25,16 @@
                     <i class="fa fa-bars"></i>
                 </button>
                 {% block menu %}
-                    <div id="menu" class="pure-menu">
-                        <ul class="pure-menu-list">
-                            <li class="pure-menu-item">
-                                <a href="/" class="pure-menu-link">Home</a>
+                    <div id="menu">
+                        <ul>
+                            <li>
+                                <a href="/">Home</a>
                             </li>
-                            <li class="pure-menu-item">
-                                <a href="comparativejudgement" class="pure-menu-link">Comparative Judgement</a>
+                            <li>
+                                <a href="comparativejudgement">Comparative Judgement</a>
                             </li>
-                            <li class="pure-menu-item">
-                                <a href="multiplesystemsestimation" class="pure-menu-link">Multiple Systems Estimation</a>
+                            <li>
+                                <a href="multiplesystemsestimation">Multiple Systems Estimation</a>
                             </li>
                         </ul>
                     </div>
