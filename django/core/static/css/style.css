@@ -128,8 +128,7 @@ div#content.active {
     width: 100%;
 }
 
-@media (min-width: 48em) {
-
+@media (width > 480px) {
     .menu-button {
         position: fixed;
         left: 150px;
@@ -141,8 +140,7 @@ div#content.active {
     }
 }
 
-@media (max-width: 48em) {
-
+@media (width <= 480px) {
     #menu {
         display: none;
     }
