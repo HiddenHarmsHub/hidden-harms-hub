@@ -198,7 +198,8 @@ div#content.active {
     }
 
     div#content {
-        display: block;
+        display: flex;
+        flex-direction: column;
     }
 
 }
