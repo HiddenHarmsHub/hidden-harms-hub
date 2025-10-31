@@ -1,0 +1,33 @@
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    background-color: gainsboro;
+}
+
+td > input {
+    border: 0;
+    background-color: white;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr.first td {
+    border-top-width: 3px;
+}
+
+th {
+    padding: 4px;
+}
+
+td {
+    padding: 0;
+    text-align: center;
+}
+
+.visually-hidden {
+    display: none;
+}

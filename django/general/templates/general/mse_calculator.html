@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'general/css/mse_calculator.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    <h1>Multiple Systems Estimation Calculator</h1>
+    <form action="/multiplesystemsestimation/calculator" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="{{ form.total_lists.html_name }}" value="{{ form.total_lists.value }}"/>
+        <table>
+            {{ formset.management_form }}
+            <tr>
+                {% for list in lists %}
+                    <th>{{ list }}</th>
+                {% endfor %}
+                <th>Total</th>
+            </tr>
+            {% for details_form in formset %}
+                {% if details_form.initial.first %}
+                    <tr class="first">
+                {% else %}
+                    <tr>
+                {% endif %}
+                    {% for list in lists %}
+                        <td>
+                            {% if list in details_form.initial.required_lists %}
+                                x
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    <td>
+                        <input type="hidden" name="{{ details_form.index_pos.html_name }}" value="{{ forloop.counter0 }}"/>
+                        <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
+                        <label class="visually-hidden" for="{{ details_form.total.id_for_label }}">{{details_form.initial.required_lists|join:"|"}}</label>
+                        {{ details_form.total_appearances }}
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </table>
+        {% for dict in formset.errors %}
+            {% for error in dict.values %}
+                {{ error }}
+            {% endfor %}
+        {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
