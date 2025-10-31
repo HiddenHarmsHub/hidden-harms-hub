@@ -1,21 +1,24 @@
 div#cookie-message-popup {
     text-align: center;
     z-index: 10000;
-    width: 96vw;
     padding: 1em;
-    position: fixed;
-    bottom: 2vw;
-    right: 2vw;
+    border: 1px solid light-dark(var(--light-color), var(--dark-color));
+    margin-left: auto;
+    margin-right: auto;
+    background-color: light-dark(var(--dark-bg), var(--light-bg));
+    color: light-dark(var(--dark-color), var(--light-color));
 }
 
 div#cookie-message-popup a {
     text-decoration: underline;
+    background-color: light-dark(var(--dark-bg), var(--light-bg));
+    color: light-dark(var(--dark-color), var(--light-color));
 }
 
 button#cookie-message-popup-accept {
     display: inline-block;
-    background: white;
-    color: black;
+    background-color: light-dark(var(--light-bg), var(--dark-bg));
+    color: light-dark(var(--light-color), var(--dark-color));
     padding: 0.4em 1.7em;
     margin-left: 1em;
     cursor: pointer;

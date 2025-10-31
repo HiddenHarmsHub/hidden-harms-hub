@@ -8,10 +8,11 @@
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="stylesheet"
-                href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
-                integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
-                crossorigin="anonymous"
+                  href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+                  integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls"
+                  crossorigin="anonymous"
             >
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
             <link rel="stylesheet" href="{% static 'css/style.css' %}">
             <link rel="stylesheet" href="{% static 'css/cookies.css' %}">
         {% endblock %}
@@ -19,34 +20,38 @@
     <body>
         <header>
             {% block header %}
-            <img id="logo" src="{% static 'img/hiddenharmshublogo.png' %}" height="80px"/><span id="header-title">Hidden Harms Hub</span>
+                <img id="logo" src="{% static 'img/hiddenharmshublogo.png' %}" alt="" height="80px"/>
+                <span id="header-title">Hidden Harms Hub</span>
             {% endblock %}
-            <a href="#menu" id="menuLink" class="menu-link">
-                <!-- Hamburger icon -->
-                <span></span>
-            </a>
         </header>
         <div id="content">
-            {% block menu %}        
-                <div id="menu" class="pure-menu">
-                    <ul class="pure-menu-list">
-                        <li class="pure-menu-item">
-                            <a href="/" class="pure-menu-link">Home</a>
-                        </li>
-                        <li class="pure-menu-item">
-                            <a href="comparativejudgement" class="pure-menu-link">Comparative Judgement</a>
-                        </li>
-                        <li class="pure-menu-item">
-                            <a href="multiplesystemsestimation" class="pure-menu-link">Multiple Systems Estimation</a>
-                        </li>
-                    </ul>
+            <nav id="main-menu" aria-label="Main Menu">
+                <button id="menu-button" class="menu-button" aria-controls="menu" aria-label="Menu" aria-expanded="false">
+                    <i class="fa fa-bars"></i>
+                </button>
+                {% block menu %}        
+                    <div id="menu" class="pure-menu">
+                        <ul class="pure-menu-list">
+                            <li class="pure-menu-item">
+                                <a href="/" class="pure-menu-link">Home</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="comparativejudgement" class="pure-menu-link">Comparative Judgement</a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="multiplesystemsestimation" class="pure-menu-link">Multiple Systems Estimation</a>
+                            </li>
+                        </ul>
+                    </div>
+                {% endblock %}
+            </nav>
+            <main role="main" id="main">
+                <div id="page-content">
+                    {% block content %}{% endblock %}
                 </div>
-            {% endblock %}
-            <main role="main" id="main">           
-                {% block content %}{% endblock %}
             </main>
         </div>
-        <footer role="contentinfo">
+        <footer id="footer" role="contentinfo">
             <p>
                 <a href="https://www.birmingham.ac.uk/privacy/index.aspx">Privacy</a> |
                 <a href="https://www.birmingham.ac.uk/legal/index.aspx">Legal</a> |

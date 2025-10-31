@@ -4,9 +4,9 @@
     // element references on page navigation
     function getElements() {
         return {
-            layout: document.getElementById('content'),
+            nav: document.getElementById('main-menu'),
             menu: document.getElementById('menu'),
-            menuLink: document.getElementById('menuLink')
+            menuButton: document.getElementById('menu-button')
         };
     }
 
@@ -32,17 +32,15 @@
 
     function toggleAll() {
         var active = 'active';
-        var elements = getElements();
-
-        toggleClass(elements.layout, active);
+        var elements = getElements();   
+        toggleClass(elements.nav, active);
         toggleClass(elements.menu, active);
-        toggleClass(elements.menuLink, active);
+        toggleClass(elements.menuButton, active);
     }
     
     function handleEvent(e) {
         var elements = getElements();
-        
-        if (e.target.id === elements.menuLink.id) {
+        if (e.target.id === elements.menuButton.id || e.target.parentNode.id === elements.menuButton.id) {
             toggleAll();
             e.preventDefault();
         } else if (elements.menu.className.indexOf('active') !== -1) {
