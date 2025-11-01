@@ -5,9 +5,9 @@ td {
 }
 
 table {
-
     --light-table-bg: gainsboro;
     --dark-table-bg: dimgrey;
+
     border-collapse: collapse;
 }
 
