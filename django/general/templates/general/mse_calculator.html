@@ -21,11 +21,7 @@
                 <th>Total</th>
             </tr>
             {% for details_form in formset %}
-                {% if details_form.initial.first %}
-                    <tr class="first">
-                {% else %}
-                    <tr>
-                {% endif %}
+                <tr{% if details_form.initial.first %} class="first"{% endif %}>
                     {% for list in lists %}
                         <td aria-hidden="true">
                             {% if list in details_form.initial.required_lists %}

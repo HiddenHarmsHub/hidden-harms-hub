@@ -19,7 +19,11 @@ class MseDetailsForm(forms.Form):
     total_appearances = forms.CharField(required=False)
 
     def clean(self):
-        """Custom validation for the individual forms."""
+        """Custom validation for the individual forms.
+
+        Raises:
+            ValidationError: raised if te data is not valid.
+        """
         total = self.cleaned_data.get("total_appearances")
         if total != "*" and total != '':
             try:

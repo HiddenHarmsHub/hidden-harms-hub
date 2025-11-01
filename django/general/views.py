@@ -53,8 +53,6 @@ class MultipleSystemsEstimationSetup(FormView):
         results = 'These are the results of your MSE'
 
         return render(request, "general/mse_results.html", {"formset": formset, "lists": lists, "results": results})
-
-
         # response = HttpResponse(content_type='application/zip')
         # response['Content-Disposition'] = 'attachment; filename=' + filename
         # response.write(open(filepath, 'rb').read())
