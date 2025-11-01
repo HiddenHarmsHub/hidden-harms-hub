@@ -1,22 +1,18 @@
-table, th, td {
-    border: 1px solid black;
-}
-
-th, td {
-    background-color: gainsboro;
-}
-
-td > input {
-    border: 0;
-    background-color: white;
+table,
+th,
+td {
+    border: 1px solid light-dark(var(--light-color), var(--dark-color));
 }
 
 table {
+    --light-table-bg: gainsboro;
+    --dark-table-bg: dimgrey;
     border-collapse: collapse;
 }
 
-tr.first td {
-    border-top-width: 3px;
+th,
+td {
+    background-color: light-dark(var(--light-table-bg), var(--dark-table-bg));
 }
 
 th {
@@ -28,6 +24,17 @@ td {
     text-align: center;
 }
 
-.visually-hidden {
-    display: none;
+td > input {
+    border: 0;
+}
+
+tr.first td {
+    border-top-width: 3px;
+}
+
+input[type="submit"] {
+    margin-top: 10px;
+    padding: 6px;
+    border-radius: 5px;
+    font-size: 1.2em;
 }

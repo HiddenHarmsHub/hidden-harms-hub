@@ -10,6 +10,10 @@
     --dark-header-bg: #41716e;
 }
 
+.visually-hidden {
+    display: none;
+}
+
 html,
 body {
     margin: 0;
@@ -136,6 +140,8 @@ button.menu-button i {
     margin-bottom: 2px;
     text-decoration: none;
     white-space: nowrap;
+    font-weight: bold;
+    font-size: 1.2em;
 }
 
 div#content.active {

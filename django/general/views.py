@@ -36,8 +36,9 @@ class MultipleSystemsEstimationSetup(FormView):
     def post(self, request):
         """Handle submission and part 2 of the MSE form display."""
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
-        if "total_columns" in request.POST:
-            total_lists = int(request.POST.get("total_columns"))
+        print(request.POST)
+        if "total_lists_required" in request.POST:
+            total_lists = int(request.POST.get("total_lists_required"))
             # render part 2 of the form
             lists, initial = self._calculate_initial_data(total_lists)
             form = MseForm(initial={"total_lists": total_lists})

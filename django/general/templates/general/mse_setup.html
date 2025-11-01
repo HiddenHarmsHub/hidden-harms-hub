@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
 
+{% block header %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'general/css/mse_calculator.css' %}">
+{% endblock %}
 
 {% block content %}
     <h1>Multiple Systems Estimation Calculator</h1>

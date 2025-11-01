@@ -16,7 +16,7 @@
             {{ formset.management_form }}
             <tr>
                 {% for list in lists %}
-                    <th>{{ list }}</th>
+                    <th aria-hidden="true" scope="col">{{ list }}</th>
                 {% endfor %}
                 <th>Total</th>
             </tr>
@@ -27,7 +27,7 @@
                     <tr>
                 {% endif %}
                     {% for list in lists %}
-                        <td>
+                        <td aria-hidden="true">
                             {% if list in details_form.initial.required_lists %}
                                 x
                             {% endif %}
@@ -36,7 +36,7 @@
                     <td>
                         <input type="hidden" name="{{ details_form.index_pos.html_name }}" value="{{ forloop.counter0 }}"/>
                         <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
-                        <label class="visually-hidden" for="{{ details_form.total.id_for_label }}">{{details_form.initial.required_lists|join:"|"}}</label>
+                        <label class="visually-hidden" for="{{ details_form.total_appearances.id_for_label }}">{{details_form.initial.required_lists|join:" and "}}</label>
                         {{ details_form.total_appearances }}
                     </td>
                 </tr>
