@@ -72,6 +72,7 @@ header {
 header #header-title {
     font-size: 2em;
     margin-left: 20px;
+    font-weight: bold;
 }
 
 footer {
@@ -94,6 +95,10 @@ main {
 
 div#page-content {
     flex-grow: 1;
+}
+
+h1 {
+    font-weight: normal;
 }
 
 nav.active {
@@ -140,7 +145,6 @@ button.menu-button i {
     margin-bottom: 2px;
     text-decoration: none;
     white-space: nowrap;
-    font-weight: bold;
     font-size: 1.2em;
 }
 
