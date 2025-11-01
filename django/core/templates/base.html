@@ -13,14 +13,10 @@
         {% endblock %}
     </head>
     <body>
-        <header>
-            {% block header %}
-                <img id="logo" src="{% static 'img/hiddenharmshublogo.png' %}" alt="" height="80px"/>
-                <span id="header-title">Hidden Harms Hub</span>
-            {% endblock %}
-        </header>
-        <div id="content">
+        <div id="content-page">
+
             <nav id="main-menu" aria-label="Main Menu">
+                <img id="logo" src="{% static 'img/hiddenharmshublogo.png' %}" alt="" height="80px"/>
                 <button id="menu-button" class="menu-button" aria-controls="menu" aria-label="Menu" aria-expanded="false">
                     <i class="fa fa-bars"></i>
                 </button>
@@ -40,11 +36,24 @@
                     </div>
                 {% endblock %}
             </nav>
-            <main role="main" id="main">
-                <div id="page-content">
-                    {% block content %}{% endblock %}
-                </div>
-            </main>
+
+            <div id="content">
+                <header>
+                    {% block header %}
+                        <span id="header-title">Hidden Harms Hub</span>
+                    {% endblock %}
+                </header>
+            
+                
+                <main role="main" id="main">
+                    <div id="page-content">
+                        {% block content %}{% endblock %}
+                    </div>
+                </main>
+            </div>
+
+
+
         </div>
         <footer id="footer" role="contentinfo">
             <p>

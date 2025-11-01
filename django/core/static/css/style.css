@@ -48,6 +48,7 @@ body {
 
 div#content {
     display: flex;
+    flex-direction: column;
     flex-grow: 1;
 }
 
@@ -67,11 +68,11 @@ header {
     display: flex;
     align-items: center;
     padding: 10px;
+    height: 80px;
 }
 
 header #header-title {
     font-size: 2em;
-    margin-left: 20px;
     font-weight: bold;
 }
 
@@ -101,6 +102,11 @@ h1 {
     font-weight: normal;
 }
 
+#content-page {
+    display: flex;
+    flex-grow: 1;
+}
+
 nav.active {
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
@@ -120,13 +126,14 @@ button.menu-button i {
     padding: 5px;
 }
 
-#menu,
-#menu * {
+#logo {
+    padding: 10px;
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
 
-#menu {
-    padding-top: 1em;
+#menu,
+#menu * {
+    background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
 
 #menu ul {
