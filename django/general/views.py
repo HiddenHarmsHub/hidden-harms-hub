@@ -89,8 +89,17 @@ class MultipleSystemsEstimation(FormView):
 
 
 class MultipleSystemsEstimationDownload(View):
+    """Download the results and the input data."""
 
     def post(self, request):
+        """Create and download a zipfile of the results and data.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponse: A zip file download of the results and the input data.
+        """
         temp_dir = TemporaryDirectory()
         output_path = os.path.join(temp_dir.name, "export")
         os.makedirs(output_path)
