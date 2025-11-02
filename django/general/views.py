@@ -1,13 +1,18 @@
+import os
+import shutil
 from itertools import combinations
+from tempfile import TemporaryDirectory
 
 from django.forms import formset_factory
+from django.http import HttpResponse
 from django.shortcuts import render
+from django.views import View
 from django.views.generic.edit import FormView
 
 from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseSetupForm
 
 
-class MultipleSystemsEstimationSetup(FormView):
+class MultipleSystemsEstimation(FormView):
     """Setup and process the MSW data."""
     on_success = "multiplesystemsestimation/calculator"
 
@@ -63,14 +68,45 @@ class MultipleSystemsEstimationSetup(FormView):
             return render(request, "general/mse_calculator.html", {"formset": formset, "lists": lists})
 
         results = 'These are the results of your MSE'
+        stringified_data = []
+        for form in formset:
+            row_data = form.cleaned_data
+            for list_name in lists:
+                if list_name in row_data["required_lists"]:
+                    stringified_data.append(f"{1}|")
+                else:
+                    stringified_data.append(f"{0}|")
+            stringified_data.append(f"{row_data['total_appearances']}|||")
+        csv_data = "".join(stringified_data)
         data = {
             "formset": formset,
             "lists": lists,
             "results": results,
             "results_display": True,
+            "csv_data": csv_data,
         }
         return render(request, "general/mse_calculator.html", data)
-        # response = HttpResponse(content_type='application/zip')
-        # response['Content-Disposition'] = 'attachment; filename=' + filename
-        # response.write(open(filepath, 'rb').read())
-        # return response
+
+
+class MultipleSystemsEstimationDownload(View):
+
+    def post(self, request):
+        temp_dir = TemporaryDirectory()
+        output_path = os.path.join(temp_dir.name, "export")
+        os.makedirs(output_path)
+        with open(os.path.join(output_path, "results.txt"), mode="w") as result_file:
+            result_file.write(request.POST.get("results"))
+        with open(os.path.join(output_path, "mse_input.txt"), mode="w") as input_file:
+            data = request.POST.get("csv-data")
+            lines = data.split("|||")
+            for line in lines:
+                input_file.write(line.replace("|", "\t"))
+                input_file.write("\n")
+
+        filename = "mse_results"
+        filepath = os.path.join(temp_dir.name, filename)
+        shutil.make_archive(filepath, "zip", os.path.join(temp_dir.name, "export"))
+        response = HttpResponse(content_type="application/zip")
+        response["Content-Disposition"] = "attachment; filename=" + filename
+        response.write(open(f"{filepath}.zip", "rb").read())
+        return response

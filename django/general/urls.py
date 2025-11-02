@@ -8,10 +8,15 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="general/home.html"), name="home"),
     path("cookies/", TemplateView.as_view(template_name="general/cookies.html"), name="cookies"),
     path("comparativejudgement", TemplateView.as_view(template_name="general/comparative_judgement.html"), name="cj"),
-     path(
+    path(
         "multiplesystemsestimation/calculator",
-        views.MultipleSystemsEstimationSetup.as_view(),
+        views.MultipleSystemsEstimation.as_view(),
         name="mse_calc"
+    ),
+    path(
+        "multiplesystemsestimation/download",
+        views.MultipleSystemsEstimationDownload.as_view(),
+        name="mse_download"
     ),
     path(
         "multiplesystemsestimation",
