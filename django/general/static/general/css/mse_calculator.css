@@ -12,7 +12,8 @@ table {
 }
 
 th,
-td {
+td,
+td b {
     background-color: light-dark(var(--light-table-bg), var(--dark-table-bg));
 }
 

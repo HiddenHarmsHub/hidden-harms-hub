@@ -12,7 +12,14 @@
     <form action="/multiplesystemsestimation/calculator" method="post">
         {% csrf_token %}
         <input type="hidden" name="{{ form.total_lists.html_name }}" value="{{ form.total_lists.value }}"/>
-        <table>
+        {% if results_display %}
+            <h2>Results</h2>
+            <div>{{ results }}</div>
+            <a href="/multiplesystemsestimation/download">download input data and results</a>
+            <h2>Input data</h2>
+        {% endif %}
+        
+        <table{% if results_display %} class="results-table"{% endif %}>
             {{ formset.management_form }}
             <tr>
                 {% for list in lists %}
@@ -30,20 +37,28 @@
                         </td>
                     {% endfor %}
                     <td>
-                        <input type="hidden" name="{{ details_form.index_pos.html_name }}" value="{{ forloop.counter0 }}"/>
-                        <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
-                        <label class="visually-hidden" for="{{ details_form.total_appearances.id_for_label }}">{{details_form.initial.required_lists|join:" and "}}</label>
-                        {{ details_form.total_appearances }}
+                        {% if results_display %}
+                            <b>
+                                {{ details_form.total_appearances.value }}
+                            </b>
+                        {% else %}
+                            <input type="hidden" name="{{ details_form.index_pos.html_name }}" value="{{ forloop.counter0 }}"/>
+                            <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
+                            <label class="visually-hidden" for="{{ details_form.total_appearances.id_for_label }}">{{details_form.initial.required_lists|join:" and "}}</label>
+                            {{ details_form.total_appearances }}
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
 
         </table>
-        {% for dict in formset.errors %}
-            {% for error in dict.values %}
-                {{ error }}
+        {% if not results_display %}
+            {% for dict in formset.errors %}
+                {% for error in dict.values %}
+                    {{ error }}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-        <input type="submit" value="Submit">
+            <input type="submit" value="Submit">
+        {% endif %}
     </form>
 {% endblock %}

@@ -1,7 +1,6 @@
 from itertools import combinations
 
 from django.forms import formset_factory
-from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import FormView
 
@@ -29,14 +28,27 @@ class MultipleSystemsEstimationSetup(FormView):
         return lists, initial
 
     def get(self, request):
-        """Display the MSE setup page."""
+        """Display the MSE setup page.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponse: The MSE setup page.
+        """
         form = MseSetupForm
         return render(request, "general/mse_setup.html", {"form": form})
 
     def post(self, request):
-        """Handle submission and part 2 of the MSE form display."""
+        """Handle submission, part 2 of the MSE form display and displaying the results.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponse: The appropriate page for the stage of the process.
+        """
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
-        print(request.POST)
         if "total_lists_required" in request.POST:
             total_lists = int(request.POST.get("total_lists_required"))
             # render part 2 of the form
@@ -51,8 +63,13 @@ class MultipleSystemsEstimationSetup(FormView):
             return render(request, "general/mse_calculator.html", {"formset": formset, "lists": lists})
 
         results = 'These are the results of your MSE'
-
-        return render(request, "general/mse_results.html", {"formset": formset, "lists": lists, "results": results})
+        data = {
+            "formset": formset,
+            "lists": lists,
+            "results": results,
+            "results_display": True,
+        }
+        return render(request, "general/mse_calculator.html", data)
         # response = HttpResponse(content_type='application/zip')
         # response['Content-Disposition'] = 'attachment; filename=' + filename
         # response.write(open(filepath, 'rb').read())
