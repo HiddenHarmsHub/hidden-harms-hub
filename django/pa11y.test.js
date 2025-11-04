@@ -27,7 +27,7 @@ describe('Accessibility tests', () => {
         const actions = [
             "wait for element #id_total_lists_required to be visible",
             "wait for element #submit-button to be visible",
-            "set field #cookie-message-popup-accept to 6",
+            "set field #id_total_lists_required to 6",
             "click element #submit-button",
         ];
         const waitTime = 1000;
