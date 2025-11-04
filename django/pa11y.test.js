@@ -6,6 +6,8 @@ describe('Accessibility tests', () => {
         const urls = [
           "http://127.0.0.1:8000/",
           "http://127.0.0.1:8000/cookies/",
+          "http://127.0.0.1:8000/multiplesystemsestimation",
+          "http://127.0.0.1:8000/multiplesystemsestimation/calculator",
         ];
         await expect(urls).allToBeAccessible();
     }, 10000 * 2); // increment second number to at least the number of URLs tested
@@ -14,7 +16,18 @@ describe('Accessibility tests', () => {
         const url = "http://127.0.0.1:8000/"
         const actions = [
             "wait for element #cookie-message-popup-accept to be visible",
-            "click element #cookie-message-popup-accept"
+            "click element #cookie-message-popup-accept",
+        ];
+        const waitTime = 1000;
+        await expect(url).toBeAccessible(actions, waitTime);
+    }, 10000);
+
+    test('Test the generated mse form', async () => {
+        const url = "http://127.0.0.1:8000/multiplesystemsestimation/calculator"
+        const actions = [
+            "wait for element #id_total_lists_required to be visible",
+            "set field #cookie-message-popup-accept to 6",
+            "click element #submit-button",
         ];
         const waitTime = 1000;
         await expect(url).toBeAccessible(actions, waitTime);
