@@ -26,6 +26,7 @@ describe('Accessibility tests', () => {
         const url = "http://127.0.0.1:8000/multiplesystemsestimation/calculator"
         const actions = [
             "wait for element #id_total_lists_required to be visible",
+            "wait for element #submit-button to be visible",
             "set field #cookie-message-popup-accept to 6",
             "click element #submit-button",
         ];
