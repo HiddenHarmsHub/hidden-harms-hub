@@ -46,7 +46,7 @@
                         {% else %}
                             <input type="hidden" name="{{ details_form.index_pos.html_name }}" value="{{ forloop.counter0 }}"/>
                             <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
-                            <input type="text" aria-label="{{details_form.initial.required_lists|join:" and "}}" id="{{ details_form.total_appearances.id_for_label }}" name="{{ details_form.required_lists.html_name }}"/>
+                            <input type="text" aria-label="{{details_form.initial.required_lists|join:' and '}}" id="{{ details_form.total_appearances.id_for_label }}" name="{{ details_form.required_lists.html_name }}"/>
 
                         {% endif %}
                     </td>
