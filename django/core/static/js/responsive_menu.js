@@ -11,7 +11,6 @@
     }
 
     function toggleClass(element, className) {
-        console.log(className)
         var classes = element.className.split(/\s+/);
         var length = classes.length;
         var i = 0;
