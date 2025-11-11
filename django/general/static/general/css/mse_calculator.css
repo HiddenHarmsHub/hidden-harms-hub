@@ -40,3 +40,12 @@ input[type="submit"] {
     border-radius: 5px;
     font-size: 1.2em;
 }
+
+form#setup-form {
+    margin-top: 20px;
+}
+
+form#setup-form div {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}

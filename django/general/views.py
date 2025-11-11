@@ -13,7 +13,7 @@ from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseSetupForm
 
 
 class MultipleSystemsEstimation(FormView):
-    """Setup and process the MSW data."""
+    """Setup and process the MSE data."""
     on_success = "multiplesystemsestimation/calculator"
 
     def _calculate_initial_data(self, total_lists):
@@ -31,6 +31,14 @@ class MultipleSystemsEstimation(FormView):
                 else:
                     initial.append({'required_lists': item, 'first': False})
         return lists, initial
+
+    def _add_uploaded_totals(self, initial, rows, lists):
+        for entry in initial:
+            expected = "\t".join(["1" if x in entry["required_lists"] else "0" for x in lists])
+            for row in rows:
+                if row.startswith(f"{expected}\t"):
+                    entry["total_appearances"] = row.split("\t")[-1].replace("\n", "")
+        return initial
 
     def get(self, request):
         """Display the MSE setup page.
@@ -53,20 +61,38 @@ class MultipleSystemsEstimation(FormView):
         Returns:
             HttpResponse: The appropriate page for the stage of the process.
         """
+        # validate the setup form
+        input_form = MseSetupForm(request.POST, request.FILES)
+        if not input_form.is_valid():
+            form = MseSetupForm
+            return render(request, "general/mse_setup.html", {"form": form})
+
+        # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
-        if "total_lists_required" in request.POST:
-            total_lists = int(request.POST.get("total_lists_required"))
-            # render part 2 of the form
-            lists, initial = self._calculate_initial_data(total_lists)
+        if "total_lists_required" in request.POST:  # then this is phase 1 by upload or form generation
+            if request.POST["total_lists_required"] != "":
+                total_lists = int(request.POST.get("total_lists_required"))
+                lists, initial = self._calculate_initial_data(total_lists)
+
+            if "file_upload" in request.FILES:
+                # process the data and render it in form part 2
+                contents = request.FILES["file_upload"].read().decode('utf-8')
+                rows = contents.split("\n")
+                total_lists = len(rows[0].split("\t")) - 1
+                lists, initial = self._calculate_initial_data(total_lists)
+                initial = self._add_uploaded_totals(initial, rows, lists)
+
+            # render part 2 of the form for data adding or to show the upload processing
             form = MseForm(initial={"total_lists": total_lists})
             formset = MseFormSet(initial=initial)
             return render(request, "general/mse_calculator.html", {"formset": formset, "form": form, "lists": lists})
+
         total_lists = int(request.POST.get("total_lists"))
         lists, initial = self._calculate_initial_data(total_lists)
         formset = MseFormSet(request.POST, initial=initial)
         if not formset.is_valid():
             return render(request, "general/mse_calculator.html", {"formset": formset, "lists": lists})
-
+        # run the calculation
         results = 'These are the results of your MSE'
         stringified_data = []
         for form in formset:

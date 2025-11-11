@@ -4,7 +4,8 @@ from django.core.exceptions import ValidationError
 
 class MseSetupForm(forms.Form):
     """Form to setup the MSE main form."""
-    total_lists_required = forms.IntegerField()
+    total_lists_required = forms.IntegerField(required=False)
+    file_upload = forms.FileField(required=False)
 
 
 class MseForm(forms.Form):
