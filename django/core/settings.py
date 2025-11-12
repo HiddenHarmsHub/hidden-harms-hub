@@ -92,7 +92,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "core/static")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "core/static"), os.path.join(BASE_DIR, "general/static")]
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
@@ -181,7 +181,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['stream', 'file', 'mail_admins'],
-            'level': 'DEBUG' if DEBUG else 'INFO',  # NOQA
+            # 'level': 'DEBUG' if DEBUG else 'INFO',  # NOQA
             'propagate': 'True',
         },
     },

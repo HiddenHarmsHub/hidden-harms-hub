@@ -10,6 +10,10 @@
     --dark-header-bg: #41716e;
 }
 
+.visually-hidden {
+    display: none;
+}
+
 html,
 body {
     margin: 0;
@@ -68,6 +72,7 @@ header {
 header #header-title {
     font-size: 2em;
     margin-left: 20px;
+    font-weight: bold;
 }
 
 footer {
@@ -90,6 +95,11 @@ main {
 
 div#page-content {
     flex-grow: 1;
+}
+
+h1,
+h2 {
+    font-weight: normal;
 }
 
 nav.active {
@@ -136,6 +146,7 @@ button.menu-button i {
     margin-bottom: 2px;
     text-decoration: none;
     white-space: nowrap;
+    font-size: 1.2em;
 }
 
 div#content.active {

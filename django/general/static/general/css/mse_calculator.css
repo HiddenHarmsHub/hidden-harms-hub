@@ -1,0 +1,51 @@
+table,
+th,
+td {
+    border: 1px solid light-dark(var(--light-color), var(--dark-color));
+}
+
+table {
+    --light-table-bg: gainsboro;
+    --dark-table-bg: dimgrey;
+
+    border-collapse: collapse;
+}
+
+th,
+td,
+td b {
+    background-color: light-dark(var(--light-table-bg), var(--dark-table-bg));
+}
+
+th {
+    padding: 4px;
+}
+
+td {
+    padding: 0;
+    text-align: center;
+}
+
+td > input {
+    border: 0;
+}
+
+tr.first td {
+    border-top-width: 3px;
+}
+
+input[type="submit"] {
+    margin-top: 10px;
+    padding: 6px;
+    border-radius: 5px;
+    font-size: 1.2em;
+}
+
+form#setup-form {
+    margin-top: 20px;
+}
+
+form#setup-form div {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}

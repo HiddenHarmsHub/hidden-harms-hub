@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'general/css/mse_calculator.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    <h1>Multiple Systems Estimation Calculator</h1>
+    <form action="/multiplesystemsestimation/{% if not results_display %}calculator{% else %}download{% endif %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="{{ form.total_lists.html_name }}" value="{{ form.total_lists.value }}"/>
+        {% if results_display %}
+            <h2>Results</h2>
+            <div>{{ results }}</div>
+            <input type="hidden" name="results" value="{{ results }}"/>
+            <input type="hidden" name="csv-data" value="{{ csv_data }}"/>
+            <input type="submit" value="Download input data and results"/>
+            <h2>Input data</h2>
+        {% endif %}
+        
+        <table{% if results_display %} class="results-table"{% endif %}>
+            {{ formset.management_form }}
+            <tr>
+                {% for list in lists %}
+                    <th aria-hidden="true" scope="col">{{ list }}</th>
+                {% endfor %}
+                <th>Total</th>
+            </tr>
+            {% for details_form in formset %}
+                <tr{% if details_form.initial.first %} class="first"{% endif %}>
+                    {% for list in lists %}
+                        <td aria-hidden="true">
+                            {% if list in details_form.initial.required_lists %}
+                                x
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    <td>
+                        {% if results_display %}
+                            <b>
+                                {{ details_form.total_appearances.value }}
+                            </b>
+                        {% else %}
+                            <input type="hidden" name="{{ details_form.index_pos.html_name }}" value="{{ forloop.counter0 }}"/>
+                            <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
+                            <label class="visually-hidden" for="{{ details_form.total_appearances.id_for_label }}">{{details_form.initial.required_lists|join:" and "}}</label>
+                            {{ details_form.total_appearances }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </table>
+        {% if not results_display %}
+            {% for dict in formset.errors %}
+                {% for error in dict.values %}
+                    {{ error }}
+                {% endfor %}
+            {% endfor %}
+            <input type="submit" value="Submit">
+        {% endif %}
+    </form>
+{% endblock %}

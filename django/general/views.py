@@ -1,3 +1,147 @@
-# This app only includes basic TemplateView generic views.
-# These are included in urls.py, within the urlpatterns array.
-# This is why this views.py file is empty.
+import os
+import shutil
+from itertools import combinations
+from tempfile import TemporaryDirectory
+
+from django.forms import formset_factory
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.views import View
+from django.views.generic.edit import FormView
+
+from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseSetupForm
+
+
+class MultipleSystemsEstimation(FormView):
+    """Setup and process the MSE data."""
+    on_success = "multiplesystemsestimation/calculator"
+
+    def _calculate_initial_data(self, total_lists):
+        lists = []
+        initial = []  # reset this in case of reposts
+        for number in range(1, total_lists + 1):
+            lists.append(f'list {number}')
+        list_combos = [[[x] for x in lists]]
+        for combination_size in range(2, total_lists + 1):
+            list_combos.append([list(x) for x in list(combinations(lists, combination_size))])
+        for typ in list_combos:
+            for i, item in enumerate(typ):
+                if len(item) > 1 and i == 0:
+                    initial.append({'required_lists': item, 'first': True})
+                else:
+                    initial.append({'required_lists': item, 'first': False})
+        return lists, initial
+
+    def _add_uploaded_totals(self, initial, rows, lists):
+        for entry in initial:
+            expected = "\t".join(["1" if x in entry["required_lists"] else "0" for x in lists])
+            for row in rows:
+                if row.startswith(f"{expected}\t"):
+                    entry["total_appearances"] = row.split("\t")[-1].replace("\n", "")
+        return initial
+
+    def get(self, request):
+        """Display the MSE setup page.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponse: The MSE setup page.
+        """
+        form = MseSetupForm
+        return render(request, "general/mse_setup.html", {"form": form})
+
+    def post(self, request):
+        """Handle submission, part 2 of the MSE form display and displaying the results.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponse: The appropriate page for the stage of the process.
+        """
+        # validate the setup form
+        input_form = MseSetupForm(request.POST, request.FILES)
+        if not input_form.is_valid():
+            form = MseSetupForm
+            return render(request, "general/mse_setup.html", {"form": form})
+
+        # create part 2 for data entry or results
+        MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
+        if "total_lists_required" in request.POST:  # then this is phase 1 by upload or form generation
+            if request.POST["total_lists_required"] != "":
+                total_lists = int(request.POST.get("total_lists_required"))
+                lists, initial = self._calculate_initial_data(total_lists)
+
+            if "file_upload" in request.FILES:
+                # process the data and render it in form part 2
+                contents = request.FILES["file_upload"].read().decode('utf-8')
+                rows = contents.split("\n")
+                total_lists = len(rows[0].split("\t")) - 1
+                lists, initial = self._calculate_initial_data(total_lists)
+                initial = self._add_uploaded_totals(initial, rows, lists)
+
+            # render part 2 of the form for data adding or to show the upload processing
+            form = MseForm(initial={"total_lists": total_lists})
+            formset = MseFormSet(initial=initial)
+            return render(request, "general/mse_calculator.html", {"formset": formset, "form": form, "lists": lists})
+
+        total_lists = int(request.POST.get("total_lists"))
+        lists, initial = self._calculate_initial_data(total_lists)
+        formset = MseFormSet(request.POST, initial=initial)
+        if not formset.is_valid():
+            return render(request, "general/mse_calculator.html", {"formset": formset, "lists": lists})
+        # run the calculation
+        results = 'These are the results of your MSE'
+        stringified_data = []
+        for form in formset:
+            row_data = form.cleaned_data
+            for list_name in lists:
+                if list_name in row_data["required_lists"]:
+                    stringified_data.append(f"{1}|")
+                else:
+                    stringified_data.append(f"{0}|")
+            stringified_data.append(f"{row_data['total_appearances']}|||")
+        csv_data = "".join(stringified_data)
+        data = {
+            "formset": formset,
+            "lists": lists,
+            "results": results,
+            "results_display": True,
+            "csv_data": csv_data,
+        }
+        return render(request, "general/mse_calculator.html", data)
+
+
+class MultipleSystemsEstimationDownload(View):
+    """Download the results and the input data."""
+
+    def post(self, request):
+        """Create and download a zipfile of the results and data.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponse: A zip file download of the results and the input data.
+        """
+        temp_dir = TemporaryDirectory()
+        output_path = os.path.join(temp_dir.name, "export")
+        os.makedirs(output_path)
+        with open(os.path.join(output_path, "results.txt"), mode="w") as result_file:
+            result_file.write(request.POST.get("results"))
+        with open(os.path.join(output_path, "mse_input.txt"), mode="w") as input_file:
+            data = request.POST.get("csv-data")
+            lines = data.split("|||")
+            for line in lines:
+                input_file.write(line.replace("|", "\t"))
+                input_file.write("\n")
+
+        filename = "mse_results"
+        filepath = os.path.join(temp_dir.name, filename)
+        shutil.make_archive(filepath, "zip", os.path.join(temp_dir.name, "export"))
+        response = HttpResponse(content_type="application/zip")
+        response["Content-Disposition"] = "attachment; filename=" + filename
+        response.write(open(f"{filepath}.zip", "rb").read())
+        return response

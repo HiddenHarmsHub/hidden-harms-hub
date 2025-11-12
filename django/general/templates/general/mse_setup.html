@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'general/css/mse_calculator.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>Multiple Systems Estimation Calculator</h1>
+    <p>Either enter the number of lists in your data or upload a csv file containing the data.</p>
+    <form id="setup-form" action="/multiplesystemsestimation/calculator" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
