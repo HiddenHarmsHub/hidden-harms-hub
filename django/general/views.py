@@ -19,11 +19,11 @@ class MultipleSystemsEstimation(FormView):
     def _calculate_initial_data(self, total_lists):
         lists = []
         initial = []  # reset this in case of reposts
-        for i in range(0, total_lists):
-            lists.append(f'list {i + 1}')
+        for number in range(1, total_lists + 1):
+            lists.append(f'list {number}')
         list_combos = [[[x] for x in lists]]
-        for i in range(1, total_lists):
-            list_combos.append([list(x) for x in list(combinations(lists, i + 1))])
+        for combination_size in range(2, total_lists + 1):
+            list_combos.append([list(x) for x in list(combinations(lists, combination_size))])
         for typ in list_combos:
             for i, item in enumerate(typ):
                 if len(item) > 1 and i == 0:
