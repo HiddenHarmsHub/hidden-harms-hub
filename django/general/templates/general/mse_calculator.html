@@ -21,7 +21,7 @@
             <h2>Input data</h2>
         {% endif %}
         
-        <table{% if results_display %} class="results-table"{% endif %}>
+        <table class="{% if results_display %}results-table{% else %}input-table{% endif %}">
             {{ formset.management_form }}
             <tr>
                 {% for list in lists %}

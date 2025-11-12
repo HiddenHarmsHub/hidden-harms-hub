@@ -29,6 +29,7 @@ describe('Accessibility tests', () => {
             "wait for element #submit-button to be visible",
             "set field #id_total_lists_required to 6",
             "click element #submit-button",
+            "wait for element #input-table to be visible",
         ];
         const waitTime = 1000;
         await expect(url).toBeAccessible(actions, waitTime);
