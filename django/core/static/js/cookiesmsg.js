@@ -1,10 +1,7 @@
 function getCookie(name) {
     // Convert cookies string to list
-    let c_list = document.cookie.split("; "),
-        i = 0,
-        c,
-        c_name,
-        c_value;
+    const c_list = document.cookie.split('; ');
+    let c, c_name, c_value;
     // Loop through cookies list to find a match
     for (let i = 0; i < c_list.length; i += 1) {
         // Find cookie
@@ -44,15 +41,15 @@ if (getCookie('cookieMessageApprove') !== '1') {
     cookieDiv.append(cookieAccept);
 
     // Add the HTML message to the page
-    document.getElementById('main').append(cookieDiv);
-
+    // document.getElementsByTagName('body')[0].insertBefore(cookieDiv, document.getElementById('footer'));
+    document.getElementsByTagName('main')[0].append(cookieDiv);
 }
 
 // Add event listener for 'accept' button to set the cookie and hide the message
 try {
-        document.getElementById("cookie-message-popup-accept").addEventListener("click", function () {
-        document.cookie = "cookieMessageApprove=1; expires=Mon, 31 Dec 2040 23:59:59 GMT; path=/; Secure;";
-        document.getElementById("cookie-message-popup").style.display = "none";
+        document.getElementById('cookie-message-popup-accept').addEventListener('click', function () {
+        document.cookie = 'cookieMessageApprove=1; expires=Mon, 31 Dec 2040 23:59:59 GMT; path=/; Secure;';
+        document.getElementById('cookie-message-popup').style.display = 'none';
     });
 } catch (ignore) {
     // Ignore error, as it's expected to fail when user has already approved (as cookie popup won't show)
