@@ -1,5 +1,7 @@
 /* global test expect describe */
 
+const colourSchemes = ['light', 'dark']
+
 describe('Accessibility tests', () => {
 
     test('Test all the simple pages with no actions', async () => {
@@ -9,8 +11,11 @@ describe('Accessibility tests', () => {
           "http://127.0.0.1:8000/multiplesystemsestimation",
           "http://127.0.0.1:8000/multiplesystemsestimation/calculator",
         ];
-        await expect(urls).allToBeAccessible();
-    }, 10000 * 2); // increment second number to at least the number of URLs tested
+        for (let i = 0; i < colourSchemes.length; i += 1) {
+            await expect(urls).allToBeAccessible(colourSchemes[i]);
+        }
+        
+    }, 10000 * 8); // increment second number to at least the number of URLs tested * number of colour schemes
 
     test('Test the base url with the cookies accepted', async () => {
         const url = "http://127.0.0.1:8000/"
@@ -19,7 +24,9 @@ describe('Accessibility tests', () => {
             "click element #cookie-message-popup-accept",
         ];
         const waitTime = 1000;
-        await expect(url).toBeAccessible(actions, waitTime);
+        for (let i = 0; i < colourSchemes.length; i += 1) {
+            await expect(url).toBeAccessible(actions, waitTime, colourSchemes[i], true);
+        }
     }, 10000);
 
     test('Test the generated mse form', async () => {
@@ -32,7 +39,9 @@ describe('Accessibility tests', () => {
             "wait for element .input-table to be visible",
         ];
         const waitTime = 1000;
-        await expect(url).toBeAccessible(actions, waitTime);
+        for (let i = 0; i < colourSchemes.length; i += 1) {
+            await expect(url).toBeAccessible(actions, waitTime, colourSchemes[i]);
+        }
     }, 10000);
 
 });
