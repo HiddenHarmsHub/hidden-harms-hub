@@ -3,7 +3,7 @@ const pa11y = require('pa11y');
 const cliReporter = require('pa11y/lib/reporters/cli');
 const puppeteer = require('puppeteer');
 
-const chromeOptions = {"args": ["--no-sandbox"], "headless": false};
+const chromeOptions = {"args": ["--no-sandbox"], "headless": "new"};
 
 const defaultOptions = {
     "runners": ["axe", "htmlcs"],
