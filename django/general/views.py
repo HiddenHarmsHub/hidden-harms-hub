@@ -102,7 +102,11 @@ class MultipleSystemsEstimation(FormView):
                     stringified_data.append(f"{1}|")
                 else:
                     stringified_data.append(f"{0}|")
-            stringified_data.append(f"{row_data['total_appearances']}|||")
+            if row_data['total_appearances'] == '':
+                total_appearances = '-'
+            else:
+                total_appearances = row_data['total_appearances']
+            stringified_data.append(f"{total_appearances}|||")
         csv_data = "".join(stringified_data)
         data = {
             "formset": formset,
@@ -135,7 +139,7 @@ class MultipleSystemsEstimationDownload(View):
             data = request.POST.get("csv-data")
             lines = data.split("|||")
             for line in lines:
-                input_file.write(line.replace("|", "\t"))
+                input_file.write(line.replace("|", "\t").replace('-', ''))
                 input_file.write("\n")
 
         filename = "mse_results"
