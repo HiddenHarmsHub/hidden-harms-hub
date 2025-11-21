@@ -34,10 +34,10 @@ class MultipleSystemsEstimation(FormView):
 
     def _add_uploaded_totals(self, initial, rows, lists):
         for entry in initial:
-            expected = "\t".join(["1" if x in entry["required_lists"] else "0" for x in lists])
+            expected = ",".join(["1" if x in entry["required_lists"] else "0" for x in lists])
             for row in rows:
-                if row.startswith(f"{expected}\t"):
-                    entry["total_appearances"] = row.split("\t")[-1].replace("\n", "")
+                if row.startswith(f"{expected},"):
+                    entry["total_appearances"] = row.split(",")[-1].replace("\n", "")
         return initial
 
     def get(self, request):
@@ -78,7 +78,7 @@ class MultipleSystemsEstimation(FormView):
                 # process the data and render it in form part 2
                 contents = request.FILES["file_upload"].read().decode('utf-8')
                 rows = contents.split("\n")
-                total_lists = len(rows[0].split("\t")) - 1
+                total_lists = len(rows[0].split(",")) - 1
                 lists, initial = self._calculate_initial_data(total_lists)
                 initial = self._add_uploaded_totals(initial, rows, lists)
 
@@ -139,7 +139,7 @@ class MultipleSystemsEstimationDownload(View):
             data = request.POST.get("csv-data")
             lines = data.split("|||")
             for line in lines:
-                input_file.write(line.replace("|", "\t").replace('-', ''))
+                input_file.write(line.replace("|", ",").replace('-', ''))
                 input_file.write("\n")
 
         filename = "mse_results"
