@@ -17,6 +17,18 @@ class MultipleSystemsEstimation(FormView):
     on_success = "multiplesystemsestimation/calculator"
 
     def _calculate_initial_data(self, total_lists):
+        """Calculate all of the list combinations and return the list of lists and the combinations.
+
+        Also records whether a combination is the first of its type (i.e. the first of the pairs or the first of
+        the triples) so that a divider can be placed on the table to assist with the data entry.
+
+        Args:
+            total_lists (int): The total number of lists in the data.
+
+        Returns:
+            tuple: A tuple containing two lists, the first a list of each of the data lists, the second a list of
+                dictionaries containing list combinations whether they are the first of their type or not.
+        """
         lists = []
         initial = []  # reset this in case of reposts
         for number in range(1, total_lists + 1):
