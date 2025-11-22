@@ -103,7 +103,8 @@ class MultipleSystemsEstimation(FormView):
         lists, initial = self._calculate_initial_data(total_lists)
         formset = MseFormSet(request.POST, initial=initial)
         if not formset.is_valid():
-            return render(request, "general/mse_calculator.html", {"formset": formset, "lists": lists})
+            form = MseForm(initial={"total_lists": total_lists})
+            return render(request, "general/mse_calculator.html", {"formset": formset, "form": form, "lists": lists})
         # run the calculation
         results = 'These are the results of your MSE'
         stringified_data = []
