@@ -45,6 +45,17 @@ class MultipleSystemsEstimation(FormView):
         return lists, initial
 
     def _add_uploaded_totals(self, initial, rows, lists):
+        """Add the total_appearances data to the initial data in the case where this has been uploaded via a file.
+
+        Args:
+            initial (list): A list of dictionaries containing the initial data to use in the forms without the uploaded
+                totals.
+            rows (list): A list where each entry is one row of the input file.
+            lists (list): A list of each of the individual lists included in the data.
+
+        Returns:
+            list: The initial data to use in the forms with the uploaded totals added.
+        """
         for entry in initial:
             expected = ",".join(["1" if x in entry["required_lists"] else "0" for x in lists])
             for row in rows:
