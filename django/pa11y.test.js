@@ -39,8 +39,8 @@ describe('Accessibility tests', () => {
             "wait for element .input-table to be visible",
         ];
         const waitTime = 1000;
-        for (let i = 0; i < colourSchemes.length; i += 1) {
-            await expect(url).toBeAccessible(actions, waitTime, colourSchemes[i]);
+        for (const scheme of colourSchemes) {
+          await expect(url).toBeAccessible(actions, waitTime, scheme);
         }
     }, 10000);
 
