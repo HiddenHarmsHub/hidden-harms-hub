@@ -41,6 +41,3 @@ class BaseMseFormSet(forms.BaseFormSet):
         if any(self.errors):
             # Don't bother validating the formset unless each form is valid on its own
             return
-        for _form in self.forms:  # TODO: remove the _ when we add this validation
-            # TODO: do some kind of validation on the different totals maybe
-            pass
