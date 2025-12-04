@@ -21,7 +21,7 @@
             <h2>Input data</h2>
         {% endif %}
         
-        <table{% if results_display %} class="results-table"{% endif %}>
+        <table class="{% if results_display %}results-table{% else %}input-table{% endif %}">
             {{ formset.management_form }}
             <tr>
                 {% for list in lists %}
@@ -46,8 +46,8 @@
                         {% else %}
                             <input type="hidden" name="{{ details_form.index_pos.html_name }}" value="{{ forloop.counter0 }}"/>
                             <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
-                            <label class="visually-hidden" for="{{ details_form.total_appearances.id_for_label }}">{{details_form.initial.required_lists|join:" and "}}</label>
-                            {{ details_form.total_appearances }}
+                            <input type="text" aria-label="{{details_form.initial.required_lists|join:' and '}}" id="{{ details_form.total_appearances.auto_id }}" name="{{ details_form.total_appearances.html_name }}"/>
+
                         {% endif %}
                     </td>
                 </tr>
@@ -60,7 +60,7 @@
                     {{ error }}
                 {% endfor %}
             {% endfor %}
-            <input type="submit" value="Submit">
+            <input id="submit-button" type="submit" value="Submit">
         {% endif %}
     </form>
 {% endblock %}
