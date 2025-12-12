@@ -17,6 +17,18 @@ class MultipleSystemsEstimation(FormView):
     on_success = "multiplesystemsestimation/calculator"
 
     def _calculate_initial_data(self, total_lists):
+        """Calculate all of the list combinations and return the list of lists and the combinations.
+
+        Also records whether a combination is the first of its type (i.e. the first of the pairs or the first of
+        the triples) so that a divider can be placed on the table to assist with the data entry.
+
+        Args:
+            total_lists (int): The total number of lists in the data.
+
+        Returns:
+            tuple: A tuple containing two lists, the first a list of each of the data lists, the second a list of
+                dictionaries containing list combinations whether they are the first of their type or not.
+        """
         lists = []
         initial = []  # reset this in case of reposts
         for number in range(1, total_lists + 1):
@@ -33,6 +45,17 @@ class MultipleSystemsEstimation(FormView):
         return lists, initial
 
     def _add_uploaded_totals(self, initial, rows, lists):
+        """Add the total_appearances data to the initial data in the case where this has been uploaded via a file.
+
+        Args:
+            initial (list): A list of dictionaries containing the initial data to use in the forms without the uploaded
+                totals.
+            rows (list): A list where each entry is one row of the input file.
+            lists (list): A list of each of the individual lists included in the data.
+
+        Returns:
+            list: The initial data to use in the forms with the uploaded totals added.
+        """
         for entry in initial:
             expected = ",".join(["1" if x in entry["required_lists"] else "0" for x in lists])
             for row in rows:
@@ -91,7 +114,8 @@ class MultipleSystemsEstimation(FormView):
         lists, initial = self._calculate_initial_data(total_lists)
         formset = MseFormSet(request.POST, initial=initial)
         if not formset.is_valid():
-            return render(request, "general/mse_calculator.html", {"formset": formset, "lists": lists})
+            form = MseForm(initial={"total_lists": total_lists})
+            return render(request, "general/mse_calculator.html", {"formset": formset, "form": form, "lists": lists})
         # run the calculation
         results = 'These are the results of your MSE'
         stringified_data = []
