@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block content %}
     <h1>Hidden Harms Mapping: A Tool for Local Authorities</h1>
@@ -79,6 +79,12 @@
             on these findings to over 130 local authority staff, embedding the insights directly into frontline practice.
         </li>
     </ul>
+    <figure>
+        <img id="notts_map" src="{% static 'general/img/Notts_map.png' %}" width="900px" alt=""/>
+        <figcaption>A map showing the level of risk of forced marriage in different regions of Nottinghamshire</figcaption>
+    </figure>
+
+    
 
     <h3>Case Study: Mapping Female Genital Mutilation (FGM) in South Yorkshire</h3>
 
@@ -101,6 +107,10 @@
             respectively.
         </li>
     </ul>
+    <figure>
+        <img id="sy_map" src="{% static 'general/img/SY_Risk_Map.png' %}" width="900px" alt=""/>
+        <figcaption>A map showing the level of risk of FGM in different regions of South Yorkshire</figcaption>
+    </figure>
 
     <h3>Case Study: Domestic Abuse Strategy in Wokingham</h3>
 
