@@ -98,8 +98,28 @@ div#page-content {
 }
 
 h1,
-h2 {
+h2,
+h3 {
     font-weight: normal;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+}
+
+h1 {
+    font-size: 2em;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+h2 {
+    font-size: 1.75em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+h3 {
+    font-size: 1.4em;
 }
 
 nav.active {
@@ -157,6 +177,10 @@ div#content.active {
     display: block;
     top: 0;
     width: 100%;
+}
+
+p.intro-paragraph {
+    font-size: 1.2em;
 }
 
 @media (width > 480px) {
