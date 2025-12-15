@@ -4,7 +4,52 @@
 
 
 {% block content %}
-    <h1>Welcome</h1>
-    <p>The <span class="highlight">RSG Django Template</span> website is under construction and will be coming soon.</p>
-    <p>For information about the project in the meantime, please email: <a href="mailto:{% settings_value 'ADMIN_EMAIL' %}">{% settings_value 'ADMIN_EMAIL' %}</a></p>
+    <h1>Introduction</h1>
+
+    <p class="intro-paragraph">
+        Modern slavery is a crime that thrives in the shadows. Because it is hidden, data on its prevalence is often
+        sparse, noisy, and incomplete. This project, led by Dr. Rowland Seymour at the University of Birmingham, leverages
+        cutting-edge computational statistics to transform fragmented data into robust, actionable intelligence.
+    </p>
+    <p>
+        Funded by a £1.5 million UKRI Future Leaders Fellowship, our team is developing novel statistical methodologies to
+        estimate the true scale of modern slavery and describe the uncertainty surrounding these figures. By moving beyond
+        simple counting to complex modelling, we aim to set a new benchmark for quantitative research in human rights,
+        directly supporting the UN’s Sustainable Development Goals.
+    </p>
+
+    <h2>Watch the Overview</h2>
+
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/IzPuuBnrIDc?si=EPi1ngWZwG-2uNET" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+    <h2>Our Scientific Objectives</h2>
+    <p>
+        We are pioneering statistical frameworks across three critical frontiers:
+
+        <ul>
+            <li>
+                <b>National Prevalence Mapping:</b> We are creating new methods to produce granular prevalence estimates across
+                different UK regions and exploitation types, updating national figures that have not been revised since 2015.
+            </li>
+            <li>
+                <b>High-Resolution Spatial Analysis:</b> We are developing neighbourhood-level models to identify local "hotspots" of
+                exploitation, with a specific focus on forced and early marriage. This allows for targeted interventions at the
+                ward level where they are needed most.
+            </li>
+            <li>
+                <b>Digital Footprint Detection:</b> We are building tools to analyse online data&mdash;from financial transactions to
+                internet service provider logs&mdash;to identify and disrupt online child sexual exploitation.
+            </li>
+        </ul>
+    </p>
+
+
+    <h2>Impact-Driven Research</h2>
+    <p>
+        Our goal is not just theoretical advancement, but practical application. By quantifying the
+        invisible, we empower policymakers, law enforcement, and NGOs with the evidence needed to design better safeguarding
+        strategies and ultimately save lives.
+    </p>
+
 {% endblock %}
