@@ -80,14 +80,14 @@ class TestMseView(TestCase):
         response_string = response.content.decode()
         self.assertTrue('name="total_lists_required"' in response_string)
         self.assertTrue('name="file_upload"' in response_string)
-        self.assertTrue('<input type="submit" value="Submit">' in response_string)
+        self.assertTrue('<input id="submit-button" type="submit" value="Submit">' in response_string)
 
     def test_post_mse_stage_1_valid(self):
         """Test stage 1 of the MSE workflow where the number of lists is provided in the data."""
         client = Client()
         response = client.post('/multiplesystemsestimation/calculator', {'total_lists_required': '3'})
         response_string = response.content.decode()
-        self.assertTrue('<table>' in response_string)
+        self.assertTrue('<table class="input-table">' in response_string)
         self.assertEqual(response_string.count('<th'), 4)
         self.assertEqual(response_string.count('<tr'), 8)
 
@@ -143,6 +143,6 @@ class TestMseView(TestCase):
         self.assertFalse('value="1|0|34|||0|1|32|||1|1|-|||"' in response_string)
         self.assertFalse('<input type="submit" value="Download input data and results"/>' in response_string)
         self.assertTrue("<li>Total must be an integer, * or left empty</li>" in response_string)
-        self.assertTrue("<table>" in response_string)
+        self.assertTrue('<table class="input-table">' in response_string)
         self.assertEqual(response_string.count("<th"), 3)
         self.assertEqual(response_string.count("<tr"), 4)
