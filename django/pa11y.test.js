@@ -8,6 +8,7 @@ describe('Accessibility tests', () => {
         const urls = [
           "http://127.0.0.1:8000/",
           "http://127.0.0.1:8000/cookies/",
+          "http://127.0.0.1:8000/comparativejudgement",
           "http://127.0.0.1:8000/multiplesystemsestimation",
           "http://127.0.0.1:8000/multiplesystemsestimation/calculator",
         ];
