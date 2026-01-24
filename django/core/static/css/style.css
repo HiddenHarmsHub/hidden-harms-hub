@@ -184,6 +184,10 @@ p.intro-paragraph {
 }
 
 @media (width > 480px) {
+    html {
+        font-size: 20px;
+    }
+
     .menu-button {
         position: fixed;
         left: 150px;
