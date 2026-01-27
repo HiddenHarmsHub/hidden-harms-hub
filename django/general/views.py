@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 from itertools import combinations
@@ -138,7 +139,8 @@ class MultipleSystemsEstimation(FormView):
         }
         # run the calculation
         mse_url = settings.MSE_CALCULATOR_URL
-        response = requests.post(mse_url, data=mse_input, timeout=10)
+        headers = {'Content-type': 'application/json'}
+        response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
         results = response.text
         # prepare the data for the download
         stringified_data = []
