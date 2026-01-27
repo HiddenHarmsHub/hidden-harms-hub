@@ -139,7 +139,7 @@ class MultipleSystemsEstimation(FormView):
         # run the calculation
         mse_url = settings.MSE_CALCULATOR_URL
         response = requests.post(mse_url, data=mse_input, timeout=10)
-        results = response
+        results = response.text
         # prepare the data for the download
         stringified_data = []
         for form in formset:
