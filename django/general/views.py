@@ -3,6 +3,8 @@ import shutil
 from itertools import combinations
 from tempfile import TemporaryDirectory
 
+import requests
+from django.conf import settings
 from django.forms import formset_factory
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -118,9 +120,6 @@ class MultipleSystemsEstimation(FormView):
         formset = MseFormSet(request.POST.get("censoring_upper"), request.POST, initial=initial)
         options_form = MseOptionsForm(request.POST)
         if not formset.is_valid():
-            print('this had errors')
-            print(formset.errors)
-            print(formset.non_form_errors())
             form = MseForm(initial={"total_lists": total_lists})
             data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
             return render(request, "general/mse_calculator.html", data)
@@ -138,9 +137,10 @@ class MultipleSystemsEstimation(FormView):
             'censoring_upper': request.POST.get('censoring_upper')
         }
         # run the calculation
-        print(mse_input)
-
-        results = 'These are the results of your MSE'
+        mse_url = settings.MSE_CALCULATOR_URL
+        response = requests.post(mse_url, data=mse_input, timeout=10)
+        results = response
+        # prepare the data for the download
         stringified_data = []
         for form in formset:
             row_data = form.cleaned_data

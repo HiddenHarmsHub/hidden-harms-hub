@@ -22,6 +22,8 @@ ALLOWED_HOSTS = ['*']/['django-template.bham.ac.uk']
 # Provide the email address for the site admin (e.g. the researcher/research team)
 ADMIN_EMAIL = '...@bham.ac.uk'
 
+MSE_CALCULATOR_URL = 'url.for.julia.service'
+
 # Set the database name below
 DATABASES = {
     'default': {
