@@ -17,6 +17,10 @@ td b {
     background-color: light-dark(var(--light-table-bg), var(--dark-table-bg));
 }
 
+td:has(input) {
+    background-color: light-dark(var(--light-bg), var(--dark-bg));
+}
+
 th {
     padding: 4px;
 }
@@ -48,4 +52,8 @@ form#setup-form {
 form#setup-form div {
     margin-top: 30px;
     margin-bottom: 30px;
+}
+
+div#options div {
+    padding-top: 10px;
 }

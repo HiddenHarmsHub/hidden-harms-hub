@@ -1,15 +1,18 @@
+import json
 import os
 import shutil
 from itertools import combinations
 from tempfile import TemporaryDirectory
 
+import requests
+from django.conf import settings
 from django.forms import formset_factory
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import FormView
 
-from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseSetupForm
+from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseOptionsForm, MseSetupForm
 
 
 class MultipleSystemsEstimation(FormView):
@@ -107,17 +110,39 @@ class MultipleSystemsEstimation(FormView):
 
             # render part 2 of the form for data adding or to show the upload processing
             form = MseForm(initial={"total_lists": total_lists})
+            options_form = MseOptionsForm()
             formset = MseFormSet(initial=initial)
-            return render(request, "general/mse_calculator.html", {"formset": formset, "form": form, "lists": lists})
+            data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
+            return render(request, "general/mse_calculator.html", data)
 
+        # this received the data from the submitted form with all of the details in it
         total_lists = int(request.POST.get("total_lists"))
         lists, initial = self._calculate_initial_data(total_lists)
-        formset = MseFormSet(request.POST, initial=initial)
+        formset = MseFormSet(request.POST.get("censoring_upper"), request.POST, initial=initial)
+        options_form = MseOptionsForm(request.POST)
         if not formset.is_valid():
             form = MseForm(initial={"total_lists": total_lists})
-            return render(request, "general/mse_calculator.html", {"formset": formset, "form": form, "lists": lists})
+            data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
+            return render(request, "general/mse_calculator.html", data)
+        # prepare the data
+        appearance_data = []
+        for form in formset:
+            row_data = form.cleaned_data
+            if row_data['total_appearances'] == '*':
+                appearance_data.append(-1)
+            else:
+                appearance_data.append(int(row_data['total_appearances']))
+        mse_input = {
+            'list_data': appearance_data,
+            'censoring_lower': request.POST.get('censoring_lower'),
+            'censoring_upper': request.POST.get('censoring_upper')
+        }
         # run the calculation
-        results = 'These are the results of your MSE'
+        mse_url = settings.MSE_CALCULATOR_URL
+        headers = {'Content-type': 'application/json'}
+        response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
+        results = response.text
+        # prepare the data for the download
         stringified_data = []
         for form in formset:
             row_data = form.cleaned_data
@@ -134,6 +159,7 @@ class MultipleSystemsEstimation(FormView):
         csv_data = "".join(stringified_data)
         data = {
             "formset": formset,
+            "options_form": options_form,
             "lists": lists,
             "results": results,
             "results_display": True,

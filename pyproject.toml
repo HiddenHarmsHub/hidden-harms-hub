@@ -9,6 +9,7 @@ authors = [
     {name = "Andrew Edmondson", email = "a.c.edmondson@bham.ac.uk"}]
 dependencies = [
 	"Django~=5.2.0",
+	"requests",
 ]
 
 [project.optional-dependencies]
