@@ -46,20 +46,40 @@
                         {% else %}
                             <input type="hidden" name="{{ details_form.index_pos.html_name }}" value="{{ forloop.counter0 }}"/>
                             <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
-                            <input type="text" aria-label="{{details_form.initial.required_lists|join:' and '}}" id="{{ details_form.total_appearances.auto_id }}" name="{{ details_form.total_appearances.html_name }}"/>
-
+                            <input
+                                type="text"
+                                aria-label="{{details_form.initial.required_lists|join:' and '}}"
+                                id="{{ details_form.total_appearances.auto_id }}"
+                                name="{{ details_form.total_appearances.html_name }}"
+                                value="{% if details_form.total_appearances.value != None %}{{ details_form.total_appearances.value }}{% endif %}"
+                            />
                         {% endif %}
                     </td>
                 </tr>
             {% endfor %}
-
         </table>
+        {% if results_display %}
+            <div id="options">
+                <div>
+                    <span>Censoring lower: </span><b>{{ options_form.censoring_lower.value }}</b>
+                </div>
+                <div>
+                    <span>Censoring upper: </span><b>{{ options_form.censoring_upper.value }}</b>
+                </div>
+            </div>
+        {% else %}
+            <div id="options">
+                {{ options_form }}
+            </div>
+        {% endif %}
+
         {% if not results_display %}
             {% for dict in formset.errors %}
                 {% for error in dict.values %}
                     {{ error }}
                 {% endfor %}
             {% endfor %}
+            {{ formset.non_form_errors }}
             <input id="submit-button" type="submit" value="Submit">
         {% endif %}
     </form>
