@@ -9,6 +9,11 @@ urlpatterns = [
     path("cookies/", TemplateView.as_view(template_name="general/cookies.html"), name="cookies"),
     path("comparativejudgement", TemplateView.as_view(template_name="general/comparative_judgement.html"), name="cj"),
     path(
+        "multiplesystemsestimation/examples",
+        TemplateView.as_view(template_name="general/mse_examples.html"),
+        name="mseexamples"
+    ),
+    path(
         "multiplesystemsestimation/calculator",
         views.MultipleSystemsEstimation.as_view(),
         name="mse_calc"
