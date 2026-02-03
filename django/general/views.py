@@ -59,12 +59,18 @@ class MultipleSystemsEstimation(FormView):
         Returns:
             list: The initial data to use in the forms with the uploaded totals added.
         """
+        censoring_settings = {}
+        if len(rows[0].split(',')) == 1:  # then we have censoring settings to separate out
+            censoring_lower = rows[0]
+            censoring_upper = rows[1]
+            censoring_settings = {'censoring_lower': censoring_lower, 'censoring_upper': censoring_upper}
+            rows = rows[2:]
         for entry in initial:
             expected = ",".join(["1" if x in entry["required_lists"] else "0" for x in lists])
             for row in rows:
                 if row.startswith(f"{expected},"):
                     entry["total_appearances"] = row.split(",")[-1].replace("\n", "")
-        return initial
+        return initial, censoring_settings
 
     def get(self, request):
         """Display the MSE setup page.
@@ -96,6 +102,7 @@ class MultipleSystemsEstimation(FormView):
         # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
         if "total_lists_required" in request.POST:  # then this is phase 1 by upload or form generation
+            censoring_settings = []
             if request.POST["total_lists_required"] != "":
                 total_lists = int(request.POST.get("total_lists_required"))
                 lists, initial = self._calculate_initial_data(total_lists)
@@ -104,13 +111,16 @@ class MultipleSystemsEstimation(FormView):
                 # process the data and render it in form part 2
                 contents = request.FILES["file_upload"].read().decode('utf-8')
                 rows = contents.split("\n")
-                total_lists = len(rows[0].split(",")) - 1
+                if len(rows) >= 3:
+                    total_lists = len(rows[2].split(",")) - 1
+                else:
+                    total_lists = len(rows[0].split(",")) - 1
                 lists, initial = self._calculate_initial_data(total_lists)
-                initial = self._add_uploaded_totals(initial, rows, lists)
+                initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
 
             # render part 2 of the form for data adding or to show the upload processing
             form = MseForm(initial={"total_lists": total_lists})
-            options_form = MseOptionsForm()
+            options_form = MseOptionsForm(initial=censoring_settings)
             formset = MseFormSet(initial=initial)
             data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
             return render(request, "general/mse_calculator.html", data)
@@ -143,7 +153,7 @@ class MultipleSystemsEstimation(FormView):
         response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
         results = response.text
         # prepare the data for the download
-        stringified_data = []
+        stringified_data = [f"{mse_input['censoring_lower']}|||{mse_input['censoring_upper']}|||"]
         for form in formset:
             row_data = form.cleaned_data
             for list_name in lists:
