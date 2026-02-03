@@ -166,7 +166,7 @@ LOGGING = {
         },
         'file': {
             'level': 'DEBUG',
-            'filters': ['require_debug_false'],
+            'filters': ['require_debug_true'],
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'django.log'),
             'formatter': 'verbose',

@@ -17,7 +17,7 @@ ALLOWED_HOSTS = ['*']
 
 ADMIN_EMAIL = 'bear-rsg@contacts.bham.ac.uk'
 
-MSE_CALCULATOR_URL = '127.0.0.1:8000/calculatemse'
+MSE_CALCULATOR_URL = 'http://127.0.0.1:8000/calculatemse'
 
 DATABASES = {
     'default': {
