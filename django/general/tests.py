@@ -180,6 +180,6 @@ class TestMseView(TestCase):
         self.assertFalse('value="1|0|34|||0|1|32|||1|1|-|||"' in response_string)
         self.assertFalse('<input type="submit" value="Download input data and results"/>' in response_string)
         self.assertTrue("<li>Total must be an integer or * (* is used for censored data)" in response_string)
-        self.assertTrue("<table " in response_string)
+        self.assertTrue('<table class="input-table">' in response_string)
         self.assertEqual(response_string.count("<th"), 3)
         self.assertEqual(response_string.count("<tr"), 4)
