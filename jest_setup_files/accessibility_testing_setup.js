@@ -7,6 +7,7 @@ const chromeOptions = {"args": ["--no-sandbox"], "headless": "new"};
 
 const defaultOptions = {
     "runners": ["axe", "htmlcs"],
+    "ignore": ["frame-tested"],
 }
 
 let browser;

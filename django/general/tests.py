@@ -116,7 +116,7 @@ class TestMseView(TestCase):
         client = Client()
         response = client.post('/multiplesystemsestimation/calculator', {'total_lists_required': '3'})
         response_string = response.content.decode()
-        self.assertTrue('<table ' in response_string)
+        self.assertTrue('<table class="input-table">' in response_string)
         self.assertEqual(response_string.count('<th'), 4)
         self.assertEqual(response_string.count('<tr'), 8)
 
