@@ -94,6 +94,8 @@ class MultipleSystemsEstimation(FormView):
             HttpResponse: The appropriate page for the stage of the process.
         """
         # validate the setup form
+        print('#############')
+        print(request.POST)
         input_form = MseSetupForm(request.POST, request.FILES)
         if not input_form.is_valid():
             form = MseSetupForm
@@ -101,15 +103,29 @@ class MultipleSystemsEstimation(FormView):
 
         # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
-        if "total_lists_required" in request.POST:  # then this is phase 1 by upload or form generation
+        if "total_lists_required" in request.POST or "example" in request.POST:  # then this is phase 1 by upload or form generation
             censoring_settings = []
-            if request.POST["total_lists_required"] != "":
+            if "total_lists_required" in request.POST and request.POST["total_lists_required"] != "":
                 total_lists = int(request.POST.get("total_lists_required"))
                 lists, initial = self._calculate_initial_data(total_lists)
 
             if "file_upload" in request.FILES:
                 # process the data and render it in form part 2
                 contents = request.FILES["file_upload"].read().decode('utf-8')
+                rows = contents.split("\n")
+                if len(rows) >= 3:
+                    total_lists = len(rows[2].split(",")) - 1
+                else:
+                    total_lists = len(rows[0].split(",")) - 1
+                lists, initial = self._calculate_initial_data(total_lists)
+                initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
+
+            if 'example' in request.POST:
+                if request.POST.get('example') not in ['silverman_1']:
+                    form = MseSetupForm
+                    return render(request, "general/mse_setup.html", {"form": form})
+                with open(os.path.join(settings.EXAMPLES_ROOT, f"{request.POST.get('example')}.csv")) as example_file:
+                    contents = example_file.read()
                 rows = contents.split("\n")
                 if len(rows) >= 3:
                     total_lists = len(rows[2].split(",")) - 1

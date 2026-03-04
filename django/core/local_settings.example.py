@@ -2,7 +2,7 @@
 Settings that are specific to this particular instance of the project.
 This can contain sensitive information (such as keys) and should not be shared with others.
 
-REMEMBER: If modfiying the content of this file, reflect the changes in local_settings.example.py
+REMEMBER: If modifying the content of this file, reflect the changes in local_settings.example.py
 """
 
 import os
