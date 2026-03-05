@@ -120,10 +120,12 @@ class MultipleSystemsEstimation(FormView):
                 initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
 
             if "example" in request.POST:
-                if request.POST.get("example") not in ["silverman_1", "silverman_2", "silverman_3", "silverman_4"]:
+                if request.POST.get("example") in ["silverman_1", "silverman_2", "silverman_3", "silverman_4"]:
+                    safe_file = request.POST.get("example")
+                else:
                     return HttpResponseRedirect("examples")
 
-                with open(os.path.join(settings.EXAMPLES_ROOT, f"{request.POST.get('example')}.csv")) as example_file:
+                with open(os.path.join(settings.EXAMPLES_ROOT, f"{safe_file}.csv")) as example_file:
                     contents = example_file.read()
                 rows = contents.split("\n")
                 if len(rows) >= 3:
