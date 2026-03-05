@@ -94,8 +94,6 @@ class MultipleSystemsEstimation(FormView):
             HttpResponse: The appropriate page for the stage of the process.
         """
         # validate the setup form
-        print('#############')
-        print(request.POST)
         input_form = MseSetupForm(request.POST, request.FILES)
         if not input_form.is_valid():
             form = MseSetupForm
