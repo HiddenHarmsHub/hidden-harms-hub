@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 import requests
 from django.conf import settings
 from django.forms import formset_factory
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import FormView
@@ -17,6 +17,7 @@ from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseOptionsFor
 
 class MultipleSystemsEstimation(FormView):
     """Setup and process the MSE data."""
+
     on_success = "multiplesystemsestimation/calculator"
 
     def _calculate_initial_data(self, total_lists):
@@ -35,16 +36,16 @@ class MultipleSystemsEstimation(FormView):
         lists = []
         initial = []  # reset this in case of reposts
         for number in range(1, total_lists + 1):
-            lists.append(f'list {number}')
+            lists.append(f"list {number}")
         list_combos = [[[x] for x in lists]]
         for combination_size in range(2, total_lists + 1):
             list_combos.append([list(x) for x in list(combinations(lists, combination_size))])
         for typ in list_combos:
             for i, item in enumerate(typ):
                 if len(item) > 1 and i == 0:
-                    initial.append({'required_lists': item, 'first': True})
+                    initial.append({"required_lists": item, "first": True})
                 else:
-                    initial.append({'required_lists': item, 'first': False})
+                    initial.append({"required_lists": item, "first": False})
         return lists, initial
 
     def _add_uploaded_totals(self, initial, rows, lists):
@@ -60,10 +61,10 @@ class MultipleSystemsEstimation(FormView):
             list: The initial data to use in the forms with the uploaded totals added.
         """
         censoring_settings = {}
-        if len(rows[0].split(',')) == 1:  # then we have censoring settings to separate out
+        if len(rows[0].split(",")) == 1:  # then we have censoring settings to separate out
             censoring_lower = rows[0]
             censoring_upper = rows[1]
-            censoring_settings = {'censoring_lower': censoring_lower, 'censoring_upper': censoring_upper}
+            censoring_settings = {"censoring_lower": censoring_lower, "censoring_upper": censoring_upper}
             rows = rows[2:]
         for entry in initial:
             expected = ",".join(["1" if x in entry["required_lists"] else "0" for x in lists])
@@ -94,8 +95,6 @@ class MultipleSystemsEstimation(FormView):
             HttpResponse: The appropriate page for the stage of the process.
         """
         # validate the setup form
-        print('#############')
-        print(request.POST)
         input_form = MseSetupForm(request.POST, request.FILES)
         if not input_form.is_valid():
             form = MseSetupForm
@@ -103,7 +102,7 @@ class MultipleSystemsEstimation(FormView):
 
         # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
-        if "total_lists_required" in request.POST or "example" in request.POST:  # then this is phase 1 by upload or form generation
+        if "total_lists_required" in request.POST or "example" in request.POST:  # then this is phase 1
             censoring_settings = []
             if "total_lists_required" in request.POST and request.POST["total_lists_required"] != "":
                 total_lists = int(request.POST.get("total_lists_required"))
@@ -111,7 +110,7 @@ class MultipleSystemsEstimation(FormView):
 
             if "file_upload" in request.FILES:
                 # process the data and render it in form part 2
-                contents = request.FILES["file_upload"].read().decode('utf-8')
+                contents = request.FILES["file_upload"].read().decode("utf-8")
                 rows = contents.split("\n")
                 if len(rows) >= 3:
                     total_lists = len(rows[2].split(",")) - 1
@@ -120,10 +119,10 @@ class MultipleSystemsEstimation(FormView):
                 lists, initial = self._calculate_initial_data(total_lists)
                 initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
 
-            if 'example' in request.POST:
-                if request.POST.get('example') not in ['silverman_1']:
-                    form = MseSetupForm
-                    return render(request, "general/mse_setup.html", {"form": form})
+            if "example" in request.POST:
+                if request.POST.get("example") not in ["silverman_1", "silverman_2", "silverman_3", "silverman_4"]:
+                    return HttpResponseRedirect("examples")
+
                 with open(os.path.join(settings.EXAMPLES_ROOT, f"{request.POST.get('example')}.csv")) as example_file:
                     contents = example_file.read()
                 rows = contents.split("\n")
@@ -154,18 +153,18 @@ class MultipleSystemsEstimation(FormView):
         appearance_data = []
         for form in formset:
             row_data = form.cleaned_data
-            if row_data['total_appearances'] == '*':
+            if row_data["total_appearances"] == "*":
                 appearance_data.append(-1)
             else:
-                appearance_data.append(int(row_data['total_appearances']))
+                appearance_data.append(int(row_data["total_appearances"]))
         mse_input = {
-            'list_data': appearance_data,
-            'censoring_lower': request.POST.get('censoring_lower'),
-            'censoring_upper': request.POST.get('censoring_upper')
+            "list_data": appearance_data,
+            "censoring_lower": request.POST.get("censoring_lower"),
+            "censoring_upper": request.POST.get("censoring_upper"),
         }
         # run the calculation
         mse_url = settings.MSE_CALCULATOR_URL
-        headers = {'Content-type': 'application/json'}
+        headers = {"Content-type": "application/json"}
         response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
         results = response.text
         # prepare the data for the download
@@ -177,10 +176,10 @@ class MultipleSystemsEstimation(FormView):
                     stringified_data.append(f"{1}|")
                 else:
                     stringified_data.append(f"{0}|")
-            if row_data['total_appearances'] == '':
-                total_appearances = '-'
+            if row_data["total_appearances"] == "":
+                total_appearances = "-"
             else:
-                total_appearances = row_data['total_appearances']
+                total_appearances = row_data["total_appearances"]
             stringified_data.append(f"{total_appearances}|||")
         csv_data = "".join(stringified_data)
         data = {
@@ -215,7 +214,7 @@ class MultipleSystemsEstimationDownload(View):
             data = request.POST.get("csv-data")
             lines = data.split("|||")
             for line in lines:
-                input_file.write(line.replace("|", ",").replace('-', ''))
+                input_file.write(line.replace("|", ",").replace("-", ""))
                 input_file.write("\n")
 
         filename = "mse_results"
