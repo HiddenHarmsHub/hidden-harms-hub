@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block header %}
+{% block head %}
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'general/css/mse_calculator.css' %}">
 {% endblock %}
@@ -15,15 +15,12 @@
         Society Series A: Statistics in Society</i>, Volume 183, Issue 3, June 2020, Pages 691–736.
     </p>
 
-    <form method="post" action="/multiplesystemsestimation/calculator">
+    <form id="examples-form" method="post" action="/multiplesystemsestimation/calculator">
         {% csrf_token %}
-        <div>
-            <input name="example" value="silverman_1" type="radio">Example 1: Potential victims of trafficking in the UK, 2013</input>
-            <input name="example" value="silverman_2" type="radio">Example 2: Victims of trafficking in the Netherlands</input>
-            <input name="example" value="silverman_3" type="radio">Example 3: Victims related to modern slavery and trafficking in New Orleans</input>
-            <input name="example" value="silverman_4" type="radio">Example 4: Killings in the Kosovo war from March 20th to June 22nd, 1999</input>
-        </div>
-
+        <label><input name="example" value="silverman_1" type="radio"/>Example 1: Potential victims of trafficking in the UK, 2013</label>
+        <label><input name="example" value="silverman_2" type="radio"/>Example 2: Victims of trafficking in the Netherlands</label>
+        <label><input name="example" value="silverman_3" type="radio"/>Example 3: Victims related to modern slavery and trafficking in New Orleans</label>
+        <label><input name="example" value="silverman_4" type="radio"/>Example 4: Killings in the Kosovo war from March 20th to June 22nd, 1999</label>
         <input type="submit" value="Load Example"/>
     </form>
     
