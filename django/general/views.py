@@ -101,7 +101,7 @@ class MultipleSystemsEstimation(FormView):
 
         # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
-        if "total_lists_required" in request.POST or "example" in request.POST:  # then this is phase 1 by upload or form generation
+        if "total_lists_required" in request.POST or "example" in request.POST:  # then this is phase 1
             censoring_settings = []
             if "total_lists_required" in request.POST and request.POST["total_lists_required"] != "":
                 total_lists = int(request.POST.get("total_lists_required"))
