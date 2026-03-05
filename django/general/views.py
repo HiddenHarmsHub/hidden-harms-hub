@@ -122,10 +122,15 @@ class MultipleSystemsEstimation(FormView):
             if "example" in request.POST:
                 if request.POST.get("example") in ["silverman_1", "silverman_2", "silverman_3", "silverman_4"]:
                     safe_file = request.POST.get("example")
+                    file_path = os.path.abspath(os.path.join(settings.EXAMPLES_ROOT, f"{safe_file}.csv"))
+                    if file_path.startswith(settings.EXAMPLES_ROOT):
+                        safe_path = file_path
+                    else:
+                        return HttpResponseRedirect("examples")
                 else:
                     return HttpResponseRedirect("examples")
 
-                with open(os.path.join(settings.EXAMPLES_ROOT, f"{safe_file}.csv")) as example_file:
+                with open(safe_path) as example_file:
                     contents = example_file.read()
                 rows = contents.split("\n")
                 if len(rows) >= 3:
