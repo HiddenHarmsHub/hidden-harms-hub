@@ -64,6 +64,10 @@ div#content {
     flex-grow: 1;
 }
 
+a {
+    overflow-wrap: break-word;
+}
+
 header,
 div#content,
 div#cookie-message-popup,
@@ -180,10 +184,6 @@ button.menu-button i {
     text-decoration: none;
     white-space: nowrap;
     font-size: 1.2em;
-}
-
-a {
-    overflow-wrap: break-word;
 }
 
 div#content.active {
