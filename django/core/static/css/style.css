@@ -14,6 +14,19 @@
     display: none;
 }
 
+.focus-only {
+    position: absolute;
+    border: 1px solid black;
+    background: white;
+    padding: 5px;
+    margin: 5px;
+    transform: translateY(-1800%);
+}
+
+.focus-only:focus {
+    transform: translateY(0%);
+}
+
 html,
 body {
     margin: 0;
@@ -167,6 +180,10 @@ button.menu-button i {
     text-decoration: none;
     white-space: nowrap;
     font-size: 1.2em;
+}
+
+a {
+    overflow-wrap: break-word;
 }
 
 div#content.active {
