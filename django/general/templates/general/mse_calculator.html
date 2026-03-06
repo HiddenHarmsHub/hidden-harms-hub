@@ -48,7 +48,7 @@
                             <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
                             <input
                                 type="text"
-                                aria-label="{{details_form.initial.required_lists|join:' and '}}"
+                                aria-label="Total entries on {{details_form.initial.required_lists|join:' and '}}"
                                 id="{{ details_form.total_appearances.auto_id }}"
                                 name="{{ details_form.total_appearances.html_name }}"
                                 value="{% if details_form.total_appearances.value != None %}{{ details_form.total_appearances.value }}{% endif %}"
