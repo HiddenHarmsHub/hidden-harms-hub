@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 import requests
 from django.conf import settings
 from django.forms import formset_factory
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import FormView
@@ -101,15 +101,36 @@ class MultipleSystemsEstimation(FormView):
 
         # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
-        if "total_lists_required" in request.POST:  # then this is phase 1 by upload or form generation
+        if "total_lists_required" in request.POST or "example" in request.POST:  # then this is phase 1
             censoring_settings = []
-            if request.POST["total_lists_required"] != "":
+            if "total_lists_required" in request.POST and request.POST["total_lists_required"] != "":
                 total_lists = int(request.POST.get("total_lists_required"))
                 lists, initial = self._calculate_initial_data(total_lists)
 
             if "file_upload" in request.FILES:
                 # process the data and render it in form part 2
                 contents = request.FILES["file_upload"].read().decode('utf-8')
+                rows = contents.split("\n")
+                if len(rows) >= 3:
+                    total_lists = len(rows[2].split(",")) - 1
+                else:
+                    total_lists = len(rows[0].split(",")) - 1
+                lists, initial = self._calculate_initial_data(total_lists)
+                initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
+
+            if "example" in request.POST:
+                if request.POST.get("example") in ["silverman_1", "silverman_2", "silverman_3", "silverman_4"]:
+                    safe_file = request.POST.get("example")
+                    file_path = os.path.abspath(os.path.join(settings.EXAMPLES_ROOT, f"{safe_file}.csv"))
+                    if file_path.startswith(settings.EXAMPLES_ROOT):
+                        safe_path = file_path
+                    else:
+                        return HttpResponseRedirect("examples")
+                else:
+                    return HttpResponseRedirect("examples")
+
+                with open(safe_path) as example_file:
+                    contents = example_file.read()
                 rows = contents.split("\n")
                 if len(rows) >= 3:
                     total_lists = len(rows[2].split(",")) - 1

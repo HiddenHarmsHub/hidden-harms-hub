@@ -62,7 +62,9 @@ jobs:
     - name: Install dependencies
       run: |
         npm i eslint
+        npm i @eslint/js
         npm i globals
+        npm i @stylistic/eslint-plugin
     - name: Run eslint
       run: |
         node_modules/eslint/bin/eslint.js . --ignore-pattern '*.mjs'
