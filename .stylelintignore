@@ -12,6 +12,7 @@
 *.html
 *.yml
 *.mjs
+*.csv
 Dockerfile
 lib
 __pycache__

@@ -102,6 +102,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Example files
+
+EXAMPLES_ROOT = os.path.join(BASE_DIR, 'general', 'data_examples')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/latest/ref/settings/#default-auto-field
