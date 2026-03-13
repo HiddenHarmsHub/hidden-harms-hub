@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block header %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'general/css/general.css' %}">
+{% endblock %}
+
 {% block content %}
     <h1>Hidden Harms Mapping: A Tool for Local Authorities</h1>
 
@@ -80,7 +85,7 @@
         </li>
     </ul>
     <figure>
-        <img id="notts_map" src="{% static 'general/img/Notts_map.png' %}" width="900px" alt=""/>
+        <img id="notts_map" src="{% static 'general/img/Notts_map.png' %}" alt=""/>
         <figcaption>A map showing the level of risk of forced marriage in different regions of Nottinghamshire</figcaption>
     </figure>
 
@@ -108,7 +113,7 @@
         </li>
     </ul>
     <figure>
-        <img id="sy_map" src="{% static 'general/img/SY_Risk_Map.png' %}" width="900px" alt=""/>
+        <img id="sy_map" src="{% static 'general/img/SY_Risk_Map.png' %}" alt=""/>
         <figcaption>A map showing the level of risk of FGM in different regions of South Yorkshire</figcaption>
     </figure>
 
