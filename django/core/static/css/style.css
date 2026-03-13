@@ -170,21 +170,24 @@ button.menu-button i {
 
 #menu ul {
     list-style: none;
-    padding: 0.6em;
+    padding: 0;
 }
 
 #menu li {
-    margin-bottom: 20px;
+    padding: 0.8em;
 }
 
 #menu a {
     border: none;
-    padding: 0.6em;
     color: light-dark(var(--light-color), var(--dark-color));
+    margin-top: 2px;
     margin-bottom: 2px;
     text-decoration: none;
-    white-space: nowrap;
     font-size: 1.2em;
+}
+
+#menu a:hover {
+    text-decoration: underline;
 }
 
 div#content.active {
