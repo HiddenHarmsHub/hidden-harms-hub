@@ -105,6 +105,9 @@ footer a {
 
 main {
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 div#page-content {
@@ -136,7 +139,6 @@ h3 {
     font-size: 1.4em;
 }
 
-
 nav.active {
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
@@ -157,8 +159,7 @@ button.menu-button i {
 }
 
 #menu,
-#menu *,
-#main-menu {
+#menu * {
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
 
