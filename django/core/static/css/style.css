@@ -14,6 +14,19 @@
     display: none;
 }
 
+.focus-only {
+    position: absolute;
+    border: 1px solid black;
+    background: white;
+    padding: 5px;
+    margin: 5px;
+    transform: translateY(-1800%);
+}
+
+.focus-only:focus {
+    transform: translateY(0%);
+}
+
 html,
 body {
     margin: 0;
@@ -49,6 +62,10 @@ body {
 div#content {
     display: flex;
     flex-grow: 1;
+}
+
+a {
+    overflow-wrap: break-word;
 }
 
 header,
@@ -142,7 +159,8 @@ button.menu-button i {
 }
 
 #menu,
-#menu * {
+#menu *,
+#main-menu {
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
 
@@ -152,21 +170,24 @@ button.menu-button i {
 
 #menu ul {
     list-style: none;
-    padding: 0.6em;
+    padding: 0;
 }
 
 #menu li {
-    margin-bottom: 20px;
+    padding: 0.8em;
 }
 
 #menu a {
     border: none;
-    padding: 0.6em;
     color: light-dark(var(--light-color), var(--dark-color));
+    margin-top: 2px;
     margin-bottom: 2px;
     text-decoration: none;
-    white-space: nowrap;
     font-size: 1.2em;
+}
+
+#menu a:hover {
+    text-decoration: underline;
 }
 
 div#content.active {
