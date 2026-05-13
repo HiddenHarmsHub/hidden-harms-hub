@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     # Custom apps
+    'django_celery_results',
     'account',
     'general',
 ]
@@ -54,6 +55,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
+# Celery/rabbit settings
+
+CELERY_RESULT_BACKEND = 'django-db'
 
 
 # Custom user model for authentication

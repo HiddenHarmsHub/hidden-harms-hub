@@ -57,8 +57,11 @@
             </p>
         </footer>
 
-        <!-- JavaScript -->
-        <script src="{% static 'js/cookiesmsg.js' %}"></script>
-        <script src="{% static 'js/responsive_menu.js' %}"></script>
+        {% block javascript %}
+            <!-- JavaScript -->
+            <script src="{% static 'js/jquery-4.0.0.min.js' %}"></script>
+            <script src="{% static 'js/cookiesmsg.js' %}"></script>
+            <script src="{% static 'js/responsive_menu.js' %}"></script>
+        {% endblock %}
     </body>
 </html>

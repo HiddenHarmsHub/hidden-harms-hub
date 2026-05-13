@@ -63,3 +63,29 @@ div#options div {
     padding-top: 2px;
     padding-bottom: 2px;
 }
+
+div#overlay {
+    position: fixed;
+    inset: 0;
+    background: rgb(0 0 0 / 30%);
+}
+
+div#spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+}
+
+.flower-12l-48x48 {
+    animation: flower-12l-48x48 1s steps(12) infinite;
+    display: block;
+    width: 48px;
+    height: 48px;
+    background: rgb(0 0 0 / 30%);
+    background-image: url("../img/loading.png");
+}
+
+@keyframes flower-12l-48x48 {
+    from { background-position: 0 0; }
+    to { background-position: 0 -576px; }
+}

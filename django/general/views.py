@@ -1,18 +1,20 @@
 import json
 import os
 import shutil
+from celery.result import AsyncResult
 from itertools import combinations
 from tempfile import TemporaryDirectory
 
 import requests
 from django.conf import settings
 from django.forms import formset_factory
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import FormView
 
 from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseOptionsForm, MseSetupForm
+from general.tasks import calculate_mse
 
 
 class MultipleSystemsEstimation(FormView):
@@ -146,7 +148,7 @@ class MultipleSystemsEstimation(FormView):
             data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
             return render(request, "general/mse_calculator.html", data)
 
-        # this received the data from the submitted form with all of the details in it
+        # this receives the data from the submitted form with all of the details in it
         total_lists = int(request.POST.get("total_lists"))
         lists, initial = self._calculate_initial_data(total_lists)
         formset = MseFormSet(request.POST.get("censoring_upper"), request.POST, initial=initial)
@@ -166,13 +168,11 @@ class MultipleSystemsEstimation(FormView):
         mse_input = {
             'list_data': appearance_data,
             'censoring_lower': request.POST.get('censoring_lower'),
-            'censoring_upper': request.POST.get('censoring_upper')
+            'censoring_upper': request.POST.get('censoring_upper'),
+            'total_lists': total_lists,
         }
         # run the calculation
-        mse_url = settings.MSE_CALCULATOR_URL
-        headers = {'Content-type': 'application/json'}
-        response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
-        results = response.text
+        task = calculate_mse.delay(mse_input)
         # prepare the data for the download
         stringified_data = [f"{mse_input['censoring_lower']}|||{mse_input['censoring_upper']}|||"]
         for form in formset:
@@ -192,11 +192,44 @@ class MultipleSystemsEstimation(FormView):
             "formset": formset,
             "options_form": options_form,
             "lists": lists,
-            "results": results,
+            # "results": results,
             "results_display": True,
             "csv_data": csv_data,
+            "task_id": task.task_id 
         }
         return render(request, "general/mse_calculator.html", data)
+
+
+
+        # # TODO: this needs to be the task bit
+        # mse_url = settings.MSE_CALCULATOR_URL
+        # headers = {'Content-type': 'application/json'}
+        # response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
+        # results = response.text
+        # # prepare the data for the download
+        # stringified_data = [f"{mse_input['censoring_lower']}|||{mse_input['censoring_upper']}|||"]
+        # for form in formset:
+        #     row_data = form.cleaned_data
+        #     for list_name in lists:
+        #         if list_name in row_data["required_lists"]:
+        #             stringified_data.append(f"{1}|")
+        #         else:
+        #             stringified_data.append(f"{0}|")
+        #     if row_data['total_appearances'] == '':
+        #         total_appearances = '-'
+        #     else:
+        #         total_appearances = row_data['total_appearances']
+        #     stringified_data.append(f"{total_appearances}|||")
+        # csv_data = "".join(stringified_data)
+        # data = {
+        #     "formset": formset,
+        #     "options_form": options_form,
+        #     "lists": lists,
+        #     "results": results,
+        #     "results_display": True,
+        #     "csv_data": csv_data,
+        # }
+        # return render(request, "general/mse_calculator.html", data)
 
 
 class MultipleSystemsEstimationDownload(View):
@@ -230,3 +263,28 @@ class MultipleSystemsEstimationDownload(View):
         response["Content-Disposition"] = "attachment; filename=" + filename
         response.write(open(f"{filepath}.zip", "rb").read())
         return response
+
+
+def poll_state(request):
+    """Check the current state of a task.
+
+    Args:
+        request (django.http.HttpRequest): The current request.
+
+    Returns:
+        JsonResponse: The current state of the task.
+    """
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        if 'task_id' in request.POST.keys() and request.POST['task_id']:
+            task_id = request.POST['task_id']
+            task = AsyncResult(task_id)
+            if isinstance(task.result, Exception):
+                context = {'data': {'message': str(task.result)}, 'state': task.state}
+            else:
+                context = {'data': task.result, 'state': task.state}
+        else:
+            context = {'data': 'No task_id in the request', 'state': 'FAILURE'}
+    else:
+        context = {'data': 'This is not an ajax request', 'state': 'FAILURE'}
+
+    return JsonResponse(context)

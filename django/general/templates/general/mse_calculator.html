@@ -9,13 +9,15 @@
 
 {% block content %}
     <h1>Multiple Systems Estimation Calculator</h1>
-    <form action="/multiplesystemsestimation/{% if not results_display %}calculator{% else %}download{% endif %}" method="post">
+    <form id="mse-form" action="/multiplesystemsestimation/{% if not results_display %}calculator{% else %}download{% endif %}" method="post" {% if results_display %}style="display:none"{% endif %}>
         {% csrf_token %}
         <input type="hidden" name="{{ form.total_lists.html_name }}" value="{{ form.total_lists.value }}"/>
         {% if results_display %}
             <h2>Results</h2>
-            <div>{{ results }}</div>
-            <input type="hidden" name="results" value="{{ results }}"/>
+            <div id="results-display"></div>
+
+            <input type="hidden" id="task-id" value="{{ task_id }}"/>
+            <input type="hidden" id="results" name="results" value="{{ results }}"/>
             <input type="hidden" name="csv-data" value="{{ csv_data }}"/>
             <input type="submit" value="Download input data and results"/>
             <h2>Input data</h2>
@@ -80,7 +82,15 @@
                 {% endfor %}
             {% endfor %}
             {{ formset.non_form_errors }}
-            <input id="submit-button" type="submit" value="Submit">
+            <input id="submit-button" value="Submit" type="submit"/>
         {% endif %}
     </form>
+
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+    {% if results_display %}
+        <script src="{% static 'general/js/multiple_systems_estimation.js' %}"></script>
+    {% endif %}
 {% endblock %}

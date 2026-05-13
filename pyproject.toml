@@ -2,14 +2,14 @@
 name = "django-template"
 version = "1.0.0"
 requires-python = ">=3.10"
-description = "This is our template for all new Django projects."
+description = "Hidden Harms Hub."
 authors = [
-    {name = "Mike Allaway", email = "m.j.allaway@bham.ac.uk"},
-    {name = "Simon Branford", email = "s.j.branford@bham.ac.uk"},
-    {name = "Andrew Edmondson", email = "a.c.edmondson@bham.ac.uk"}]
+    {name = "Cat Smith", email = "c.j.smith@bham.ac.uk"}
+]
 dependencies = [
 	"Django~=5.2.0",
 	"requests",
+	"django-celery-results",
 ]
 
 [project.optional-dependencies]
