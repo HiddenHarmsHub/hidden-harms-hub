@@ -1,19 +1,29 @@
-// $(function () {
-//     $('#mse-form').on('submit', function(event) {
-//         event.preventDefault();
-//         console.log('Form is submitted');
+$(function () {
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
+        }
+      }
+    });
+    if (document.getElementById('task-id') && document.getElementById('task-id').value !== '') {
+        showLoadingOverlay();
+        successCallback = function (response) {
+            let status = response.data[0];
+            let result = response.data[1];
+            if (status == 200) {
+                document.getElementById('mse-form').style.display = 'block';
+                document.getElementById('results').value = result;
+                document.getElementById('results-display').innerHTML = createTable(result);
+            } else {
+                document.getElementById('results-display').textContent = 'Something went wrong while calculating the results.';
 
-//         fetch('/multiplesystemsestimation/calculator', {
-//             method: 'POST',
-//             body: new FormData(this)
-//         }).then(function (response) {
-//             return response.json();
-//         }).then(function (data) {
-
-//             // taskChecker.pollTaskState(data.task_id);
-//         });
-//     });
-// })
+            }            
+            removeLoadingOverlay();
+        }
+        taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback});
+    }
+});
 
 csrfSafeMethod = function (method) {
     // these HTTP methods do not require CSRF protection
@@ -36,44 +46,41 @@ getCSRFToken = function () {
     return cookieValue;
 };
 
-
-
-$(function () {
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
-        }
-      }
-    });
-    if (document.getElementById('task-id') && document.getElementById('task-id').value !== '') {
-        showLoadingOverlay();
-        successCallback = function (result) {
-            document.getElementById('mse-form').style.display = 'block';
-            document.getElementById('results').value = result.data;
-            document.getElementById('results-display').textContent = result.data;
-            removeLoadingOverlay();
-        }
-        taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback});
+createTable = function(data) {
+    const lines = data.split('\n');
+    const html = ['<table>'];
+    html.push('<tr>');
+    const headers = lines[0].split(',');
+    for (tab of headers) {
+        html.push(`<th scope="col">${ tab }</th>`);
     }
-});
-
+    html.push('</tr>');
+    for (let i = 1; i < lines.length; i += 1) {
+        html.push('<tr>');
+            for (tab of lines[i].split(',')) {
+                html.push(`<td>${ tab }</td>`);
+            }
+        html.push('</tr>');
+    }
+    html.push('</table>');
+    return html.join('');
+};
 
 showLoadingOverlay = function() {
     if (!document.getElementById('overlay')) {
-    const overlay = document.createElement('div');
-    overlay.id = 'overlay';
-    const spinner_div = document.createElement('div');
-    spinner_div.id = 'spinner';
-    spinner_div.innerHTML = '<span class="flower-12l-48x48" />';
-    overlay.appendChild(spinner_div);
-    document.getElementsByTagName('body')[0].appendChild(overlay);
+        const overlay = document.createElement('div');
+        overlay.id = 'overlay';
+        const spinner_div = document.createElement('div');
+        spinner_div.id = 'spinner';
+        spinner_div.innerHTML = '<span class="flower-12l-48x48" />';
+        overlay.appendChild(spinner_div);
+        document.getElementsByTagName('body')[0].appendChild(overlay);
     }
 };
 
 removeLoadingOverlay = function() {
     if (document.getElementById('overlay')) {
-    document.getElementsByTagName('body')[0].removeChild(document.getElementById('overlay'));
+        document.getElementsByTagName('body')[0].removeChild(document.getElementById('overlay'));
     }
 };
 
