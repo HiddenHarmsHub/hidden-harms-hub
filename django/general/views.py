@@ -167,8 +167,8 @@ class MultipleSystemsEstimation(FormView):
                 appearance_data.append(int(row_data['total_appearances']))
         mse_input = {
             'list_data': appearance_data,
-            'censoring_lower': request.POST.get('censoring_lower'),
-            'censoring_upper': request.POST.get('censoring_upper'),
+            'censoring_lower': int(request.POST.get('censoring_lower')),
+            'censoring_upper': int(request.POST.get('censoring_upper')),
             'total_lists': total_lists,
         }
         # run the calculation

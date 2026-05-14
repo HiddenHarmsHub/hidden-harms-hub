@@ -8,6 +8,7 @@ from django.conf import settings
 def calculate_mse(mse_input):
     mse_url = settings.MSE_CALCULATOR_URL
     headers = {'Content-type': 'application/json'}
-    response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
+    response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=200)
+    status = response.status_code
     results = response.text
-    return results
+    return status, results
