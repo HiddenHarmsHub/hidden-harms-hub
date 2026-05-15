@@ -9,19 +9,21 @@ $(function () {
     if (document.getElementById('task-id') && document.getElementById('task-id').value !== '') {
         showLoadingOverlay();
         successCallback = function (response) {
-            let status = response.data[0];
-            let result = response.data[1];
-            if (status == 200) {
-                document.getElementById('mse-form').style.display = 'block';
-                document.getElementById('results').value = result;
-                document.getElementById('results-display').innerHTML = createTable(result);
-            } else {
-                document.getElementById('results-display').textContent = 'Something went wrong while calculating the results.';
-
-            }            
+            let result = response.data;
+            document.getElementById('mse-form').style.display = 'block';
+            document.getElementById('results').value = result;
+            document.getElementById('results-display').innerHTML = createTable(result);            
             removeLoadingOverlay();
         }
-        taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback});
+        errorCallback = function (response) {
+            document.getElementById('mse-form').style.display = 'block';
+            document.getElementById('results').value = 'failed';
+            document.getElementById('download-button').value = 'Download input data';
+            displayError(response.data);
+            removeLoadingOverlay();
+
+        }
+        taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback, errorCallback: errorCallback});
     }
 });
 
@@ -48,7 +50,7 @@ getCSRFToken = function () {
 
 createTable = function(data) {
     const lines = data.split('\n');
-    const html = ['<table>'];
+    const html = ['<table class="results-table"><tbody>'];
     html.push('<tr>');
     const headers = lines[0].split(',');
     for (tab of headers) {
@@ -56,14 +58,28 @@ createTable = function(data) {
     }
     html.push('</tr>');
     for (let i = 1; i < lines.length; i += 1) {
-        html.push('<tr>');
-            for (tab of lines[i].split(',')) {
-                html.push(`<td>${ tab }</td>`);
-            }
-        html.push('</tr>');
+        if (lines[i].trim() !== '') {
+            html.push('<tr>');
+                for (tab of lines[i].split(',')) {
+                    html.push(`<td>${ tab }</td>`);
+                }
+            html.push('</tr>');
+        }
     }
-    html.push('</table>');
+    html.push('</tbody></table>');
     return html.join('');
+};
+
+displayError = function(data) {
+    const opening = document.createElement('p');
+    opening.textContent = 'Something went wrong while calculating the results. Please try again later.';
+    document.getElementById('results-display').appendChild(opening);
+    const error = document.createElement('p');
+    error.textContent = data.message;
+    document.getElementById('results-display').appendChild(error);
+    const closing = document.createElement('p');
+    closing.textContent = 'The input data can still be downloaded.';
+    document.getElementById('results-display').appendChild(closing);
 };
 
 showLoadingOverlay = function() {
@@ -145,5 +161,3 @@ var taskChecker = (function () {
     };
 
 }());
-
-

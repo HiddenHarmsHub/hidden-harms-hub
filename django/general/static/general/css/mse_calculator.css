@@ -21,6 +21,11 @@ th {
     padding: 4px;
 }
 
+table.results-table td {
+    padding: 4px;
+    text-align: right;
+}
+
 td {
     padding: 0;
     text-align: center;

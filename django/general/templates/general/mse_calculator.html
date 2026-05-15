@@ -19,11 +19,11 @@
             <input type="hidden" id="task-id" value="{{ task_id }}"/>
             <input type="hidden" id="results" name="results" value="{{ results }}"/>
             <input type="hidden" name="csv-data" value="{{ csv_data }}"/>
-            <input type="submit" value="Download input data and results"/>
+            <input type="submit" value="Download input data and results" id="download-button"/>
             <h2>Input data</h2>
         {% endif %}
         
-        <table class="{% if results_display %}results-table{% else %}input-table{% endif %}">
+        <table class="{% if results_display %}results-input-table{% else %}input-table{% endif %}">
             {{ formset.management_form }}
             <tr>
                 {% for list in lists %}

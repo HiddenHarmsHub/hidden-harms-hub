@@ -192,7 +192,6 @@ class MultipleSystemsEstimation(FormView):
             "formset": formset,
             "options_form": options_form,
             "lists": lists,
-            # "results": results,
             "results_display": True,
             "csv_data": csv_data,
             "task_id": task.task_id 
@@ -200,43 +199,11 @@ class MultipleSystemsEstimation(FormView):
         return render(request, "general/mse_calculator.html", data)
 
 
-
-        # # TODO: this needs to be the task bit
-        # mse_url = settings.MSE_CALCULATOR_URL
-        # headers = {'Content-type': 'application/json'}
-        # response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
-        # results = response.text
-        # # prepare the data for the download
-        # stringified_data = [f"{mse_input['censoring_lower']}|||{mse_input['censoring_upper']}|||"]
-        # for form in formset:
-        #     row_data = form.cleaned_data
-        #     for list_name in lists:
-        #         if list_name in row_data["required_lists"]:
-        #             stringified_data.append(f"{1}|")
-        #         else:
-        #             stringified_data.append(f"{0}|")
-        #     if row_data['total_appearances'] == '':
-        #         total_appearances = '-'
-        #     else:
-        #         total_appearances = row_data['total_appearances']
-        #     stringified_data.append(f"{total_appearances}|||")
-        # csv_data = "".join(stringified_data)
-        # data = {
-        #     "formset": formset,
-        #     "options_form": options_form,
-        #     "lists": lists,
-        #     "results": results,
-        #     "results_display": True,
-        #     "csv_data": csv_data,
-        # }
-        # return render(request, "general/mse_calculator.html", data)
-
-
 class MultipleSystemsEstimationDownload(View):
     """Download the results and the input data."""
 
     def post(self, request):
-        """Create and download a zipfile of the results and data.
+        """Create and download a zipfile of the results and data, or just the data if there was an error.
 
         Args:
             request (django.http.HttpRequest): The current request.
@@ -247,16 +214,20 @@ class MultipleSystemsEstimationDownload(View):
         temp_dir = TemporaryDirectory()
         output_path = os.path.join(temp_dir.name, "export")
         os.makedirs(output_path)
-        with open(os.path.join(output_path, "results.txt"), mode="w") as result_file:
-            result_file.write(request.POST.get("results"))
+        results = request.POST.get("results")
+        if results != "failed":
+            with open(os.path.join(output_path, "results.csv"), mode="w") as result_file:
+                result_file.write(results)
         with open(os.path.join(output_path, "mse_input.txt"), mode="w") as input_file:
             data = request.POST.get("csv-data")
             lines = data.split("|||")
             for line in lines:
                 input_file.write(line.replace("|", ",").replace('-', ''))
                 input_file.write("\n")
-
-        filename = "mse_results"
+        if results == "failed":
+            filename = "mse_input"
+        else:
+            filename = "mse_results"
         filepath = os.path.join(temp_dir.name, filename)
         shutil.make_archive(filepath, "zip", os.path.join(temp_dir.name, "export"))
         response = HttpResponse(content_type="application/zip")
