@@ -21,11 +21,6 @@ th {
     padding: 4px;
 }
 
-table.results-table td {
-    padding: 4px;
-    text-align: right;
-}
-
 td {
     padding: 0;
     text-align: center;
@@ -33,6 +28,11 @@ td {
 
 td:has(input) {
     background-color: light-dark(var(--light-bg), var(--dark-bg));
+}
+
+table.results-table td {
+    padding: 4px;
+    text-align: right;
 }
 
 td > input {
