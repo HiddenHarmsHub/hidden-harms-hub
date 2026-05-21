@@ -12,12 +12,12 @@ def calculate_mse(mse_input):
     Args:
         mse_input (dict): The input data for the MSE calculation.
 
+    Returns:
+        str: The MSE results as a csv string.
+
     Raises:
         requests.exceptions.ConnectionError: Raised if the MSE server could not be contacted.
         requests.exceptions.HTTPError: Raised if the MSE server raised an internal error.
-
-    Returns:
-        str: The MSE results as a csv string.
     """
     mse_url = settings.MSE_CALCULATOR_URL
     headers = {'Content-type': 'application/json'}
