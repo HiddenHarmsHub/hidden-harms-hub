@@ -1,11 +1,9 @@
-import json
 import os
 import shutil
-from celery.result import AsyncResult
 from itertools import combinations
 from tempfile import TemporaryDirectory
 
-import requests
+from celery.result import AsyncResult
 from django.conf import settings
 from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -151,7 +149,11 @@ class MultipleSystemsEstimation(FormView):
         # this receives the data from the submitted form with all of the details in it
         total_lists = int(request.POST.get("total_lists"))
         lists, initial = self._calculate_initial_data(total_lists)
-        formset = MseFormSet(request.POST.get("censoring_lower"), request.POST.get("censoring_upper"), request.POST, initial=initial)
+        formset = MseFormSet(
+            request.POST.get("censoring_lower"),
+            request.POST.get("censoring_upper"),
+            request.POST, initial=initial
+        )
         options_form = MseOptionsForm(request.POST)
         if not formset.is_valid():
             form = MseForm(initial={"total_lists": total_lists})
@@ -194,7 +196,7 @@ class MultipleSystemsEstimation(FormView):
             "lists": lists,
             "results_display": True,
             "csv_data": csv_data,
-            "task_id": task.task_id 
+            "task_id": task.task_id
         }
         return render(request, "general/mse_calculator.html", data)
 
