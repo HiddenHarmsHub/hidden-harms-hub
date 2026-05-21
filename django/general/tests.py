@@ -120,12 +120,9 @@ class TestMseView(TestCase):
         self.assertEqual(response_string.count('<th'), 4)
         self.assertEqual(response_string.count('<tr'), 8)
 
-    @patch('general.views.requests')
-    def test_post_mse_stage_2_valid(self, mock_requests):
+    @patch('general.views.calculate_mse.delay')
+    def test_post_mse_stage_2_valid(self, mock_task):
         """Test stage 2 of the MSE workflow."""
-        mock_requests = MagicMock()
-        mock_requests.status_code = 200
-        mock_requests.get.return_value = 'These are the results'
         client = Client()
         post_data = {
             "total_lists": "2",
@@ -146,11 +143,9 @@ class TestMseView(TestCase):
             "censoring_upper": "0",
         }
         response = client.post('/multiplesystemsestimation/calculator', post_data)
+        mock_task.assert_called_once()
         response_string = response.content.decode()
-        self.assertTrue('<table class="results-table">' in response_string)
         self.assertTrue('<h2>Results</h2>' in response_string)
-        self.assertTrue('value="0|||0|||1|0|34|||0|1|32|||1|1|20|||"' in response_string)
-        self.assertTrue('<input type="submit" value="Download input data and results"/>' in response_string)
 
     def test_post_mse_stage_2_invalid(self):
         """Test stage 2 of the MSE workflow."""
