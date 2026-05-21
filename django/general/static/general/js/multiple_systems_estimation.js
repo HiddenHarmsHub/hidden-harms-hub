@@ -12,7 +12,13 @@ $(function () {
             let result = response.data;
             document.getElementById('mse-form').style.display = 'block';
             document.getElementById('results').value = result;
-            document.getElementById('results-display').innerHTML = createTable(result);            
+            if (result.indexOf('|') !== -1) {
+                let table_1 = createTable(result.split('|')[0]);
+                let table_2 = createTable(result.split('|')[1]);
+                document.getElementById('results-display').innerHTML = table_1 + '<br/>' + table_2;
+            } else {
+                document.getElementById('results-display').innerHTML = createTable(result);
+            }          
             removeLoadingOverlay();
         }
         let errorCallback = function (response) {
@@ -21,7 +27,6 @@ $(function () {
             document.getElementById('download-button').value = 'Download input data';
             displayError(response.data);
             removeLoadingOverlay();
-
         }
         taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback, errorCallback: errorCallback});
     }

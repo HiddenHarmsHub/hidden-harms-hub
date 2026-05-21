@@ -172,6 +172,7 @@ class MultipleSystemsEstimation(FormView):
             'censoring_lower': int(request.POST.get('censoring_lower')),
             'censoring_upper': int(request.POST.get('censoring_upper')),
             'total_lists': total_lists,
+            'model_type': request.POST.get('model_type'),
         }
         # run the calculation
         task = calculate_mse.delay(mse_input)
