@@ -8,14 +8,14 @@ $(function () {
     });
     if (document.getElementById('task-id') && document.getElementById('task-id').value !== '') {
         showLoadingOverlay();
-        successCallback = function (response) {
+        let successCallback = function (response) {
             let result = response.data;
             document.getElementById('mse-form').style.display = 'block';
             document.getElementById('results').value = result;
             document.getElementById('results-display').innerHTML = createTable(result);            
             removeLoadingOverlay();
         }
-        errorCallback = function (response) {
+        let errorCallback = function (response) {
             document.getElementById('mse-form').style.display = 'block';
             document.getElementById('results').value = 'failed';
             document.getElementById('download-button').value = 'Download input data';
