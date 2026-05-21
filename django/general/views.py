@@ -151,7 +151,7 @@ class MultipleSystemsEstimation(FormView):
         # this receives the data from the submitted form with all of the details in it
         total_lists = int(request.POST.get("total_lists"))
         lists, initial = self._calculate_initial_data(total_lists)
-        formset = MseFormSet(request.POST.get("censoring_upper"), request.POST, initial=initial)
+        formset = MseFormSet(request.POST.get("censoring_lower"), request.POST.get("censoring_upper"), request.POST, initial=initial)
         options_form = MseOptionsForm(request.POST)
         if not formset.is_valid():
             form = MseForm(initial={"total_lists": total_lists})
