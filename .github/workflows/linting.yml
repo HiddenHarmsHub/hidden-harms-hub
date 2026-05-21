@@ -67,7 +67,7 @@ jobs:
         npm i @stylistic/eslint-plugin
     - name: Run eslint
       run: |
-        node_modules/eslint/bin/eslint.js . --ignore-pattern '*.mjs'
+        node_modules/eslint/bin/eslint.js . --ignore-pattern '*.mjs' --ignore-pattern '*.min.js'
 
   stylelint:
     permissions:
