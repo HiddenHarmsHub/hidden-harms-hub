@@ -9,13 +9,15 @@ $(function () {
     if (document.getElementById('task-id') && document.getElementById('task-id').value !== '') {
         showLoadingOverlay();
         let successCallback = function (response) {
-            let result = response.data;
+            console.log(response.data)
+            let result = response.data[0];
+            let model_type = response.data[1];
             document.getElementById('mse-form').style.display = 'block';
             document.getElementById('results').value = result;
-            if (result.indexOf('|') !== -1) {
-                let table_1 = createTable(result.split('|')[0]);
-                let table_2 = createTable(result.split('|')[1]);
-                document.getElementById('results-display').innerHTML = table_1 + '<br/>' + table_2;
+            document.getElementById('model_type').value = model_type;
+            if (model_type === 'NPE') {
+                let message = '<p>The table shows the results summary. The samples file is available in the download.</p>';
+                document.getElementById('results-display').innerHTML = message + createTable(result.split('|')[0]);
             } else {
                 document.getElementById('results-display').innerHTML = createTable(result);
             }          

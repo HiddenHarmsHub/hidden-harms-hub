@@ -219,8 +219,15 @@ class MultipleSystemsEstimationDownload(View):
         os.makedirs(output_path)
         results = request.POST.get("results")
         if results != "failed":
-            with open(os.path.join(output_path, "results.csv"), mode="w") as result_file:
-                result_file.write(results)
+            if request.POST.get("model_type") == "NPE":
+                summary, samples = results.split('|')
+                with open(os.path.join(output_path, "summary.csv"), mode="w") as result_file:
+                    result_file.write(summary)
+                with open(os.path.join(output_path, "samples.csv"), mode="w") as result_file:
+                    result_file.write(samples)
+            else:
+                with open(os.path.join(output_path, "results.csv"), mode="w") as result_file:
+                    result_file.write(results)
         with open(os.path.join(output_path, "mse_input.txt"), mode="w") as input_file:
             data = request.POST.get("csv-data")
             lines = data.split("|||")
