@@ -27,13 +27,13 @@ $(function () {
     }
 });
 
-csrfSafeMethod = function (method) {
+let csrfSafeMethod = function (method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 };
 
-getCSRFToken = function () {
-    var cookieValue, cookies, cookie;
+let getCSRFToken = function () {
+    let cookieValue, cookies, cookie;
     cookieValue = null;
     if (document.cookie && document.cookie != '') {
         cookies = document.cookie.split(';');
@@ -48,19 +48,19 @@ getCSRFToken = function () {
     return cookieValue;
 };
 
-createTable = function(data) {
+let createTable = function(data) {
     const lines = data.split('\n');
     const html = ['<table class="results-table"><tbody>'];
     html.push('<tr>');
     const headers = lines[0].split(',');
-    for (tab of headers) {
+    for (let tab of headers) {
         html.push(`<th scope="col">${ tab }</th>`);
     }
     html.push('</tr>');
     for (let i = 1; i < lines.length; i += 1) {
         if (lines[i].trim() !== '') {
             html.push('<tr>');
-                for (tab of lines[i].split(',')) {
+                for (let tab of lines[i].split(',')) {
                     html.push(`<td>${ tab }</td>`);
                 }
             html.push('</tr>');
@@ -70,7 +70,7 @@ createTable = function(data) {
     return html.join('');
 };
 
-displayError = function(data) {
+let displayError = function(data) {
     const opening = document.createElement('p');
     opening.textContent = 'Something went wrong while calculating the results. Please try again later.';
     document.getElementById('results-display').appendChild(opening);
@@ -82,7 +82,7 @@ displayError = function(data) {
     document.getElementById('results-display').appendChild(closing);
 };
 
-showLoadingOverlay = function() {
+let showLoadingOverlay = function() {
     if (!document.getElementById('overlay')) {
         const overlay = document.createElement('div');
         overlay.id = 'overlay';
@@ -94,13 +94,13 @@ showLoadingOverlay = function() {
     }
 };
 
-removeLoadingOverlay = function() {
+let removeLoadingOverlay = function() {
     if (document.getElementById('overlay')) {
         document.getElementsByTagName('body')[0].removeChild(document.getElementById('overlay'));
     }
 };
 
-var taskChecker = (function () {
+let taskChecker = (function () {
 
     let delay;
     let stop = false;
