@@ -9,7 +9,6 @@ $(function () {
     if (document.getElementById('task-id') && document.getElementById('task-id').value !== '') {
         showLoadingOverlay();
         let successCallback = function (response) {
-            console.log(response.data)
             let result = response.data[0];
             let model_type = response.data[1];
             document.getElementById('mse-form').style.display = 'block';
