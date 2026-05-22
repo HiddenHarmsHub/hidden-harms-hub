@@ -19,7 +19,6 @@ def calculate_mse(mse_input):
         requests.exceptions.ConnectionError: Raised if the MSE server could not be contacted.
         requests.exceptions.HTTPError: Raised if the MSE server raised an internal error.
     """
-    print(mse_input)
     mse_url = settings.MSE_CALCULATOR_URL
     headers = {'Content-type': 'application/json'}
     try:
