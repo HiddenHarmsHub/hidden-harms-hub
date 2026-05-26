@@ -9,10 +9,17 @@ $(function () {
     if (document.getElementById('task-id') && document.getElementById('task-id').value !== '') {
         showLoadingOverlay();
         let successCallback = function (response) {
-            let result = response.data;
+            let result = response.data[0];
+            let model_type = response.data[1];
             document.getElementById('mse-form').style.display = 'block';
             document.getElementById('results').value = result;
-            document.getElementById('results-display').innerHTML = createTable(result);            
+            document.getElementById('model_type').value = model_type;
+            if (model_type === 'NPE') {
+                let message = '<p>The table shows the results summary. The samples file is available in the download.</p>';
+                document.getElementById('results-display').innerHTML = message + createTable(result.split('|')[0]);
+            } else {
+                document.getElementById('results-display').innerHTML = createTable(result);
+            }          
             removeLoadingOverlay();
         }
         let errorCallback = function (response) {
@@ -21,7 +28,6 @@ $(function () {
             document.getElementById('download-button').value = 'Download input data';
             displayError(response.data);
             removeLoadingOverlay();
-
         }
         taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback, errorCallback: errorCallback});
     }

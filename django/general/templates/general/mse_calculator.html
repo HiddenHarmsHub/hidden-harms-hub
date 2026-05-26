@@ -18,6 +18,7 @@
 
             <input type="hidden" id="task-id" value="{{ task_id }}"/>
             <input type="hidden" id="results" name="results" value="{{ results }}"/>
+            <input type="hidden" id="model_type" name="model_type" value="{{ model_type }}"/>
             <input type="hidden" name="csv-data" value="{{ csv_data }}"/>
             <input type="submit" value="Download input data and results" id="download-button"/>
             <h2>Input data</h2>
@@ -67,6 +68,9 @@
                 </div>
                 <div>
                     <span>Censoring upper: </span><b>{{ options_form.censoring_upper.value }}</b>
+                </div>
+                <div>
+                    <span>Model type: </span><b>{{ options_form.model_type.value }}</b>
                 </div>
             </div>
         {% else %}

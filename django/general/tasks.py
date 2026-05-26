@@ -32,4 +32,4 @@ def calculate_mse(mse_input):
         if response.status_code == 500:
             raise requests.exceptions.HTTPError('The MSE server generated an internal error.')
         results = response.text
-    return results
+    return results, mse_input['model_type']
