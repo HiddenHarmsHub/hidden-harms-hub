@@ -37,7 +37,7 @@ class TestMseTasks(TestCase):
     def test_calculate_mse_task_no_connection(self, mock_post):
         """Test that an appropriate error is returned if the server cannot be contacted."""
         mock_post.side_effect = requests.exceptions.ConnectionError("server not available")
-        with self.assertRaises(requests.exceptions.HTTPError) as run_context:
+        with self.assertRaises(requests.exceptions.ConnectionError) as run_context:
             calculate_mse({})
         self.assertIn("the connection to the mse calculator was refused", str(run_context.exception).lower())
 
