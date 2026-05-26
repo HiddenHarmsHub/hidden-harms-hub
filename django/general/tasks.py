@@ -20,16 +20,16 @@ def calculate_mse(mse_input):
         requests.exceptions.HTTPError: Raised if the MSE server raised an internal error.
     """
     mse_url = settings.MSE_CALCULATOR_URL
-    headers = {'Content-type': 'application/json'}
+    headers = {"Content-type": "application/json"}
     try:
         response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=200)
     except requests.exceptions.ConnectionError as connection_error:
         raise requests.exceptions.ConnectionError(
-            'An error has occurred. The connection to the MSE calculator was refused, probably because '
-            'the server is not available.'
+            "An error has occurred. The connection to the MSE calculator was refused, probably because "
+            "the server is not available."
         ) from connection_error
     else:
         if response.status_code == 500:
-            raise requests.exceptions.HTTPError('The MSE server generated an internal error.')
+            raise requests.exceptions.HTTPError("The MSE server generated an internal error.")
         results = response.text
     return results
