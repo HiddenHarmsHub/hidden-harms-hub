@@ -12,11 +12,13 @@ class TestMseTasks(TestCase):
     """Test the Tasks."""
 
     def setUp(self):
+        """Add test url which will never be hit due to mocking."""
         self.test_url = "localhost:5000/calculate_mse"
         settings.MSE_CALCULATOR_URL = self.test_url
 
     @patch("general.tasks.requests.post")
     def test_calculate_mse_task_success(self, mock_post):
+        """Test that request is called with the right data and returns the result."""
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = "a,b,c\n1,2,3\n"
@@ -33,6 +35,7 @@ class TestMseTasks(TestCase):
 
     @patch("general.tasks.requests.post")
     def test_calculate_mse_task_no_connection(self, mock_post):
+        """Test that an appropriate error is returned if the server cannot be contacted."""
         mock_post.side_effect = requests.exceptions.ConnectionError("server not available")
         with self.assertRaises(requests.exceptions.HTTPError) as run_context:
             calculate_mse({})
@@ -40,6 +43,7 @@ class TestMseTasks(TestCase):
 
     @patch("general.tasks.requests.post")
     def test_calculate_mse_task_500_error(self, mock_post):
+        """Test that an appropriate error is returned if the server raise an error."""
         mock_response = MagicMock()
         mock_response.status_code = 500
         mock_post.return_value = mock_response
