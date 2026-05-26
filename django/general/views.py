@@ -1,18 +1,18 @@
-import json
 import os
 import shutil
 from itertools import combinations
 from tempfile import TemporaryDirectory
 
-import requests
+from celery.result import AsyncResult
 from django.conf import settings
 from django.forms import formset_factory
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.edit import FormView
 
 from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseOptionsForm, MseSetupForm
+from general.tasks import calculate_mse
 
 
 class MultipleSystemsEstimation(FormView):
@@ -146,10 +146,14 @@ class MultipleSystemsEstimation(FormView):
             data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
             return render(request, "general/mse_calculator.html", data)
 
-        # this received the data from the submitted form with all of the details in it
+        # this receives the data from the submitted form with all of the details in it
         total_lists = int(request.POST.get("total_lists"))
         lists, initial = self._calculate_initial_data(total_lists)
-        formset = MseFormSet(request.POST.get("censoring_upper"), request.POST, initial=initial)
+        formset = MseFormSet(
+            request.POST.get("censoring_lower"),
+            request.POST.get("censoring_upper"),
+            request.POST, initial=initial
+        )
         options_form = MseOptionsForm(request.POST)
         if not formset.is_valid():
             form = MseForm(initial={"total_lists": total_lists})
@@ -165,14 +169,13 @@ class MultipleSystemsEstimation(FormView):
                 appearance_data.append(int(row_data['total_appearances']))
         mse_input = {
             'list_data': appearance_data,
-            'censoring_lower': request.POST.get('censoring_lower'),
-            'censoring_upper': request.POST.get('censoring_upper')
+            'censoring_lower': int(request.POST.get('censoring_lower')),
+            'censoring_upper': int(request.POST.get('censoring_upper')),
+            'total_lists': total_lists,
+            'model_type': request.POST.get('model_type'),
         }
         # run the calculation
-        mse_url = settings.MSE_CALCULATOR_URL
-        headers = {'Content-type': 'application/json'}
-        response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=10)
-        results = response.text
+        task = calculate_mse.delay(mse_input)
         # prepare the data for the download
         stringified_data = [f"{mse_input['censoring_lower']}|||{mse_input['censoring_upper']}|||"]
         for form in formset:
@@ -192,9 +195,9 @@ class MultipleSystemsEstimation(FormView):
             "formset": formset,
             "options_form": options_form,
             "lists": lists,
-            "results": results,
             "results_display": True,
             "csv_data": csv_data,
+            "task_id": task.task_id
         }
         return render(request, "general/mse_calculator.html", data)
 
@@ -203,7 +206,7 @@ class MultipleSystemsEstimationDownload(View):
     """Download the results and the input data."""
 
     def post(self, request):
-        """Create and download a zipfile of the results and data.
+        """Create and download a zipfile of the results and data, or just the data if there was an error.
 
         Args:
             request (django.http.HttpRequest): The current request.
@@ -214,19 +217,55 @@ class MultipleSystemsEstimationDownload(View):
         temp_dir = TemporaryDirectory()
         output_path = os.path.join(temp_dir.name, "export")
         os.makedirs(output_path)
-        with open(os.path.join(output_path, "results.txt"), mode="w") as result_file:
-            result_file.write(request.POST.get("results"))
+        results = request.POST.get("results")
+        if results != "failed":
+            if request.POST.get("model_type") == "NPE":
+                summary, samples = results.split('|')
+                with open(os.path.join(output_path, "summary.csv"), mode="w") as result_file:
+                    result_file.write(summary)
+                with open(os.path.join(output_path, "samples.csv"), mode="w") as result_file:
+                    result_file.write(samples)
+            else:
+                with open(os.path.join(output_path, "results.csv"), mode="w") as result_file:
+                    result_file.write(results)
         with open(os.path.join(output_path, "mse_input.txt"), mode="w") as input_file:
             data = request.POST.get("csv-data")
             lines = data.split("|||")
             for line in lines:
                 input_file.write(line.replace("|", ",").replace('-', ''))
                 input_file.write("\n")
-
-        filename = "mse_results"
+        if results == "failed":
+            filename = "mse_input"
+        else:
+            filename = "mse_results"
         filepath = os.path.join(temp_dir.name, filename)
         shutil.make_archive(filepath, "zip", os.path.join(temp_dir.name, "export"))
         response = HttpResponse(content_type="application/zip")
         response["Content-Disposition"] = "attachment; filename=" + filename
         response.write(open(f"{filepath}.zip", "rb").read())
         return response
+
+
+def poll_state(request):
+    """Check the current state of a task.
+
+    Args:
+        request (django.http.HttpRequest): The current request.
+
+    Returns:
+        JsonResponse: The current state of the task.
+    """
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        if 'task_id' in request.POST.keys() and request.POST['task_id']:
+            task_id = request.POST['task_id']
+            task = AsyncResult(task_id)
+            if isinstance(task.result, Exception):
+                context = {'data': {'message': str(task.result)}, 'state': task.state}
+            else:
+                context = {'data': task.result, 'state': task.state}
+        else:
+            context = {'data': 'No task_id in the request', 'state': 'FAILURE'}
+    else:
+        context = {'data': 'This is not an ajax request', 'state': 'FAILURE'}
+
+    return JsonResponse(context)

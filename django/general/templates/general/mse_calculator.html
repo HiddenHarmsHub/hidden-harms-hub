@@ -9,19 +9,22 @@
 
 {% block content %}
     <h1>Multiple Systems Estimation Calculator</h1>
-    <form action="/multiplesystemsestimation/{% if not results_display %}calculator{% else %}download{% endif %}" method="post">
+    <form id="mse-form" action="/multiplesystemsestimation/{% if not results_display %}calculator{% else %}download{% endif %}" method="post" {% if results_display %}style="display:none"{% endif %}>
         {% csrf_token %}
         <input type="hidden" name="{{ form.total_lists.html_name }}" value="{{ form.total_lists.value }}"/>
         {% if results_display %}
             <h2>Results</h2>
-            <div>{{ results }}</div>
-            <input type="hidden" name="results" value="{{ results }}"/>
+            <div id="results-display"></div>
+
+            <input type="hidden" id="task-id" value="{{ task_id }}"/>
+            <input type="hidden" id="results" name="results" value="{{ results }}"/>
+            <input type="hidden" id="model_type" name="model_type" value="{{ model_type }}"/>
             <input type="hidden" name="csv-data" value="{{ csv_data }}"/>
-            <input type="submit" value="Download input data and results"/>
+            <input type="submit" value="Download input data and results" id="download-button"/>
             <h2>Input data</h2>
         {% endif %}
         
-        <table class="{% if results_display %}results-table{% else %}input-table{% endif %}">
+        <table class="{% if results_display %}results-input-table{% else %}input-table{% endif %}">
             {{ formset.management_form }}
             <tr>
                 {% for list in lists %}
@@ -66,6 +69,9 @@
                 <div>
                     <span>Censoring upper: </span><b>{{ options_form.censoring_upper.value }}</b>
                 </div>
+                <div>
+                    <span>Model type: </span><b>{{ options_form.model_type.value }}</b>
+                </div>
             </div>
         {% else %}
             <div id="options">
@@ -80,7 +86,16 @@
                 {% endfor %}
             {% endfor %}
             {{ formset.non_form_errors }}
-            <input id="submit-button" type="submit" value="Submit">
+            <input id="submit-button" value="Submit" type="submit"/>
         {% endif %}
     </form>
+
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+    {% if results_display %}
+        <script src="{% static 'js/jquery-4.0.0.min.js' %}"></script>
+        <script src="{% static 'general/js/multiple_systems_estimation.js' %}"></script>
+    {% endif %}
 {% endblock %}

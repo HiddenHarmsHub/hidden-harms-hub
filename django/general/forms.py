@@ -37,12 +37,14 @@ class MseOptionsForm(forms.Form):
     """Form to collect the additional processing options required."""
     censoring_lower = forms.ChoiceField(choices=[(x, x) for x in range(0, 2)])
     censoring_upper = forms.ChoiceField(choices=[(x, x) for x in range(0, 11)])
+    model_type = forms.ChoiceField(choices=[("NBE", "NBE"), ("NPE", "NPE")])
 
 
 class BaseMseFormSet(forms.BaseFormSet):
     """Form Set for MSE data."""
-    def __init__(self, censoring_upper=0, *args, **kwargs):
+    def __init__(self, censoring_lower=0, censoring_upper=0, *args, **kwargs):
         self._censoring_upper = int(censoring_upper)
+        self._censoring_lower = int(censoring_lower)
         super().__init__(*args, **kwargs)
 
     def clean(self):
@@ -59,3 +61,21 @@ class BaseMseFormSet(forms.BaseFormSet):
             for form in self.forms:
                 if form.cleaned_data.get("total_appearances") == "*":
                     raise ValidationError("Censoring upper must be greater than 0 if * is used in the data.")
+        if self._censoring_upper > 0:
+            # then we must have at least one * entry and we are not allowed any values between censoring_lower and
+            # censoring_upper
+            has_star = False
+            for form in self.forms:
+                total_appearances = form.cleaned_data.get("total_appearances")
+                if total_appearances == "*":
+                    has_star = True
+                elif (
+                    int(total_appearances) >= self._censoring_lower and int(total_appearances) <= self._censoring_upper
+                ):
+                    raise ValidationError(
+                        "No values can fall in the censored range if censoring upper is greater than 0."
+                    )
+            if not has_star:
+                raise ValidationError(
+                    "If censoring upper is greater than 0 then some entries need to be censored with *."
+                )
