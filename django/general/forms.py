@@ -37,6 +37,7 @@ class MseOptionsForm(forms.Form):
     """Form to collect the additional processing options required."""
     censoring_lower = forms.ChoiceField(choices=[(x, x) for x in range(0, 2)])
     censoring_upper = forms.ChoiceField(choices=[(x, x) for x in range(0, 11)])
+    model_type = forms.ChoiceField(choices=[("NBE", "NBE"), ("NPE", "NPE")])
 
 
 class BaseMseFormSet(forms.BaseFormSet):
