@@ -4,8 +4,22 @@ from django.core.exceptions import ValidationError
 
 class MseSetupForm(forms.Form):
     """Form to setup the MSE main form."""
-    total_lists_required = forms.IntegerField(required=False)
+    total_lists_required = forms.IntegerField(required=False, min_value=2, max_value=10)
     file_upload = forms.FileField(required=False)
+
+    def clean(self):
+        """Checks that one of the two pieces of data needed has been provided.
+
+        Raises:
+            ValidationError: raised if the data is not valid.
+        """
+        total_lists_required = self.cleaned_data.get("total_lists_required")
+        file_upload = self.cleaned_data.get("file_upload")
+        if total_lists_required is None and file_upload is None:
+            raise ValidationError(
+                "You must either specify the number of lists required or upload a data file. You can also test this "
+                "technique using some example data by returning to the previous page."
+            )
 
 
 class MseForm(forms.Form):
