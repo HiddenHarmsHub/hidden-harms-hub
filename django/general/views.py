@@ -96,8 +96,7 @@ class MultipleSystemsEstimation(FormView):
         # validate the setup form
         input_form = MseSetupForm(request.POST, request.FILES)
         if not input_form.is_valid():
-            form = MseSetupForm
-            return render(request, "general/mse_setup.html", {"form": form})
+            return render(request, "general/mse_setup.html", {"form": input_form})
 
         # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA

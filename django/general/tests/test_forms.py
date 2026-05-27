@@ -1,7 +1,7 @@
 from django.forms import formset_factory
 from django.test import TestCase
 
-from general.forms import BaseMseFormSet, MseDetailsForm
+from general.forms import BaseMseFormSet, MseDetailsForm, MseSetupForm
 
 
 class TestMseFormSet(TestCase):
@@ -131,8 +131,8 @@ class TestMseFormSet(TestCase):
         self.assertTrue(formset.is_valid())
 
 
-class TestMseForms(TestCase):
-    """Test the MSE form."""
+class TestMseDetailsForm(TestCase):
+    """Test the MSE details form."""
 
     def test_mse_details_form_clean_valid_1(self):
 
@@ -155,3 +155,15 @@ class TestMseForms(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)
         self.assertIn("Total must be an integer or *", form.errors['__all__'][0])
+
+
+class TestMseSetupForm(TestCase):
+    """Test the MSE setup form."""
+
+    def test_mse_setup_form_clean_valid_1(self):
+        form = MseSetupForm(data={"total_lists_required": 3, "file_upload": ""})
+        self.assertTrue(form.is_valid())
+
+    def test_mse_setup_form_clean_invalid(self):
+        form = MseSetupForm(data={"total_lists_required": "", "file_upload": ""})
+        self.assertFalse(form.is_valid())
