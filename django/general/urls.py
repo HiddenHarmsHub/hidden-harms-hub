@@ -12,7 +12,12 @@ urlpatterns = [
     path(
         "multiplesystemsestimation/examples",
         TemplateView.as_view(template_name="general/mse_examples.html"),
-        name="mseexamples"
+        name="mse_examples"
+    ),
+    path(
+        "multiplesystemsestimation/setup",
+        views.MultipleSystemsEstimationSetup.as_view(),
+        name="mse_setup"
     ),
     path(
         "multiplesystemsestimation/calculator",

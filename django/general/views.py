@@ -7,7 +7,7 @@ from celery.result import AsyncResult
 from django.conf import settings
 from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render, reverse
 from django.views import View
 from django.views.generic.edit import FormView
 
@@ -15,8 +15,31 @@ from general.forms import BaseMseFormSet, MseDetailsForm, MseForm, MseOptionsFor
 from general.tasks import calculate_mse
 
 
+class MultipleSystemsEstimationSetup(FormView):
+    """Setup the MSE form."""
+    on_success = "multiplesystemsestimation/calculator"
+
+    def get(self, request):
+        """Display the MSE setup page.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponse: The MSE setup page.
+        """
+        form = MseSetupForm
+        return render(request, "general/mse_setup.html", {"form": form})
+
+    def post(self, request):
+        # validate the setup form
+        input_form = MseSetupForm(request.POST, request.FILES)
+        if not input_form.is_valid():
+            return render(request, "general/mse_setup.html", {"form": input_form})
+
+
 class MultipleSystemsEstimation(FormView):
-    """Setup and process the MSE data."""
+    """Process the MSE data."""
     on_success = "multiplesystemsestimation/calculator"
 
     def _calculate_initial_data(self, total_lists):
@@ -73,16 +96,7 @@ class MultipleSystemsEstimation(FormView):
         return initial, censoring_settings
 
     def get(self, request):
-        """Display the MSE setup page.
-
-        Args:
-            request (django.http.HttpRequest): The current request.
-
-        Returns:
-            HttpResponse: The MSE setup page.
-        """
-        form = MseSetupForm
-        return render(request, "general/mse_setup.html", {"form": form})
+        return HttpResponseRedirect(reverse('general:mse_setup'))
 
     def post(self, request):
         """Handle submission, part 2 of the MSE form display and displaying the results.
@@ -93,11 +107,6 @@ class MultipleSystemsEstimation(FormView):
         Returns:
             HttpResponse: The appropriate page for the stage of the process.
         """
-        # validate the setup form
-        input_form = MseSetupForm(request.POST, request.FILES)
-        if not input_form.is_valid():
-            return render(request, "general/mse_setup.html", {"form": input_form})
-
         # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
         if "total_lists_required" in request.POST or "example" in request.POST:  # then this is phase 1
@@ -156,6 +165,8 @@ class MultipleSystemsEstimation(FormView):
         options_form = MseOptionsForm(request.POST)
         if not formset.is_valid():
             form = MseForm(initial={"total_lists": total_lists})
+            print(form)
+            print(formset)
             data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
             return render(request, "general/mse_calculator.html", data)
         # prepare the data
