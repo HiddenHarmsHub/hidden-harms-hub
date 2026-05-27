@@ -8,6 +8,11 @@ class MseSetupForm(forms.Form):
     file_upload = forms.FileField(required=False)
 
     def clean(self):
+        """Checks that one of the two pieces of data needed has been provided.
+
+        Raises:
+            ValidationError: raised if the data is not valid.
+        """
         total_lists_required = self.cleaned_data.get("total_lists_required")
         file_upload = self.cleaned_data.get("file_upload")
         if total_lists_required is None and file_upload is None:
