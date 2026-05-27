@@ -7,7 +7,7 @@ from celery.result import AsyncResult
 from django.conf import settings
 from django.forms import formset_factory
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import redirect, render, reverse
+from django.shortcuts import render, reverse
 from django.views import View
 from django.views.generic.edit import FormView
 
@@ -32,6 +32,14 @@ class MultipleSystemsEstimationSetup(FormView):
         return render(request, "general/mse_setup.html", {"form": form})
 
     def post(self, request):
+        """Validate the input data and either explain any problems or redirect to the mse calculator.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponse: The setup page again if the post data was not valid or the calculator form if it was.
+        """
         # validate the setup form
         input_form = MseSetupForm(request.POST, request.FILES)
         if not input_form.is_valid():
@@ -96,6 +104,14 @@ class MultipleSystemsEstimation(FormView):
         return initial, censoring_settings
 
     def get(self, request):
+        """Redirect the user to the setup page as post data is needed to construct the form.
+
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            HttpResponseRedirect: A redirect to the setup page for the form.
+        """
         return HttpResponseRedirect(reverse('general:mse_setup'))
 
     def post(self, request):
@@ -165,8 +181,6 @@ class MultipleSystemsEstimation(FormView):
         options_form = MseOptionsForm(request.POST)
         if not formset.is_valid():
             form = MseForm(initial={"total_lists": total_lists})
-            print(form)
-            print(formset)
             data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
             return render(request, "general/mse_calculator.html", data)
         # prepare the data
