@@ -149,7 +149,7 @@ class MultipleSystemsEstimation(FormView):
                 if file_path.startswith(settings.EXAMPLES_ROOT):
                     safe_path = file_path
                 else:
-                    return HttpResponseRedirect("examples")
+                    raise Exception()
                 with open(safe_path) as example_file:
                     contents = example_file.read()
                 rows = contents.split("\n")
