@@ -33,7 +33,7 @@ class MultipleSystemsEstimationSetup(FormView):
             self.request.session["upload_id"] = temp_file.id
         return super().form_valid(form)
 
-class ExamplesView(FormView):
+class MultipleSystemsEstimationExamplesView(FormView):
     """Allow example selection and save choice in session."""
     template_name = "general/mse_examples.html"
     success_url = "/multiplesystemsestimation/calculator"
@@ -102,7 +102,7 @@ class MultipleSystemsEstimation(FormView):
         return initial, censoring_settings
 
     def get(self, request):
-        """DIsplay the required form/data if the required session data is available or redirect if not.
+        """Display the required form/data if the required session data is available or redirect if not.
 
         Args:
             request (django.http.HttpRequest): The current request.
