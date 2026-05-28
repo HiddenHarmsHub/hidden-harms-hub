@@ -1,5 +1,8 @@
+import csv
+import io
 import re
 from unittest.mock import patch
+import zipfile
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import reverse
@@ -313,7 +316,31 @@ class TestMseView(TestCase):
 
 
 class TestMultipleSystemsEstimationDownloadView(TestCase):
-    pass
+    """Tests for the download view."""
+
+    def test_download_data_only(self):
+        client = Client()
+        post_data = {
+            "results": "failed",
+            "csv-data": "0|||0|||1|0|34|||0|1|32|||1|1|20|||",
+        }
+        response = client.post("/multiplesystemsestimation/download", post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/zip")
+        zip_file = zipfile.ZipFile(io.BytesIO(response.content))
+        file_list = zip_file.namelist()
+        self.assertEqual(len(file_list), 1)
+        self.assertEqual(file_list[0], "mse_input.csv")
+        with zip_file.open(file_list[0]) as input_data_file:
+            file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
+            reader = csv.reader(file_string)
+            rows = list(reader)
+        self.assertEqual(rows[0], ["0"])
+        self.assertEqual(rows[1], ["0"])
+        self.assertEqual(rows[2], ["1", "0", "34"])
+        self.assertEqual(rows[3], ["0", "1", "32"])
+        self.assertEqual(rows[4], ["1", "1", "20"])
+
 
 
 class TestPollState(TestCase):
