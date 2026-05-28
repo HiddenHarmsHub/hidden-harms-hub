@@ -1,3 +1,4 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import formset_factory
 from django.test import TestCase
 
@@ -184,10 +185,22 @@ class TestMseDetailsForm(TestCase):
 class TestMseSetupForm(TestCase):
     """Test the MSE setup form."""
 
+    def _make_file(self):
+        file = SimpleUploadedFile("test.csv", b"1,2,3\n4,5,6", content_type="text/plain")
+        return file
+
     def test_mse_setup_form_clean_valid_1(self):
-        form = MseSetupForm(data={"total_lists_required": 3, "file_upload": ""})
+        form = MseSetupForm(data={"total_lists_required": 3}, files={})
         self.assertTrue(form.is_valid())
 
-    def test_mse_setup_form_clean_invalid(self):
-        form = MseSetupForm(data={"total_lists_required": "", "file_upload": ""})
+    def test_mse_setup_form_clean_valid_2(self):
+        form = MseSetupForm(data={"total_lists_required": ""}, files={"file_upload": self._make_file()})
+        self.assertTrue(form.is_valid())
+
+    def test_mse_setup_form_clean_invalid_1(self):
+        form = MseSetupForm(data={"total_lists_required": ""}, files={})
+        self.assertFalse(form.is_valid())
+
+    def test_mse_setup_form_clean_invalid_2(self):
+        form = MseSetupForm(data={"total_lists_required": 3}, files={"file_upload": self._make_file()})
         self.assertFalse(form.is_valid())
