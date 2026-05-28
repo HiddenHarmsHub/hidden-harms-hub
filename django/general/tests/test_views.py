@@ -327,21 +327,114 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
         response = client.post("/multiplesystemsestimation/download", post_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/zip")
-        zip_file = zipfile.ZipFile(io.BytesIO(response.content))
-        file_list = zip_file.namelist()
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:  
+            file_list = zip_file.namelist()
+            with zip_file.open(file_list[0]) as input_data_file:
+                file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
+                reader = csv.reader(file_string)
+                rows = list(reader)
         self.assertEqual(len(file_list), 1)
         self.assertEqual(file_list[0], "mse_input.csv")
-        with zip_file.open(file_list[0]) as input_data_file:
-            file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
-            reader = csv.reader(file_string)
-            rows = list(reader)
         self.assertEqual(rows[0], ["0"])
         self.assertEqual(rows[1], ["0"])
         self.assertEqual(rows[2], ["1", "0", "34"])
         self.assertEqual(rows[3], ["0", "1", "32"])
         self.assertEqual(rows[4], ["1", "1", "20"])
 
+    def test_nbe_results_and_data(self):
+        client = Client()
+        results = [
+            "parameter,estimate,ci_lower,ci_upper\n",
+            "alpha,5.248895,3.395394,6.6492987\n",
+            "beta_1,-1.9524562,-3.4493365,-0.68000245\n",
+            "beta_2,-1.6629716,-3.2102783,-0.37538695\n",
+            "beta_3,-2.355661,-3.8829818,-1.2214549\n",
+            "gamma_12,0.45588067,-1.0248151,1.4809868\n",
+            "gamma_13,0.9122592,-0.30105764,1.8032496\n",
+            "gamma_23,1.4185445,0.21890734,2.6326616",
+        ]
+        post_data = {
+            "model_type": "NBE",
+            "results": ''.join(results),
+            "csv-data": "0|||0|||1|0|34|||0|1|32|||1|1|20|||",
+        }
+        response = client.post("/multiplesystemsestimation/download", post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/zip")
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:  
+            file_list = sorted(zip_file.namelist())
+            self.assertEqual(len(file_list), 2)
+            self.assertEqual(file_list[0], "mse_input.csv")
+            self.assertEqual(file_list[1], "results.csv")
+            with zip_file.open("mse_input.csv") as input_data_file:
+                file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
+                reader = csv.reader(file_string)
+                rows = list(reader)
+                self.assertEqual(rows[0], ["0"])
+                self.assertEqual(rows[1], ["0"])
+                self.assertEqual(rows[2], ["1", "0", "34"])
+                self.assertEqual(rows[3], ["0", "1", "32"])
+                self.assertEqual(rows[4], ["1", "1", "20"])
+            with zip_file.open("results.csv") as results_file:
+                file_string = io.TextIOWrapper(results_file, encoding="utf-8")
+                lines = file_string.readlines()
+                for i, line in enumerate(lines):
+                    self.assertEqual(line, results[i])
+                
 
+    def test_npe_results_and_data(self):
+        client = Client()
+        summary = [
+            "parameter,estimate,ci_lower,ci_upper\n",
+            "alpha,5.248895,3.395394,6.6492987\n",
+            "beta_1,-1.9524562,-3.4493365,-0.68000245\n",
+            "beta_2,-1.6629716,-3.2102783,-0.37538695\n",
+            "beta_3,-2.355661,-3.8829818,-1.2214549\n",
+            "gamma_12,0.45588067,-1.0248151,1.4809868\n",
+            "gamma_13,0.9122592,-0.30105764,1.8032496\n",
+            "gamma_23,1.4185445,0.21890734,2.6326616",
+        ]
+        samples = [
+            "alpha,beta_1,beta_2,beta_3,beta_4,gamma_12,gamma_13,gamma_14,gamma_23,gamma_24,gamma_34\n",
+            "8.77,-1.90,-2.29,-1.85,-3.11,0.89,0.74,0.06,0.96,0.11,1.00\n",
+            "8.88,-1.99,-2.11,-2.06,-3.32,0.18,0.84,0.53,1.16,-0.57,1.04\n",
+            "8.89,-2.29,-2.07,-2.03,-3.37,0.65,0.47,0.85,1.13,0.45,1.13\n",
+            "8.75,-2.01,-2.39,-1.86,-3.16,0.73,0.67,0.67,1.03,0.01,0.94\n",
+            "8.76,-1.85,-2.48,-2.04,-3.44,0.53,0.76,0.61,1.50,0.13,1.08\n",
+        ]
+        post_data = {
+            "model_type": "NPE",
+            "results": f"{''.join(summary)}|{''.join(samples)}",
+            "csv-data": "0|||0|||1|0|34|||0|1|32|||1|1|20|||",
+        }
+        response = client.post("/multiplesystemsestimation/download", post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/zip")
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:  
+            file_list = sorted(zip_file.namelist())
+            self.assertEqual(len(file_list), 3)
+            self.assertEqual(file_list[0], "mse_input.csv")
+            self.assertEqual(file_list[1], "samples.csv")
+            self.assertEqual(file_list[2], "summary.csv")
+            with zip_file.open("mse_input.csv") as input_data_file:
+                file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
+                reader = csv.reader(file_string)
+                rows = list(reader)
+                self.assertEqual(rows[0], ["0"])
+                self.assertEqual(rows[1], ["0"])
+                self.assertEqual(rows[2], ["1", "0", "34"])
+                self.assertEqual(rows[3], ["0", "1", "32"])
+                self.assertEqual(rows[4], ["1", "1", "20"])
+            with zip_file.open("summary.csv") as results_file:
+                file_string = io.TextIOWrapper(results_file, encoding="utf-8")
+                lines = file_string.readlines()
+                for i, line in enumerate(lines):
+                    self.assertEqual(line, summary[i])
+            with zip_file.open("samples.csv") as results_file:
+                file_string = io.TextIOWrapper(results_file, encoding="utf-8")
+                lines = file_string.readlines()
+                for i, line in enumerate(lines):
+                    self.assertEqual(line, samples[i])
 
 class TestPollState(TestCase):
     pass
