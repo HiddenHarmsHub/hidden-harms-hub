@@ -112,22 +112,24 @@ class MultipleSystemsEstimation(FormView):
         """
         if "mode" not in request.session:
             return HttpResponseRedirect(reverse("general:mse"))
+        if request.session["mode"] not in ["new", "upload", "example"]:
+            return render(request, "general/mse_error.html")
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
         if request.session["mode"] == "new":
             try:
                 censoring_settings = []          
-                total_lists = int(request.session['total_lists_required'])
+                total_lists = int(request.session["total_lists_required"])
                 lists, initial = self._calculate_initial_data(total_lists)
                 request.session.pop('total_lists_required', None)
             except Exception:
-                request.session.pop('mode', None)
-                request.session.pop('total_lists_required', None)
-                raise
+                request.session.pop("mode", None)
+                request.session.pop("total_lists_required", None)
+                return render(request, "general/mse_error.html")
         elif request.session["mode"] == "upload":
             try:
                 file_id = self.request.session["upload_id"]
                 temp_file = TempMseUpload.objects.get(id=file_id)
-                contents = temp_file.file.read().decode('utf-8')
+                contents = temp_file.file.read().decode("utf-8")
                 rows = contents.split("\n")
                 if len(rows) >= 3:
                     total_lists = len(rows[2].split(",")) - 1
@@ -137,9 +139,9 @@ class MultipleSystemsEstimation(FormView):
                 initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
                 request.session.pop("upload_id", None)
             except Exception:
-                request.session.pop('mode', None)
+                request.session.pop("mode", None)
                 request.session.pop("upload_id", None)
-                raise
+                return render(request, "general/mse_error.html")
         elif request.session["mode"] == "example":
             try:
                 safe_file = request.session["example"]
@@ -159,10 +161,10 @@ class MultipleSystemsEstimation(FormView):
                 initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
                 request.session.pop("example", None)
             except Exception:
-                request.session.pop('mode', None)
+                request.session.pop("mode", None)
                 request.session.pop("example", None)
-                raise
-        request.session.pop('mode', None)
+                return render(request, "general/mse_error.html")
+        request.session.pop("mode", None)
         form = MseForm(initial={"total_lists": total_lists})
         options_form = MseOptionsForm(initial=censoring_settings)
         formset = MseFormSet(initial=initial)
@@ -179,7 +181,6 @@ class MultipleSystemsEstimation(FormView):
             HttpResponse: The appropriate page which will be the results page in loading mode or a redirect if the 
                 data was not valid.
         """
-        # create part 2 for data entry or results
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
 
         total_lists = int(request.POST.get("total_lists"))
