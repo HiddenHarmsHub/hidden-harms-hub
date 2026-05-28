@@ -310,3 +310,11 @@ class TestMseView(TestCase):
         self.assertTrue('<table class="input-table">' in response_string)
         self.assertEqual(response_string.count("<th"), 3)
         self.assertEqual(response_string.count("<tr"), 4)
+
+
+class TestMultipleSystemsEstimationDownloadView(TestCase):
+    pass
+
+
+class TestPollState(TestCase):
+    pass
