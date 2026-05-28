@@ -20,12 +20,25 @@ class MseSetupForm(forms.Form):
                 "You must either specify the number of lists required or upload a data file. You can also test this "
                 "technique using some example data by returning to the previous page."
             )
+        if total_lists_required is not None and file_upload is not None:
+            raise ValidationError(
+                "You must either specify the number of lists required or upload a data file. You cannot do both."
+            )
 
+class MseExamplesForm(forms.Form):
+    """Form to collect example data choice."""
+
+    example_choices = [
+        ("silverman_1", "Example 1: Potential victims of trafficking in the UK, 2013"),
+        ("silverman_2", "Example 2: Victims of trafficking in the Netherlands"),
+        ("silverman_3", "Example 3: Victims related to modern slavery and trafficking in New Orleans"),
+        ("silverman_4", "Example 4: Killings in the Kosovo war from March 20th to June 22nd, 1999"),
+    ]
+    example = forms.ChoiceField(widget=forms.RadioSelect, choices=example_choices)
 
 class MseForm(forms.Form):
     """Parent form to collect shared MSE data."""
     total_lists = forms.IntegerField()
-
 
 class MseDetailsForm(forms.Form):
     """Form to collect MSE data for a single list combination."""
