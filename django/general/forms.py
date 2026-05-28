@@ -25,6 +25,7 @@ class MseSetupForm(forms.Form):
                 "You must either specify the number of lists required or upload a data file. You cannot do both."
             )
 
+
 class MseExamplesForm(forms.Form):
     """Form to collect example data choice."""
 
@@ -36,9 +37,11 @@ class MseExamplesForm(forms.Form):
     ]
     example = forms.ChoiceField(widget=forms.RadioSelect, choices=example_choices)
 
+
 class MseForm(forms.Form):
     """Parent form to collect shared MSE data."""
     total_lists = forms.IntegerField()
+
 
 class MseDetailsForm(forms.Form):
     """Form to collect MSE data for a single list combination."""

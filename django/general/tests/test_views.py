@@ -11,7 +11,7 @@ from general.views import MultipleSystemsEstimation
 
 class TestMseSetupView(TestCase):
     """Test the MultipleSystemsEstimationSetup view.
-    
+
     There are no test for get or invalid input because validation is all handled by core Django.
     """
 
@@ -40,7 +40,7 @@ class TestMseSetupView(TestCase):
 
 class TestMultipleSystemsEstimationExamplesView(TestCase):
     """Test the examples view.
-    
+
     There are no test for get or invalid input because validation is all handled by core Django.
     """
 
@@ -69,7 +69,7 @@ class TestMseView(TestCase):
                 {"required_lists": ["list 1", "list 3"], "first": False},
                 {"required_lists": ["list 2", "list 3"], "first": False},
                 {"required_lists": ["list 1", "list 2", "list 3"], "first": True},
-            ]
+            ],
         )
         result = MultipleSystemsEstimation()._calculate_initial_data(3)
         self.assertEqual(result, expected)
@@ -94,7 +94,7 @@ class TestMseView(TestCase):
                 {"required_lists": ["list 1", "list 3", "list 4"], "first": False},
                 {"required_lists": ["list 2", "list 3", "list 4"], "first": False},
                 {"required_lists": ["list 1", "list 2", "list 3", "list 4"], "first": True},
-            ]
+            ],
         )
         result = MultipleSystemsEstimation()._calculate_initial_data(4)
         self.assertEqual(result, expected)
@@ -186,8 +186,8 @@ class TestMseView(TestCase):
         response_string = response.content.decode()
         self.assertTemplateUsed(response, "general/mse_calculator.html")
         self.assertTrue('<table class="input-table">' in response_string)
-        self.assertEqual(response_string.count('<th'), 4)
-        self.assertEqual(response_string.count('<tr'), 8)
+        self.assertEqual(response_string.count("<th"), 4)
+        self.assertEqual(response_string.count("<tr"), 8)
 
     def test_get_mode_upload_but_missing_data(self):
         """Test that an error is shown if the 'upload' mode is missing the other data required."""
@@ -197,7 +197,7 @@ class TestMseView(TestCase):
         session.save()
         response = client.get("/multiplesystemsestimation/calculator")
         self.assertTemplateUsed(response, "general/mse_error.html")
-    
+
     def test_get_mode_upload_with_correct_data(self):
         """Test that the data entry page is shown and populated if all of the required upload data is available."""
         csv_string = b"0\n0\n1,0,20\n0,1,30\n1,1,14"
@@ -240,21 +240,21 @@ class TestMseView(TestCase):
         response_string = response.content.decode()
         self.assertTemplateUsed(response, "general/mse_calculator.html")
         self.assertTrue('<table class="input-table">' in response_string)
-        self.assertEqual(response_string.count('<th'), 5)
-        self.assertEqual(response_string.count('<tr'), 16)
+        self.assertEqual(response_string.count("<th"), 5)
+        self.assertEqual(response_string.count("<tr"), 16)
         first_line_string = (
             '<input type="text" aria-label="Total entries on list 1" id="id_form-0-total_appearances" '
             'name="form-0-total_appearances" value="1131"'
         )
         self.assertTrue(first_line_string in re.sub(r"\s+", " ", response_string).strip())
 
-    @patch('general.views.calculate_mse.delay')
+    @patch("general.views.calculate_mse.delay")
     def test_post_mse_valid(self, mock_task):
         """Test the post to the mse calculator with valid data."""
         client = Client()
         post_data = {
             "total_lists": "2",
-            "form-TOTAL_FORMS":	"3",
+            "form-TOTAL_FORMS": "3",
             "form-INITIAL_FORMS": "3",
             "form-MIN_NUM_FORMS": "0",
             "form-MAX_NUM_FORMS": "3",
@@ -263,21 +263,19 @@ class TestMseView(TestCase):
             "form-0-total_appearances": "34",
             "form-1-index_pos": "1",
             "form-1-required_lists": "list 2",
-            "form-1-total_appearances":	"32",
+            "form-1-total_appearances": "32",
             "form-2-index_pos": "2",
             "form-2-required_lists": "list 1|list 2",
-            "form-2-total_appearances":	"20",
+            "form-2-total_appearances": "20",
             "censoring_lower": "0",
             "censoring_upper": "0",
             "model_type": "NBE",
         }
-        response = client.post('/multiplesystemsestimation/calculator', post_data)
+        response = client.post("/multiplesystemsestimation/calculator", post_data)
         mock_task.assert_called_once()
         response_string = response.content.decode()
-        self.assertTrue('<h2>Results</h2>' in response_string)
-        download_string = (
-            'input type="hidden" name="csv-data" value="0|||0|||1|0|34|||0|1|32|||1|1|20|||"'
-        )
+        self.assertTrue("<h2>Results</h2>" in response_string)
+        download_string = 'input type="hidden" name="csv-data" value="0|||0|||1|0|34|||0|1|32|||1|1|20|||"'
         self.assertTrue(download_string in re.sub(r"\s+", " ", response_string).strip())
 
     def test_post_mse_invalid_data(self):
@@ -285,7 +283,7 @@ class TestMseView(TestCase):
         client = Client()
         post_data = {
             "total_lists": "2",
-            "form-TOTAL_FORMS":	"3",
+            "form-TOTAL_FORMS": "3",
             "form-INITIAL_FORMS": "3",
             "form-MIN_NUM_FORMS": "0",
             "form-MAX_NUM_FORMS": "1000",
@@ -294,10 +292,10 @@ class TestMseView(TestCase):
             "form-0-total_appearances": "invalid",
             "form-1-index_pos": "1",
             "form-1-required_lists": "list 2",
-            "form-1-total_appearances":	"32",
+            "form-1-total_appearances": "32",
             "form-2-index_pos": "2",
             "form-2-required_lists": "list 1|list 2",
-            "form-2-total_appearances":	"",
+            "form-2-total_appearances": "",
             "censoring_lower": "0",
             "censoring_upper": "0",
             "model_type": "NBE",
@@ -305,7 +303,7 @@ class TestMseView(TestCase):
         response = client.post("/multiplesystemsestimation/calculator", post_data)
         response_string = response.content.decode()
         self.assertFalse('<table class="results-table">' in response_string)
-        self.assertFalse('<h2>Results</h2>' in response_string)
+        self.assertFalse("<h2>Results</h2>" in response_string)
         self.assertFalse('value="1|0|34|||0|1|32|||1|1|-|||"' in response_string)
         self.assertFalse('<input type="submit" value="Download input data and results"/>' in response_string)
         self.assertTrue("<li>Total must be an integer or * (* is used for censored data)" in response_string)

@@ -18,34 +18,55 @@ from general.tasks import calculate_mse
 
 class MultipleSystemsEstimationSetup(FormView):
     """Setup the MSE form."""
+
     template_name = "general/mse_setup.html"
     success_url = "/multiplesystemsestimation/calculator"
     form_class = MseSetupForm
-    
+
     def form_valid(self, form):
-        if form.cleaned_data['total_lists_required'] is not None:
-            self.request.session['mode'] = 'new'
-            self.request.session['total_lists_required'] = form.cleaned_data['total_lists_required']
+        """Store the data in the session.
+
+        Args:
+            form (general.forms.MseSetupForm): The form for the MSE setup.
+
+        Returns:
+            HttpResponse: A redirect to the success_url.
+        """
+        if form.cleaned_data["total_lists_required"] is not None:
+            self.request.session["mode"] = "new"
+            self.request.session["total_lists_required"] = form.cleaned_data["total_lists_required"]
         else:
-            self.request.session['mode'] = 'upload'
-            csv_file = form.cleaned_data['file_upload']
+            self.request.session["mode"] = "upload"
+            csv_file = form.cleaned_data["file_upload"]
             temp_file = TempMseUpload.objects.create(file=csv_file)
             self.request.session["upload_id"] = temp_file.id
         return super().form_valid(form)
 
+
 class MultipleSystemsEstimationExamplesView(FormView):
     """Allow example selection and save choice in session."""
+
     template_name = "general/mse_examples.html"
     success_url = "/multiplesystemsestimation/calculator"
     form_class = MseExamplesForm
 
     def form_valid(self, form):
-        self.request.session['mode'] = 'example'
-        self.request.session['example'] = form.cleaned_data['example']
+        """Store the data in the session.
+
+        Args:
+            form (general.forms.MseExamplesForm): The form for the MSE example choices.
+
+        Returns:
+            HttpResponse: A redirect to the success_url.
+        """
+        self.request.session["mode"] = "example"
+        self.request.session["example"] = form.cleaned_data["example"]
         return super().form_valid(form)
+
 
 class MultipleSystemsEstimation(FormView):
     """Process the MSE data."""
+
     on_success = "multiplesystemsestimation/calculator"
 
     def _calculate_initial_data(self, total_lists):
@@ -64,16 +85,16 @@ class MultipleSystemsEstimation(FormView):
         lists = []
         initial = []  # reset this in case of reposts
         for number in range(1, total_lists + 1):
-            lists.append(f'list {number}')
+            lists.append(f"list {number}")
         list_combos = [[[x] for x in lists]]
         for combination_size in range(2, total_lists + 1):
             list_combos.append([list(x) for x in list(combinations(lists, combination_size))])
         for typ in list_combos:
             for i, item in enumerate(typ):
                 if len(item) > 1 and i == 0:
-                    initial.append({'required_lists': item, 'first': True})
+                    initial.append({"required_lists": item, "first": True})
                 else:
-                    initial.append({'required_lists': item, 'first': False})
+                    initial.append({"required_lists": item, "first": False})
         return lists, initial
 
     def _add_uploaded_totals(self, initial, rows, lists):
@@ -89,10 +110,10 @@ class MultipleSystemsEstimation(FormView):
             list: The initial data to use in the forms with the uploaded totals added.
         """
         censoring_settings = {}
-        if len(rows[0].split(',')) == 1:  # then we have censoring settings to separate out
+        if len(rows[0].split(",")) == 1:  # then we have censoring settings to separate out
             censoring_lower = rows[0]
             censoring_upper = rows[1]
-            censoring_settings = {'censoring_lower': censoring_lower, 'censoring_upper': censoring_upper}
+            censoring_settings = {"censoring_lower": censoring_lower, "censoring_upper": censoring_upper}
             rows = rows[2:]
         for entry in initial:
             expected = ",".join(["1" if x in entry["required_lists"] else "0" for x in lists])
@@ -109,6 +130,9 @@ class MultipleSystemsEstimation(FormView):
 
         Returns:
             HttpResponseRedirect: A redirect to the first page in the MSE workflow.
+
+        Raises:
+            Exception: Raised if the file path is not safe (extremely unlikely).
         """
         if "mode" not in request.session:
             return HttpResponseRedirect(reverse("general:mse"))
@@ -117,10 +141,10 @@ class MultipleSystemsEstimation(FormView):
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
         if request.session["mode"] == "new":
             try:
-                censoring_settings = []          
+                censoring_settings = []
                 total_lists = int(request.session["total_lists_required"])
                 lists, initial = self._calculate_initial_data(total_lists)
-                request.session.pop('total_lists_required', None)
+                request.session.pop("total_lists_required", None)
             except Exception:
                 request.session.pop("mode", None)
                 request.session.pop("total_lists_required", None)
@@ -178,7 +202,7 @@ class MultipleSystemsEstimation(FormView):
             request (django.http.HttpRequest): The current request.
 
         Returns:
-            HttpResponse: The appropriate page which will be the results page in loading mode or a redirect if the 
+            HttpResponse: The appropriate page which will be the results page in loading mode or a redirect if the
                 data was not valid.
         """
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
@@ -186,9 +210,7 @@ class MultipleSystemsEstimation(FormView):
         total_lists = int(request.POST.get("total_lists"))
         lists, initial = self._calculate_initial_data(total_lists)
         formset = MseFormSet(
-            request.POST.get("censoring_lower"),
-            request.POST.get("censoring_upper"),
-            request.POST, initial=initial
+            request.POST.get("censoring_lower"), request.POST.get("censoring_upper"), request.POST, initial=initial
         )
         options_form = MseOptionsForm(request.POST)
         if not formset.is_valid():
@@ -199,16 +221,16 @@ class MultipleSystemsEstimation(FormView):
         appearance_data = []
         for form in formset:
             row_data = form.cleaned_data
-            if row_data['total_appearances'] == '*':
+            if row_data["total_appearances"] == "*":
                 appearance_data.append(-1)
             else:
-                appearance_data.append(int(row_data['total_appearances']))
+                appearance_data.append(int(row_data["total_appearances"]))
         mse_input = {
-            'list_data': appearance_data,
-            'censoring_lower': int(request.POST.get('censoring_lower')),
-            'censoring_upper': int(request.POST.get('censoring_upper')),
-            'total_lists': total_lists,
-            'model_type': request.POST.get('model_type'),
+            "list_data": appearance_data,
+            "censoring_lower": int(request.POST.get("censoring_lower")),
+            "censoring_upper": int(request.POST.get("censoring_upper")),
+            "total_lists": total_lists,
+            "model_type": request.POST.get("model_type"),
         }
         # run the calculation
         task = calculate_mse.delay(mse_input)
@@ -221,10 +243,10 @@ class MultipleSystemsEstimation(FormView):
                     stringified_data.append(f"{1}|")
                 else:
                     stringified_data.append(f"{0}|")
-            if row_data['total_appearances'] == '':
-                total_appearances = '-'
+            if row_data["total_appearances"] == "":
+                total_appearances = "-"
             else:
-                total_appearances = row_data['total_appearances']
+                total_appearances = row_data["total_appearances"]
             stringified_data.append(f"{total_appearances}|||")
         csv_data = "".join(stringified_data)
         data = {
@@ -233,7 +255,7 @@ class MultipleSystemsEstimation(FormView):
             "lists": lists,
             "results_display": True,
             "csv_data": csv_data,
-            "task_id": task.task_id
+            "task_id": task.task_id,
         }
         return render(request, "general/mse_calculator.html", data)
 
@@ -256,7 +278,7 @@ class MultipleSystemsEstimationDownload(View):
         results = request.POST.get("results")
         if results != "failed":
             if request.POST.get("model_type") == "NPE":
-                summary, samples = results.split('|')
+                summary, samples = results.split("|")
                 with open(os.path.join(output_path, "summary.csv"), mode="w") as result_file:
                     result_file.write(summary)
                 with open(os.path.join(output_path, "samples.csv"), mode="w") as result_file:
@@ -268,7 +290,7 @@ class MultipleSystemsEstimationDownload(View):
             data = request.POST.get("csv-data")
             lines = data.split("|||")
             for line in lines:
-                input_file.write(line.replace("|", ",").replace('-', ''))
+                input_file.write(line.replace("|", ",").replace("-", ""))
                 input_file.write("\n")
         if results == "failed":
             filename = "mse_input"
@@ -291,17 +313,17 @@ def poll_state(request):
     Returns:
         JsonResponse: The current state of the task.
     """
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        if 'task_id' in request.POST.keys() and request.POST['task_id']:
-            task_id = request.POST['task_id']
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        if "task_id" in request.POST.keys() and request.POST["task_id"]:
+            task_id = request.POST["task_id"]
             task = AsyncResult(task_id)
             if isinstance(task.result, Exception):
-                context = {'data': {'message': str(task.result)}, 'state': task.state}
+                context = {"data": {"message": str(task.result)}, "state": task.state}
             else:
-                context = {'data': task.result, 'state': task.state}
+                context = {"data": task.result, "state": task.state}
         else:
-            context = {'data': 'No task_id in the request', 'state': 'FAILURE'}
+            context = {"data": "No task_id in the request", "state": "FAILURE"}
     else:
-        context = {'data': 'This is not an ajax request', 'state': 'FAILURE'}
+        context = {"data": "This is not an ajax request", "state": "FAILURE"}
 
     return JsonResponse(context)
