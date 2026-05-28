@@ -1,8 +1,8 @@
 import csv
 import io
 import re
-from unittest.mock import patch
 import zipfile
+from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import reverse
@@ -319,6 +319,7 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
     """Tests for the download view."""
 
     def test_download_data_only(self):
+        """Test the download of the input data when the MSE failed to return results."""
         client = Client()
         post_data = {
             "results": "failed",
@@ -327,7 +328,7 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
         response = client.post("/multiplesystemsestimation/download", post_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/zip")
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:  
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:
             file_list = zip_file.namelist()
             with zip_file.open(file_list[0]) as input_data_file:
                 file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
@@ -342,6 +343,7 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
         self.assertEqual(rows[4], ["1", "1", "20"])
 
     def test_nbe_results_and_data(self):
+        """Test the download of the NBE results and data."""
         client = Client()
         results = [
             "parameter,estimate,ci_lower,ci_upper\n",
@@ -361,7 +363,7 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
         response = client.post("/multiplesystemsestimation/download", post_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/zip")
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:  
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:
             file_list = sorted(zip_file.namelist())
             self.assertEqual(len(file_list), 2)
             self.assertEqual(file_list[0], "mse_input.csv")
@@ -380,9 +382,9 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
                 lines = file_string.readlines()
                 for i, line in enumerate(lines):
                     self.assertEqual(line, results[i])
-                
 
     def test_npe_results_and_data(self):
+        """Test the download of the NPE results and data."""
         client = Client()
         summary = [
             "parameter,estimate,ci_lower,ci_upper\n",
@@ -410,7 +412,7 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
         response = client.post("/multiplesystemsestimation/download", post_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/zip")
-        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:  
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:
             file_list = sorted(zip_file.namelist())
             self.assertEqual(len(file_list), 3)
             self.assertEqual(file_list[0], "mse_input.csv")
@@ -435,6 +437,7 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
                 lines = file_string.readlines()
                 for i, line in enumerate(lines):
                     self.assertEqual(line, samples[i])
+
 
 class TestPollState(TestCase):
     pass
