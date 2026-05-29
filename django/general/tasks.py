@@ -40,7 +40,7 @@ def calculate_mse(mse_input):
 
 @shared_task
 def clean_database():
-    """Remove any celery task results object from the database if they are more than one hour old.
+    """Remove any celery task results objects from the database if they are more than one hour old.
 
     Run as a scheduled task.
     """
