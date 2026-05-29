@@ -7,7 +7,7 @@ app_name = 'general'
 urlpatterns = [
     path("", TemplateView.as_view(template_name="general/home.html"), name="home"),
     path("cookies/", TemplateView.as_view(template_name="general/cookies.html"), name="cookies"),
-    path('pollstate', views.poll_state, name="pollstate"),
+    path('pollstate', views.PollState.as_view(), name="pollstate"),
     path("comparativejudgement", TemplateView.as_view(template_name="general/comparative_judgement.html"), name="cj"),
     path(
         "multiplesystemsestimation/examples",
