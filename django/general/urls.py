@@ -11,8 +11,13 @@ urlpatterns = [
     path("comparativejudgement", TemplateView.as_view(template_name="general/comparative_judgement.html"), name="cj"),
     path(
         "multiplesystemsestimation/examples",
-        TemplateView.as_view(template_name="general/mse_examples.html"),
-        name="mseexamples"
+        views.MultipleSystemsEstimationExamplesView.as_view(),
+        name="mse_examples"
+    ),
+    path(
+        "multiplesystemsestimation/setup",
+        views.MultipleSystemsEstimationSetup.as_view(),
+        name="mse_setup"
     ),
     path(
         "multiplesystemsestimation/calculator",
