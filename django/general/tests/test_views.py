@@ -357,7 +357,7 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
         ]
         post_data = {
             "model_type": "NBE",
-            "results": ''.join(results),
+            "results": "".join(results),
             "csv-data": "0|||0|||1|0|34|||0|1|32|||1|1|20|||",
         }
         response = client.post("/multiplesystemsestimation/download", post_data)
@@ -478,7 +478,7 @@ class TestPollState(TestCase):
     @patch("general.views.AsyncResult")
     def test_task_success(self, mock_async_result):
         """Test the view when the task succeeds."""
-        mock_async_result.return_value = self.TaskResult('SUCCESS', ("csv,string\n", "NBE"))
+        mock_async_result.return_value = self.TaskResult("SUCCESS", ("csv,string\n", "NBE"))
         client = Client()
         post_data = {"task_id": "123"}
         response = client.post("/pollstate", data=post_data, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
@@ -488,7 +488,7 @@ class TestPollState(TestCase):
     @patch("general.views.AsyncResult")
     def test_task_exception(self, mock_async_result):
         """Test the view when the task raises an exception."""
-        mock_async_result.return_value = self.TaskResult('SUCCESS', Exception("task raised exception"))
+        mock_async_result.return_value = self.TaskResult("SUCCESS", Exception("task raised exception"))
         client = Client()
         post_data = {"task_id": "123"}
         response = client.post("/pollstate", data=post_data, HTTP_X_REQUESTED_WITH="XMLHttpRequest")

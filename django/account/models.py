@@ -8,4 +8,5 @@ class User(AbstractUser):
     in the project is challenging. For more information see:
     https://docs.djangoproject.com/en/3.2/topics/auth/customizing/
     """
+
     pass
