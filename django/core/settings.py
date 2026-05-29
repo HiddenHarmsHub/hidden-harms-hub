@@ -1,6 +1,8 @@
 import os
 import sys
 
+from celery.schedules import crontab
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'core/templates')
@@ -18,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     # Custom apps
+    'django_celery_beat',
     'django_celery_results',
     'account',
     'general',
@@ -59,6 +62,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Celery/rabbit settings
 
 CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BEAT_SCHEDULE = {
+    'clean_up_database_nightly': {
+        'task': 'general.tasks.clean_database',
+        'schedule': crontab(hour=2, minute=0)
+    }
+}
 
 
 # Custom user model for authentication

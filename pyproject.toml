@@ -10,6 +10,7 @@ dependencies = [
 	"Django~=5.2.0",
 	"requests",
 	"django-celery-results",
+	"django-celery-beat",
 ]
 
 [project.optional-dependencies]
