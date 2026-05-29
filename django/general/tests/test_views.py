@@ -455,7 +455,7 @@ class TestPollState(TestCase):
 
     def test_response_when_not_ajax(self):
         """Test the view when the request is not from ajax.
-        
+
         Doesn't need patching because it doesn't get to the task check.
         """
         client = Client()
@@ -463,10 +463,10 @@ class TestPollState(TestCase):
         response = client.post("/pollstate", data=post_data)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"data": "This is not an ajax request", "state": "FAILURE"})
-    
+
     def test_response_when_no_task_id(self):
         """Test the view when no task id is provided.
-        
+
         Doesn't need patching because it doesn't get to the task check.
         """
         client = Client()
@@ -478,7 +478,6 @@ class TestPollState(TestCase):
     @patch("general.views.AsyncResult")
     def test_task_success(self, mock_async_result):
         """Test the view when the task succeeds."""
-
         mock_async_result.return_value = self.TaskResult('SUCCESS', ("csv,string\n", "NBE"))
         client = Client()
         post_data = {"task_id": "123"}
@@ -489,7 +488,6 @@ class TestPollState(TestCase):
     @patch("general.views.AsyncResult")
     def test_task_exception(self, mock_async_result):
         """Test the view when the task raises an exception."""
-
         mock_async_result.return_value = self.TaskResult('SUCCESS', Exception("task raised exception"))
         client = Client()
         post_data = {"task_id": "123"}
