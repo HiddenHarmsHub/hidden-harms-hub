@@ -306,26 +306,29 @@ class MultipleSystemsEstimationDownload(View):
         return response
 
 
-def poll_state(request):
-    """Check the current state of a task.
+class PollState(View):
+    """Check the task state."""
 
-    Args:
-        request (django.http.HttpRequest): The current request.
+    def post(self, request):
+        """Check the current state of a task.
 
-    Returns:
-        JsonResponse: The current state of the task.
-    """
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        if "task_id" in request.POST.keys() and request.POST["task_id"]:
-            task_id = request.POST["task_id"]
-            task = AsyncResult(task_id)
-            if isinstance(task.result, Exception):
-                context = {"data": {"message": str(task.result)}, "state": task.state}
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            JsonResponse: The current state of the task.
+        """
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            if "task_id" in request.POST.keys() and request.POST["task_id"]:
+                task_id = request.POST["task_id"]
+                task = AsyncResult(task_id)
+                if isinstance(task.result, Exception):
+                    context = {"data": {"message": str(task.result)}, "state": task.state}
+                else:
+                    context = {"data": task.result, "state": task.state}
             else:
-                context = {"data": task.result, "state": task.state}
+                context = {"data": "No task_id in the request", "state": "FAILURE"}
         else:
-            context = {"data": "No task_id in the request", "state": "FAILURE"}
-    else:
-        context = {"data": "This is not an ajax request", "state": "FAILURE"}
+            context = {"data": "This is not an ajax request", "state": "FAILURE"}
 
-    return JsonResponse(context)
+        return JsonResponse(context)
