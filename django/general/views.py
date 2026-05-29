@@ -162,6 +162,8 @@ class MultipleSystemsEstimation(FormView):
                 lists, initial = self._calculate_initial_data(total_lists)
                 initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
                 request.session.pop("upload_id", None)
+                # remove the object from the database
+                TempMseUpload.objects.get(id=file_id).delete()
             except Exception:
                 request.session.pop("mode", None)
                 request.session.pop("upload_id", None)
