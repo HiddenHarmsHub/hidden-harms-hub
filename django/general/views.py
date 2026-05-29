@@ -288,7 +288,7 @@ class MultipleSystemsEstimationDownload(View):
             else:
                 with open(os.path.join(output_path, "results.csv"), mode="w") as result_file:
                     result_file.write(results)
-        with open(os.path.join(output_path, "mse_input.txt"), mode="w") as input_file:
+        with open(os.path.join(output_path, "mse_input.csv"), mode="w") as input_file:
             data = request.POST.get("csv-data")
             lines = data.split("|||")
             for line in lines:
