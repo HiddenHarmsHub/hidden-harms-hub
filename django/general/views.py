@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 from itertools import combinations
@@ -318,17 +319,18 @@ class PollState(View):
         Returns:
             JsonResponse: The current state of the task.
         """
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            if "task_id" in request.POST.keys() and request.POST["task_id"]:
-                task_id = request.POST["task_id"]
-                task = AsyncResult(task_id)
-                if isinstance(task.result, Exception):
-                    context = {"data": {"message": str(task.result)}, "state": task.state}
-                else:
-                    context = {"data": task.result, "state": task.state}
-            else:
-                context = {"data": "No task_id in the request", "state": "FAILURE"}
+        content_type = request.content_type or ''
+        if content_type.startswith('application/json'):
+            data = json.loads(request.body)
         else:
-            context = {"data": "This is not an ajax request", "state": "FAILURE"}
-
+            data = request.POST
+        if "task_id" in data and data["task_id"]:
+            task_id = data["task_id"]
+            task = AsyncResult(task_id)
+            if isinstance(task.result, Exception):
+                context = {"data": {"message": str(task.result)}, "state": task.state}
+            else:
+                context = {"data": task.result, "state": task.state}
+        else:
+            context = {"data": "No task_id in the request", "state": "FAILURE"}
         return JsonResponse(context)

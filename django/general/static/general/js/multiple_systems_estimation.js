@@ -1,11 +1,5 @@
-$(function () {
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", getCSRFToken());
-        }
-      }
-    });
+document.addEventListener("DOMContentLoaded", () => {
+
     if (document.getElementById('task-id') && document.getElementById('task-id').value !== '') {
         showLoadingOverlay();
         let successCallback = function (response) {
@@ -31,12 +25,9 @@ $(function () {
         }
         taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback, errorCallback: errorCallback});
     }
+    
 });
 
-let csrfSafeMethod = function (method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-};
 
 let getCSRFToken = function () {
     let cookieValue, cookies, cookie;
@@ -146,10 +137,13 @@ let taskChecker = (function () {
         },
 
         _poll: function (taskId, optns) {
-            $.ajax({
-                url: '/pollstate',
-                type: 'POST',
-                data: {task_id: taskId}
+            fetch('/pollstate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFTOKEN': getCSRFToken(),
+                },
+                body: JSON.stringify({task_id: taskId}),
             }).then(function (result) {
                 taskChecker._updateTaskStatus(result, taskId, optns);
             });
