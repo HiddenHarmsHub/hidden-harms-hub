@@ -14,10 +14,16 @@ env = environ.Env()
 
 env_path = os.environ.get("ENV_FILE", ".env")
 
+print(env_path)
+
 if os.path.exists(env_path):
-    env.read_env(env_path)
+    print('READING ENV FILE')
+    environ.ENV.read_env(env_path)
+    print('READ ENV FILE')
 
 print(env)
+
+print(env.str("DJANGO_SECRET_KEY"))
 
 LOCAL_PATH = env.str("DJANGO_LOCAL_PATH", "/local/")
 LOG_DIR = env.str("DJANGO_LOG_DIR", os.path.join(LOCAL_PATH, "logs"))
