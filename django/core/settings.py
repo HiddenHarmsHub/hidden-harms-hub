@@ -127,7 +127,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SECRET_KEY = None
 try:
     from .local_settings import *  # NOQA
-except ImportError:
+except ImportError as e:
+    print(e)
     sys.exit("Unable to import local_settings.py (refer to local_settings.example.py for help)")
 
 # Ensure the SECRET_KEY is supplied in local_settings.py - and trust that the other settings are there too.
