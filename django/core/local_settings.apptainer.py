@@ -11,7 +11,11 @@ import environ
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 env = environ.Env()
-env.read_env(BASE_DIR / '.env')
+
+env_path = os.environ.get("ENV_FILE", ".env")
+
+if os.path.exists(env_path):
+    env.read_env(env_path)
 
 LOCAL_PATH = env.str("DJANGO_LOCAL_PATH", "/local/")
 LOG_DIR = env.str("DJANGO_LOG_DIR", os.path.join(LOCAL_PATH, "logs"))
