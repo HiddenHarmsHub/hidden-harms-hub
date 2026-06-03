@@ -17,6 +17,8 @@ env_path = os.environ.get("ENV_FILE", ".env")
 if os.path.exists(env_path):
     env.read_env(env_path)
 
+print(env)
+
 LOCAL_PATH = env.str("DJANGO_LOCAL_PATH", "/local/")
 LOG_DIR = env.str("DJANGO_LOG_DIR", os.path.join(LOCAL_PATH, "logs"))
 
