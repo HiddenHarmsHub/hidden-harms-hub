@@ -44,7 +44,7 @@ DATABASES = {
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "core/static")]
 
-STATIC_URL = '/static/'
+STATIC_URL = env.str("DJANGO_STATIC_URL", '/static/')
 STATIC_ROOT = os.path.join(LOCAL_PATH, "static")
 
 MEDIA_URL = '/media/'
