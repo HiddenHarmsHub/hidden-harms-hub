@@ -29,15 +29,15 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=['*'])
 # Provide the email address for the site admin (e.g. the researcher/research team)
 ADMIN_EMAIL = env.str("DJANGO_ADMIN_EMAIL", "")
 
-MSE_CALCULATOR_URL = 'url.for.julia.service'
+MSE_CALCULATOR_URL = env.str("MSE_CALCULATOR_URL", 'http://localhost:8085')
 
 # Set the database name below
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(LOCAL_PATH, 'hidden-harms-hub-dev.sqlite3'),
+        'NAME': os.path.join(LOCAL_PATH, 'hidden-harms-hub.sqlite3'),
         'TEST': {
-            'NAME': os.path.join(LOCAL_PATH, 'hidden-harms-hub-dev_TEST.sqlite3'),
+            'NAME': os.path.join(LOCAL_PATH, 'hidden-harms-hub_TEST.sqlite3'),
         },
     }
 }
