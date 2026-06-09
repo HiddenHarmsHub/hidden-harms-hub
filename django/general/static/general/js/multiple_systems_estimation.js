@@ -105,8 +105,6 @@ let taskChecker = (function () {
     return {
 
         _updateTaskStatus: function (result, taskId, optns) {
-            console.log('###############')
-            console.log(result)
             if (result.state === 'SUCCESS' || result.state === 'FAILURE') {
                 clearTimeout(delay);
                 if (result.state === 'SUCCESS') {
