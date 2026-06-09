@@ -105,6 +105,8 @@ let taskChecker = (function () {
     return {
 
         _updateTaskStatus: function (result, taskId, optns) {
+            console.log('###############')
+            console.log(result)
             if (result.state === 'SUCCESS' || result.state === 'FAILURE') {
                 clearTimeout(delay);
                 if (result.state === 'SUCCESS') {
@@ -144,6 +146,11 @@ let taskChecker = (function () {
                     'X-CSRFTOKEN': getCSRFToken(),
                 },
                 body: JSON.stringify({task_id: taskId}),
+            }).then(function (response) {
+                if (!response.ok) {
+                    optns.errorCallback();
+                }
+                return response.json();
             }).then(function (result) {
                 taskChecker._updateTaskStatus(result, taskId, optns);
             });
