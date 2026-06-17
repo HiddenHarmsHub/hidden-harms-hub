@@ -1,8 +1,11 @@
 import json
+from datetime import timedelta
 
 import requests
 from celery import shared_task
 from django.conf import settings
+from django.utils import timezone
+from django_celery_results.models import TaskResult
 
 
 @shared_task(track_started=True)
@@ -32,4 +35,14 @@ def calculate_mse(mse_input):
         if response.status_code == 500:
             raise requests.exceptions.HTTPError("The MSE server generated an internal error.")
         results = response.text
-    return results, mse_input['model_type']
+    return results, mse_input["model_type"]
+
+
+@shared_task
+def clean_database():
+    """Remove any celery task results objects from the database if they are more than one hour old.
+
+    Run as a scheduled task.
+    """
+    cut_off_time = timezone.now() - timedelta(hours=1)
+    TaskResult.objects.filter(date_done__lt=cut_off_time).delete()

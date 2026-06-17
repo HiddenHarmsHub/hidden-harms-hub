@@ -1,14 +1,66 @@
+import csv
+import io
+import re
+import zipfile
 from unittest.mock import patch
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.shortcuts import reverse
 from django.test import Client, TestCase
 
+from general.models import TempMseUpload
 from general.views import MultipleSystemsEstimation
+
+
+class TestMseSetupView(TestCase):
+    """Test the MultipleSystemsEstimationSetup view.
+
+    There are no tests for get or invalid input because validation is all handled by core Django.
+    """
+
+    def _make_file(self):
+        file = SimpleUploadedFile("test.csv", b"1,2,3\n4,5,6", content_type="text/plain")
+        return file
+
+    def test_get_mse_post_valid_1(self):
+        """Test posting valid data to the form."""
+        client = Client()
+        post_data = {"total_lists_required": 3, "file_upload": ""}
+        response = client.post("/multiplesystemsestimation/setup", post_data)
+        self.assertTrue("mode" in client.session)
+        self.assertEqual(client.session["mode"], "new")
+        self.assertRedirects(response, reverse("general:mse_calc"))
+
+    def test_get_mse_post_valid_2(self):
+        """Test posting valid data to the form."""
+        client = Client()
+        post_data = {"total_lists_required": "", "file_upload": self._make_file()}
+        response = client.post("/multiplesystemsestimation/setup", post_data)
+        self.assertTrue("mode" in client.session)
+        self.assertEqual(client.session["mode"], "upload")
+        self.assertRedirects(response, reverse("general:mse_calc"))
+
+
+class TestMultipleSystemsEstimationExamplesView(TestCase):
+    """Test the examples view.
+
+    There are no tests for get or invalid input because validation is all handled by core Django.
+    """
+
+    def test_get_mse_post_valid(self):
+        """Test posting valid data to the form."""
+        client = Client()
+        post_data = {"example": "silverman_1"}
+        response = client.post("/multiplesystemsestimation/examples", post_data)
+        self.assertTrue("mode" in client.session)
+        self.assertEqual(client.session["mode"], "example")
+        self.assertRedirects(response, reverse("general:mse_calc"))
 
 
 class TestMseView(TestCase):
     """Test the MultipleSystemsEstimation view."""
 
-    def test__calculate_initial_data_with_3(self):
+    def test__calculate_initial_data_with_3_lists(self):
         """Test the input table data creation process with 3 lists."""
         expected = (
             ["list 1", "list 2", "list 3"],
@@ -20,12 +72,12 @@ class TestMseView(TestCase):
                 {"required_lists": ["list 1", "list 3"], "first": False},
                 {"required_lists": ["list 2", "list 3"], "first": False},
                 {"required_lists": ["list 1", "list 2", "list 3"], "first": True},
-            ]
+            ],
         )
         result = MultipleSystemsEstimation()._calculate_initial_data(3)
         self.assertEqual(result, expected)
 
-    def test__calculate_initial_data_with_4(self):
+    def test__calculate_initial_data_with_4_lists(self):
         """Test the input table data creation process with 4 lists."""
         expected = (
             ["list 1", "list 2", "list 3", "list 4"],
@@ -45,7 +97,7 @@ class TestMseView(TestCase):
                 {"required_lists": ["list 1", "list 3", "list 4"], "first": False},
                 {"required_lists": ["list 2", "list 3", "list 4"], "first": False},
                 {"required_lists": ["list 1", "list 2", "list 3", "list 4"], "first": True},
-            ]
+            ],
         )
         result = MultipleSystemsEstimation()._calculate_initial_data(4)
         self.assertEqual(result, expected)
@@ -102,57 +154,139 @@ class TestMseView(TestCase):
         self.assertEqual(results[0], expected)
         self.assertEqual(results[1], {"censoring_lower": "1", "censoring_upper": "9"})
 
-    def test_get_mse(self):
-        """Test the get stage of the MSE workflow."""
+    def test_get_with_no_session_data(self):
+        """Test that we are redirected to the start page if there is no appropriate session data available."""
         client = Client()
-        response = client.get('/multiplesystemsestimation/calculator')
-        response_string = response.content.decode()
-        self.assertTrue('name="total_lists_required"' in response_string)
-        self.assertTrue('name="file_upload"' in response_string)
-        self.assertTrue('<input id="submit-button" type="submit" value="Submit">' in response_string)
+        response = client.get("/multiplesystemsestimation/calculator")
+        self.assertRedirects(response, reverse("general:mse"))
 
-    def test_post_mse_stage_1_valid(self):
-        """Test stage 1 of the MSE workflow where the number of lists is provided in the data."""
+    def test_get_with_incorrect_mode_session_data(self):
+        """Test that we are shown the error page if there is no appropriate mode available."""
         client = Client()
-        response = client.post('/multiplesystemsestimation/calculator', {'total_lists_required': '3'})
+        session = client.session
+        session["mode"] = "wrong"
+        session.save()
+        response = client.get("/multiplesystemsestimation/calculator")
+        self.assertTemplateUsed(response, "general/mse_error.html")
+
+    def test_get_mode_new_but_missing_data(self):
+        """Test that an error page is shown if the 'new' mode is missing the other data required."""
+        client = Client()
+        session = client.session
+        session["mode"] = "new"
+        session.save()
+        response = client.get("/multiplesystemsestimation/calculator")
+        self.assertTemplateUsed(response, "general/mse_error.html")
+
+    def test_get_mode_new_with_correct_data(self):
+        """Test that the data entry page is shown if all of the required data is available."""
+        client = Client()
+        session = client.session
+        session["mode"] = "new"
+        session["total_lists_required"] = 3
+        session.save()
+        response = client.get("/multiplesystemsestimation/calculator")
         response_string = response.content.decode()
+        self.assertTemplateUsed(response, "general/mse_calculator.html")
         self.assertTrue('<table class="input-table">' in response_string)
-        self.assertEqual(response_string.count('<th'), 4)
-        self.assertEqual(response_string.count('<tr'), 8)
+        self.assertEqual(response_string.count("<th"), 4)
+        self.assertEqual(response_string.count("<tr"), 8)
 
-    @patch('general.views.calculate_mse.delay')
-    def test_post_mse_stage_2_valid(self, mock_task):
-        """Test stage 2 of the MSE workflow."""
+    def test_get_mode_upload_but_missing_data(self):
+        """Test that an error is shown if the 'upload' mode is missing the other data required."""
+        client = Client()
+        session = client.session
+        session["mode"] = "upload"
+        session.save()
+        response = client.get("/multiplesystemsestimation/calculator")
+        self.assertTemplateUsed(response, "general/mse_error.html")
+
+    def test_get_mode_upload_with_correct_data(self):
+        """Test that the data entry page is shown and populated if all of the required upload data is available."""
+        csv_string = b"0\n0\n1,0,20\n0,1,30\n1,1,14"
+        test_file = SimpleUploadedFile("test.csv", csv_string, content_type="text/plain")
+        upload = TempMseUpload.objects.create(file=test_file)
+        client = Client()
+        session = client.session
+        session["mode"] = "upload"
+        session["upload_id"] = upload.id
+        session.save()
+        response = client.get("/multiplesystemsestimation/calculator")
+        response_string = response.content.decode()
+        self.assertTemplateUsed(response, "general/mse_calculator.html")
+        self.assertTrue('<table class="input-table">' in response_string)
+        self.assertEqual(response_string.count("<th"), 3)
+        self.assertEqual(response_string.count("<tr"), 4)
+        first_line_string = (
+            '<input type="text" aria-label="Total entries on list 1" id="id_form-0-total_appearances" '
+            'name="form-0-total_appearances" value="20"'
+        )
+        self.assertTrue(first_line_string in re.sub(r"\s+", " ", response_string).strip())
+
+    def test_get_mode_example_but_missing_data(self):
+        """Test that an error is shown if the 'example' mode is missing the other data required."""
+        client = Client()
+        session = client.session
+        session["mode"] = "example"
+        session.save()
+        response = client.get("/multiplesystemsestimation/calculator")
+        self.assertTemplateUsed(response, "general/mse_error.html")
+
+    def test_get_mode_example_with_correct_data(self):
+        """Test that the data entry page is shown and populated if all of the required example data is available."""
+        client = Client()
+        session = client.session
+        session["mode"] = "example"
+        session["example"] = "silverman_4"
+        session.save()
+        response = client.get("/multiplesystemsestimation/calculator")
+        response_string = response.content.decode()
+        self.assertTemplateUsed(response, "general/mse_calculator.html")
+        self.assertTrue('<table class="input-table">' in response_string)
+        self.assertEqual(response_string.count("<th"), 5)
+        self.assertEqual(response_string.count("<tr"), 16)
+        first_line_string = (
+            '<input type="text" aria-label="Total entries on list 1" id="id_form-0-total_appearances" '
+            'name="form-0-total_appearances" value="1131"'
+        )
+        self.assertTrue(first_line_string in re.sub(r"\s+", " ", response_string).strip())
+
+    @patch("general.views.calculate_mse.delay")
+    def test_post_mse_valid(self, mock_task):
+        """Test the post to the mse calculator with valid data."""
         client = Client()
         post_data = {
             "total_lists": "2",
-            "form-TOTAL_FORMS":	"3",
+            "form-TOTAL_FORMS": "3",
             "form-INITIAL_FORMS": "3",
             "form-MIN_NUM_FORMS": "0",
-            "form-MAX_NUM_FORMS": "1000",
+            "form-MAX_NUM_FORMS": "3",
             "form-0-index_pos": "0",
             "form-0-required_lists": "list 1",
             "form-0-total_appearances": "34",
             "form-1-index_pos": "1",
             "form-1-required_lists": "list 2",
-            "form-1-total_appearances":	"32",
+            "form-1-total_appearances": "32",
             "form-2-index_pos": "2",
             "form-2-required_lists": "list 1|list 2",
-            "form-2-total_appearances":	"20",
+            "form-2-total_appearances": "20",
             "censoring_lower": "0",
             "censoring_upper": "0",
+            "model_type": "NBE",
         }
-        response = client.post('/multiplesystemsestimation/calculator', post_data)
+        response = client.post("/multiplesystemsestimation/calculator", post_data)
         mock_task.assert_called_once()
         response_string = response.content.decode()
-        self.assertTrue('<h2>Results</h2>' in response_string)
+        self.assertTrue("<h2>Results</h2>" in response_string)
+        download_string = 'input type="hidden" name="csv-data" value="0|||0|||1|0|34|||0|1|32|||1|1|20|||"'
+        self.assertTrue(download_string in re.sub(r"\s+", " ", response_string).strip())
 
-    def test_post_mse_stage_2_invalid(self):
-        """Test stage 2 of the MSE workflow."""
+    def test_post_mse_invalid_data(self):
+        """Test the post to the mse calculator with invalid data."""
         client = Client()
         post_data = {
             "total_lists": "2",
-            "form-TOTAL_FORMS":	"3",
+            "form-TOTAL_FORMS": "3",
             "form-INITIAL_FORMS": "3",
             "form-MIN_NUM_FORMS": "0",
             "form-MAX_NUM_FORMS": "1000",
@@ -161,20 +295,191 @@ class TestMseView(TestCase):
             "form-0-total_appearances": "invalid",
             "form-1-index_pos": "1",
             "form-1-required_lists": "list 2",
-            "form-1-total_appearances":	"32",
+            "form-1-total_appearances": "32",
             "form-2-index_pos": "2",
             "form-2-required_lists": "list 1|list 2",
-            "form-2-total_appearances":	"",
+            "form-2-total_appearances": "",
             "censoring_lower": "0",
             "censoring_upper": "0",
+            "model_type": "NBE",
         }
         response = client.post("/multiplesystemsestimation/calculator", post_data)
         response_string = response.content.decode()
         self.assertFalse('<table class="results-table">' in response_string)
-        self.assertFalse('<h2>Results</h2>' in response_string)
+        self.assertFalse("<h2>Results</h2>" in response_string)
         self.assertFalse('value="1|0|34|||0|1|32|||1|1|-|||"' in response_string)
         self.assertFalse('<input type="submit" value="Download input data and results"/>' in response_string)
         self.assertTrue("<li>Total must be an integer or * (* is used for censored data)" in response_string)
         self.assertTrue('<table class="input-table">' in response_string)
         self.assertEqual(response_string.count("<th"), 3)
         self.assertEqual(response_string.count("<tr"), 4)
+
+
+class TestMultipleSystemsEstimationDownloadView(TestCase):
+    """Tests for the download view."""
+
+    def test_download_data_only(self):
+        """Test that only the input CSV is downloaded when MSE returns no results."""
+        client = Client()
+        post_data = {
+            "results": "failed",
+            "csv-data": "0|||0|||1|0|34|||0|1|32|||1|1|20|||",
+        }
+        response = client.post("/multiplesystemsestimation/download", post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/zip")
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:
+            file_list = zip_file.namelist()
+            with zip_file.open(file_list[0]) as input_data_file:
+                file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
+                reader = csv.reader(file_string)
+                rows = list(reader)
+        self.assertEqual(len(file_list), 1)
+        self.assertEqual(file_list[0], "mse_input.csv")
+        self.assertEqual(rows[0], ["0"])
+        self.assertEqual(rows[1], ["0"])
+        self.assertEqual(rows[2], ["1", "0", "34"])
+        self.assertEqual(rows[3], ["0", "1", "32"])
+        self.assertEqual(rows[4], ["1", "1", "20"])
+
+    def test_nbe_results_and_data(self):
+        """Test the download of the NBE results and data."""
+        client = Client()
+        results = [
+            "parameter,estimate,ci_lower,ci_upper\n",
+            "alpha,5.248895,3.395394,6.6492987\n",
+            "beta_1,-1.9524562,-3.4493365,-0.68000245\n",
+            "beta_2,-1.6629716,-3.2102783,-0.37538695\n",
+            "beta_3,-2.355661,-3.8829818,-1.2214549\n",
+            "gamma_12,0.45588067,-1.0248151,1.4809868\n",
+            "gamma_13,0.9122592,-0.30105764,1.8032496\n",
+            "gamma_23,1.4185445,0.21890734,2.6326616",
+        ]
+        post_data = {
+            "model_type": "NBE",
+            "results": "".join(results),
+            "csv-data": "0|||0|||1|0|34|||0|1|32|||1|1|20|||",
+        }
+        response = client.post("/multiplesystemsestimation/download", post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/zip")
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:
+            file_list = sorted(zip_file.namelist())
+            self.assertEqual(len(file_list), 2)
+            self.assertEqual(file_list[0], "mse_input.csv")
+            self.assertEqual(file_list[1], "results.csv")
+            with zip_file.open("mse_input.csv") as input_data_file:
+                file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
+                reader = csv.reader(file_string)
+                rows = list(reader)
+                self.assertEqual(rows[0], ["0"])
+                self.assertEqual(rows[1], ["0"])
+                self.assertEqual(rows[2], ["1", "0", "34"])
+                self.assertEqual(rows[3], ["0", "1", "32"])
+                self.assertEqual(rows[4], ["1", "1", "20"])
+            with zip_file.open("results.csv") as results_file:
+                file_string = io.TextIOWrapper(results_file, encoding="utf-8")
+                lines = file_string.readlines()
+                for i, line in enumerate(lines):
+                    self.assertEqual(line, results[i])
+
+    def test_npe_results_and_data(self):
+        """Test the download of the NPE results and data."""
+        client = Client()
+        summary = [
+            "parameter,estimate,ci_lower,ci_upper\n",
+            "alpha,5.248895,3.395394,6.6492987\n",
+            "beta_1,-1.9524562,-3.4493365,-0.68000245\n",
+            "beta_2,-1.6629716,-3.2102783,-0.37538695\n",
+            "beta_3,-2.355661,-3.8829818,-1.2214549\n",
+            "gamma_12,0.45588067,-1.0248151,1.4809868\n",
+            "gamma_13,0.9122592,-0.30105764,1.8032496\n",
+            "gamma_23,1.4185445,0.21890734,2.6326616",
+        ]
+        samples = [
+            "alpha,beta_1,beta_2,beta_3,beta_4,gamma_12,gamma_13,gamma_14,gamma_23,gamma_24,gamma_34\n",
+            "8.77,-1.90,-2.29,-1.85,-3.11,0.89,0.74,0.06,0.96,0.11,1.00\n",
+            "8.88,-1.99,-2.11,-2.06,-3.32,0.18,0.84,0.53,1.16,-0.57,1.04\n",
+            "8.89,-2.29,-2.07,-2.03,-3.37,0.65,0.47,0.85,1.13,0.45,1.13\n",
+            "8.75,-2.01,-2.39,-1.86,-3.16,0.73,0.67,0.67,1.03,0.01,0.94\n",
+            "8.76,-1.85,-2.48,-2.04,-3.44,0.53,0.76,0.61,1.50,0.13,1.08\n",
+        ]
+        post_data = {
+            "model_type": "NPE",
+            "results": f"{''.join(summary)}|{''.join(samples)}",
+            "csv-data": "0|||0|||1|0|34|||0|1|32|||1|1|20|||",
+        }
+        response = client.post("/multiplesystemsestimation/download", post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/zip")
+        with zipfile.ZipFile(io.BytesIO(response.content)) as zip_file:
+            file_list = sorted(zip_file.namelist())
+            self.assertEqual(len(file_list), 3)
+            self.assertEqual(file_list[0], "mse_input.csv")
+            self.assertEqual(file_list[1], "samples.csv")
+            self.assertEqual(file_list[2], "summary.csv")
+            with zip_file.open("mse_input.csv") as input_data_file:
+                file_string = io.TextIOWrapper(input_data_file, encoding="utf-8")
+                reader = csv.reader(file_string)
+                rows = list(reader)
+                self.assertEqual(rows[0], ["0"])
+                self.assertEqual(rows[1], ["0"])
+                self.assertEqual(rows[2], ["1", "0", "34"])
+                self.assertEqual(rows[3], ["0", "1", "32"])
+                self.assertEqual(rows[4], ["1", "1", "20"])
+            with zip_file.open("summary.csv") as results_file:
+                file_string = io.TextIOWrapper(results_file, encoding="utf-8")
+                lines = file_string.readlines()
+                for i, line in enumerate(lines):
+                    self.assertEqual(line, summary[i])
+            with zip_file.open("samples.csv") as results_file:
+                file_string = io.TextIOWrapper(results_file, encoding="utf-8")
+                lines = file_string.readlines()
+                for i, line in enumerate(lines):
+                    self.assertEqual(line, samples[i])
+
+
+class TestPollState(TestCase):
+    """Test the poll state view."""
+
+    class TaskResult:
+        def __init__(self, state, result):
+            self.state = state
+            self.result = result
+
+    def test_get_not_allowed(self):
+        """Test that the view does not respond to GET requests."""
+        client = Client()
+        response = client.get("/pollstate")
+        self.assertEqual(response.status_code, 405)
+
+    def test_response_when_no_task_id(self):
+        """Test the view when no task ID is provided.
+
+        Doesn't need patching because it doesn't get to the task check.
+        """
+        client = Client()
+        post_data = {}
+        response = client.post("/pollstate", data=post_data, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"data": "No task_id in the request", "state": "FAILURE"})
+
+    @patch("general.views.AsyncResult")
+    def test_task_success(self, mock_async_result):
+        """Test the view when the task succeeds."""
+        mock_async_result.return_value = self.TaskResult("SUCCESS", ("csv,string\n", "NBE"))
+        client = Client()
+        post_data = {"task_id": "123"}
+        response = client.post("/pollstate", data=post_data, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"data": ["csv,string\n", "NBE"], "state": "SUCCESS"})
+
+    @patch("general.views.AsyncResult")
+    def test_task_exception(self, mock_async_result):
+        """Test the view when the task raises an exception."""
+        mock_async_result.return_value = self.TaskResult("SUCCESS", Exception("task raised exception"))
+        client = Client()
+        post_data = {"task_id": "123"}
+        response = client.post("/pollstate", data=post_data, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"data": {"message": "task raised exception"}, "state": "SUCCESS"})

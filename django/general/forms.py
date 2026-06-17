@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 
 class MseSetupForm(forms.Form):
     """Form to setup the MSE main form."""
+
     total_lists_required = forms.IntegerField(required=False, min_value=2, max_value=10)
     file_upload = forms.FileField(required=False)
 
@@ -20,15 +21,33 @@ class MseSetupForm(forms.Form):
                 "You must either specify the number of lists required or upload a data file. You can also test this "
                 "technique using some example data by returning to the previous page."
             )
+        if total_lists_required is not None and file_upload is not None:
+            raise ValidationError(
+                "You must either specify the number of lists required or upload a data file. You cannot do both."
+            )
+
+
+class MseExamplesForm(forms.Form):
+    """Form to collect example data choice."""
+
+    example_choices = [
+        ("silverman_1", "Example 1: Potential victims of trafficking in the UK, 2013"),
+        ("silverman_2", "Example 2: Victims of trafficking in the Netherlands"),
+        ("silverman_3", "Example 3: Victims related to modern slavery and trafficking in New Orleans"),
+        ("silverman_4", "Example 4: Killings in the Kosovo war from March 20th to June 22nd, 1999"),
+    ]
+    example = forms.ChoiceField(widget=forms.RadioSelect, choices=example_choices)
 
 
 class MseForm(forms.Form):
     """Parent form to collect shared MSE data."""
+
     total_lists = forms.IntegerField()
 
 
 class MseDetailsForm(forms.Form):
     """Form to collect MSE data for a single list combination."""
+
     index_pos = forms.IntegerField()
     required_lists = forms.CharField()
     total_appearances = forms.CharField(required=False)
@@ -49,6 +68,7 @@ class MseDetailsForm(forms.Form):
 
 class MseOptionsForm(forms.Form):
     """Form to collect the additional processing options required."""
+
     censoring_lower = forms.ChoiceField(choices=[(x, x) for x in range(0, 2)])
     censoring_upper = forms.ChoiceField(choices=[(x, x) for x in range(0, 11)])
     model_type = forms.ChoiceField(choices=[("NBE", "NBE"), ("NPE", "NPE")])
@@ -56,6 +76,7 @@ class MseOptionsForm(forms.Form):
 
 class BaseMseFormSet(forms.BaseFormSet):
     """Form Set for MSE data."""
+
     def __init__(self, censoring_lower=0, censoring_upper=0, *args, **kwargs):
         self._censoring_upper = int(censoring_upper)
         self._censoring_lower = int(censoring_lower)
