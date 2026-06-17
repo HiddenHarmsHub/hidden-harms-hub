@@ -44,7 +44,7 @@ class TestMseSetupView(TestCase):
 class TestMultipleSystemsEstimationExamplesView(TestCase):
     """Test the examples view.
 
-    There are no test for get or invalid input because validation is all handled by core Django.
+    There are no tests for get or invalid input because validation is all handled by core Django.
     """
 
     def test_get_mse_post_valid(self):
