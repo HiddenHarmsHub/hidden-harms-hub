@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 
 class MseSetupForm(forms.Form):
     """Form to setup the MSE main form."""
+
     total_lists_required = forms.IntegerField(required=False, min_value=2, max_value=10)
     file_upload = forms.FileField(required=False)
 
@@ -40,11 +41,13 @@ class MseExamplesForm(forms.Form):
 
 class MseForm(forms.Form):
     """Parent form to collect shared MSE data."""
+
     total_lists = forms.IntegerField()
 
 
 class MseDetailsForm(forms.Form):
     """Form to collect MSE data for a single list combination."""
+
     index_pos = forms.IntegerField()
     required_lists = forms.CharField()
     total_appearances = forms.CharField(required=False)
@@ -65,6 +68,7 @@ class MseDetailsForm(forms.Form):
 
 class MseOptionsForm(forms.Form):
     """Form to collect the additional processing options required."""
+
     censoring_lower = forms.ChoiceField(choices=[(x, x) for x in range(0, 2)])
     censoring_upper = forms.ChoiceField(choices=[(x, x) for x in range(0, 11)])
     model_type = forms.ChoiceField(choices=[("NBE", "NBE"), ("NPE", "NPE")])
@@ -72,6 +76,7 @@ class MseOptionsForm(forms.Form):
 
 class BaseMseFormSet(forms.BaseFormSet):
     """Form Set for MSE data."""
+
     def __init__(self, censoring_lower=0, censoring_upper=0, *args, **kwargs):
         self._censoring_upper = int(censoring_upper)
         self._censoring_lower = int(censoring_lower)

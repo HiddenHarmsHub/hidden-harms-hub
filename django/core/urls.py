@@ -3,8 +3,6 @@ from django.conf.urls.static import static
 from django.urls import include, path
 
 urlpatterns = [
-
     # General app's urls
-    path('', include('general.urls')),
-
+    path("", include("general.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
