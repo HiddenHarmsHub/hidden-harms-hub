@@ -454,7 +454,7 @@ class TestPollState(TestCase):
         self.assertEqual(response.status_code, 405)
 
     def test_response_when_no_task_id(self):
-        """Test the view when no task id is provided.
+        """Test the view when no task ID is provided.
 
         Doesn't need patching because it doesn't get to the task check.
         """
