@@ -15,7 +15,7 @@ from general.views import MultipleSystemsEstimation
 class TestMseSetupView(TestCase):
     """Test the MultipleSystemsEstimationSetup view.
 
-    There are no test for get or invalid input because validation is all handled by core Django.
+    There are no tests for get or invalid input because validation is all handled by core Django.
     """
 
     def _make_file(self):
