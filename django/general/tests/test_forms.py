@@ -49,7 +49,7 @@ class TestMseFormSet(TestCase):
         """Test the form with some censoring."""
         data = self.build_formset_data(
             ["40", "30", "20", "*", "18", "4", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
         )
         formset = self.MseFormSet(
             data=data,
