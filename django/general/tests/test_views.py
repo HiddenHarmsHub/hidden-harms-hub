@@ -448,7 +448,7 @@ class TestPollState(TestCase):
             self.result = result
 
     def test_get_not_allowed(self):
-        """Test the view does not response to get."""
+        """Test that the view does not respond to GET requests."""
         client = Client()
         response = client.get("/pollstate")
         self.assertEqual(response.status_code, 405)
