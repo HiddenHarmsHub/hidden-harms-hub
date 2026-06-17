@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 from itertools import combinations
@@ -288,7 +289,7 @@ class MultipleSystemsEstimationDownload(View):
             else:
                 with open(os.path.join(output_path, "results.csv"), mode="w") as result_file:
                     result_file.write(results)
-        with open(os.path.join(output_path, "mse_input.txt"), mode="w") as input_file:
+        with open(os.path.join(output_path, "mse_input.csv"), mode="w") as input_file:
             data = request.POST.get("csv-data")
             lines = data.split("|||")
             for line in lines:
@@ -306,18 +307,25 @@ class MultipleSystemsEstimationDownload(View):
         return response
 
 
-def poll_state(request):
-    """Check the current state of a task.
+class PollState(View):
+    """Handle polling requests for asynchronous task state."""
 
-    Args:
-        request (django.http.HttpRequest): The current request.
+    def post(self, request):
+        """Return the current state of an asynchronous task as JSON.
 
-    Returns:
-        JsonResponse: The current state of the task.
-    """
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        if "task_id" in request.POST.keys() and request.POST["task_id"]:
-            task_id = request.POST["task_id"]
+        Args:
+            request (django.http.HttpRequest): The current request.
+
+        Returns:
+            JsonResponse: The current state of the task.
+        """
+        content_type = request.content_type or ''
+        if content_type.startswith('application/json'):
+            data = json.loads(request.body)
+        else:
+            data = request.POST
+        if "task_id" in data and data["task_id"]:
+            task_id = data["task_id"]
             task = AsyncResult(task_id)
             if isinstance(task.result, Exception):
                 context = {"data": {"message": str(task.result)}, "state": task.state}
@@ -325,7 +333,4 @@ def poll_state(request):
                 context = {"data": task.result, "state": task.state}
         else:
             context = {"data": "No task_id in the request", "state": "FAILURE"}
-    else:
-        context = {"data": "This is not an ajax request", "state": "FAILURE"}
-
-    return JsonResponse(context)
+        return JsonResponse(context)
