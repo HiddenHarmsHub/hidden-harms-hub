@@ -308,7 +308,7 @@ class MultipleSystemsEstimationDownload(View):
 
 
 class PollState(View):
-    """Check the task state."""
+    """Handle polling requests for asynchronous task state."""
 
     def post(self, request):
         """Check the current state of a task.
