@@ -8,6 +8,7 @@ django/media/
 django/static/
 node_modules/
 accessibility_reports/
+celerybeat-schedule
 
 
 ###################### Django Templated gitignore paths  ######################
