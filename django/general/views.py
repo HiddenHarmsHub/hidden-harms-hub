@@ -311,7 +311,7 @@ class PollState(View):
     """Handle polling requests for asynchronous task state."""
 
     def post(self, request):
-        """Check the current state of a task.
+        """Return the current state of an asynchronous task as JSON.
 
         Args:
             request (django.http.HttpRequest): The current request.
