@@ -7,6 +7,7 @@ from general.forms import BaseMseFormSet, MseDetailsForm, MseSetupForm
 
 class TestMseFormSet(TestCase):
     """Test the MSE form set."""
+
     MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)
 
     def build_formset_data(self, appearances, required_lists):
@@ -35,7 +36,7 @@ class TestMseFormSet(TestCase):
         """Test a non-censored version of the data."""
         data = self.build_formset_data(
             ["40", "30", "20", "10", "18", "4", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
         )
         formset = self.MseFormSet(
             data=data,
@@ -48,7 +49,7 @@ class TestMseFormSet(TestCase):
         """Test the form with some censoring."""
         data = self.build_formset_data(
             ["40", "30", "20", "*", "18", "4", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
         )
         formset = self.MseFormSet(
             data=data,
@@ -61,7 +62,7 @@ class TestMseFormSet(TestCase):
         """Test * not allowed in data if we are not censoring."""
         data = self.build_formset_data(
             ["40", "30", "*", "10", "18", "9", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
         )
         formset = self.MseFormSet(
             data=data,
@@ -69,16 +70,13 @@ class TestMseFormSet(TestCase):
             censoring_upper=0,
         )
         self.assertFalse(formset.is_valid())
-        self.assertIn(
-            "Censoring upper must be greater than 0 if * is used in the data.",
-            formset.non_form_errors()
-        )
+        self.assertIn("Censoring upper must be greater than 0 if * is used in the data.", formset.non_form_errors())
 
     def test_invalid_requires_star_when_censoring_upper_is_over_0(self):
         """Test * is required when we are censoring."""
         data = self.build_formset_data(
             ["40", "30", "20", "10", "18", "9", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
         )
         formset = self.MseFormSet(
             data=data,
@@ -88,14 +86,14 @@ class TestMseFormSet(TestCase):
         self.assertFalse(formset.is_valid())
         self.assertIn(
             "If censoring upper is greater than 0 then some entries need to be censored with *.",
-            formset.non_form_errors()
+            formset.non_form_errors(),
         )
 
     def test_invalid_no_values_allowed_in_censored_range_mid(self):
         """Test values within censored range not allowed (central number)."""
         data = self.build_formset_data(
             ["40", "30", "20", "10", "18", "2", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
         )
         formset = self.MseFormSet(
             data=data,
@@ -104,15 +102,14 @@ class TestMseFormSet(TestCase):
         )
         self.assertFalse(formset.is_valid())
         self.assertIn(
-            "No values can fall in the censored range if censoring upper is greater than 0.",
-            formset.non_form_errors()
+            "No values can fall in the censored range if censoring upper is greater than 0.", formset.non_form_errors()
         )
 
     def test_invalid_no_values_allowed_in_censored_range_edge_1(self):
         """Test values within censored range not allowed (lowest bound)."""
         data = self.build_formset_data(
             ["40", "30", "20", "10", "18", "1", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
         )
         formset = self.MseFormSet(
             data=data,
@@ -121,15 +118,14 @@ class TestMseFormSet(TestCase):
         )
         self.assertFalse(formset.is_valid())
         self.assertIn(
-            "No values can fall in the censored range if censoring upper is greater than 0.",
-            formset.non_form_errors()
+            "No values can fall in the censored range if censoring upper is greater than 0.", formset.non_form_errors()
         )
 
     def test_invalid_no_values_allowed_in_censored_range_edge_2(self):
         """Test values within censored range not allowed (upper bound)."""
         data = self.build_formset_data(
             ["40", "30", "20", "10", "18", "3", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
         )
         formset = self.MseFormSet(
             data=data,
@@ -138,15 +134,14 @@ class TestMseFormSet(TestCase):
         )
         self.assertFalse(formset.is_valid())
         self.assertIn(
-            "No values can fall in the censored range if censoring upper is greater than 0.",
-            formset.non_form_errors()
+            "No values can fall in the censored range if censoring upper is greater than 0.", formset.non_form_errors()
         )
 
     def test_valid_lower_value_than_censoring_lower(self):
         """Test values below censoring bounds are allowed."""
         data = self.build_formset_data(
             ["40", "30", "*", "10", "18", "0", "12"],
-            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"]
+            ["list1", "List2", "List3", "List1|List2", "List1|List3", "List2|List3", "List1|List2|List3"],
         )
         formset = self.MseFormSet(
             data=data,
@@ -179,7 +174,7 @@ class TestMseDetailsForm(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)
-        self.assertIn("Total must be an integer or *", form.errors['__all__'][0])
+        self.assertIn("Total must be an integer or *", form.errors["__all__"][0])
 
 
 class TestMseSetupForm(TestCase):
