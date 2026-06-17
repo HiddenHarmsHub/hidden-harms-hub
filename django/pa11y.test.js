@@ -10,7 +10,7 @@ describe('Accessibility tests', () => {
           "http://127.0.0.1:8000/cookies/",
           "http://127.0.0.1:8000/comparativejudgement",
           "http://127.0.0.1:8000/multiplesystemsestimation",
-          "http://127.0.0.1:8000/multiplesystemsestimation/calculator",
+          "http://127.0.0.1:8000/multiplesystemsestimation/setup",
           "http://127.0.0.1:8000/multiplesystemsestimation/examples",
         ];
         for (let i = 0; i < colourSchemes.length; i += 1) {
@@ -32,7 +32,7 @@ describe('Accessibility tests', () => {
     }, 10000);
 
     test('Test the generated mse form', async () => {
-        const url = "http://127.0.0.1:8000/multiplesystemsestimation/calculator"
+        const url = "http://127.0.0.1:8000/multiplesystemsestimation/setup"
         const actions = [
             "wait for element #id_total_lists_required to be visible",
             "wait for element #submit-button to be visible",
