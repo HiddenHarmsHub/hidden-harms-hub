@@ -319,7 +319,7 @@ class TestMultipleSystemsEstimationDownloadView(TestCase):
     """Tests for the download view."""
 
     def test_download_data_only(self):
-        """Test the download of the input data when the MSE failed to return results."""
+        """Test that only the input CSV is downloaded when MSE returns no results."""
         client = Client()
         post_data = {
             "results": "failed",
