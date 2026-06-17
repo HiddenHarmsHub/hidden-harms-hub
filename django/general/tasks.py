@@ -44,5 +44,5 @@ def clean_database():
 
     Run as a scheduled task.
     """
-    cut_off_time = timezone.now() - timedelta(minutes=5)
+    cut_off_time = timezone.now() - timedelta(hours=1)
     TaskResult.objects.filter(date_done__lt=cut_off_time).delete()
