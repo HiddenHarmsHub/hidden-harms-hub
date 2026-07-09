@@ -13,17 +13,44 @@
         {% csrf_token %}
         <input type="hidden" name="{{ form.total_lists.html_name }}" value="{{ form.total_lists.value }}"/>
         {% if results_display %}
-            <h2>Results</h2>
-            <div id="results-display"></div>
-
             <input type="hidden" id="task-id" value="{{ task_id }}"/>
             <input type="hidden" id="results" name="results" value="{{ results }}"/>
             <input type="hidden" id="model_type" name="model_type" value="{{ model_type }}"/>
             <input type="hidden" name="csv-data" value="{{ csv_data }}"/>
+            <input type="hidden" id="total-observed" value="{{ total_observed }}"/>
             <input type="submit" value="Download input data and results" id="download-button"/>
+            <h2>Results</h2>
+            <div id="results-display">
+                {% include mse_results_display.html %}
+            </div>
             <h2>Input data</h2>
+        {% else %}
+            <h2>Data entry</h2>
+            <p>
+                Enter your data in the table below. Each row represents a different combination of lists. The X marks show
+                which lists are involved in that combination. For example, the first row asks how many people appeared on
+                list 1 only, while a row with an X under both list 1 and list 2 asks how many people appeared on both of
+                those lists but no others. Enter a count in the Total box for every row. If no people fall into a particular
+                combination, enter 0. If you are using a screen reader, the fields for entering the totals are labelled with
+                the list combinations e.g. "Total entries on list 1 only" or "Total entries on list 2, list 3
+                and list 4 only".
+            </p>
+            <h3>Censoring</h3>
+            <p>
+                Sometimes counts in administrative data are suppressed to protect people's identities. For instance, a
+                data provider might replace any count between 1 and 4 with a blank or an asterisk, so that individuals
+                cannot be identified. If your data has been treated this way, set the lower and upper limits of the
+                suppressed range here, and leave the affected cells in the table blank. The calculator is designed to
+                handle this and will still produce a valid estimate. If your data is complete, leave both values set
+                to 0.
+            </p>
+            <h3>Method</h3>
+            <p>
+                The calculator offers two ways of producing your estimate. NPE is recommended; it produces a full
+                picture of the uncertainty around the estimate and allows the fit of the model to be checked. But it
+                may take a few seconds to run. NBE is a faster alternative that is useful as a quick first look. 
+            </p>
         {% endif %}
-        
         <table class="{% if results_display %}results-input-table{% else %}input-table{% endif %}">
             {{ formset.management_form }}
             <tr>
@@ -51,7 +78,7 @@
                             <input type="hidden" name="{{ details_form.required_lists.html_name }}" value="{{details_form.initial.required_lists|join:'|'}}"/>
                             <input
                                 type="text"
-                                aria-label="Total entries on {{details_form.initial.required_lists|join:' and '}}"
+                                aria-label="Total entries on {{details_form.initial.required_lists|join:' and '}} only"
                                 id="{{ details_form.total_appearances.auto_id }}"
                                 name="{{ details_form.total_appearances.html_name }}"
                                 value="{% if details_form.total_appearances.value != None %}{{ details_form.total_appearances.value }}{% endif %}"

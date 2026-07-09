@@ -1,0 +1,36 @@
+<span id="result-statement">Estimated number of unobserved people: <span id="result-figure"></span></span>
+
+<p>
+    Based on the overlap patterns in your data, we estimate there are around <span id="alpha-estimate"></span> people who
+    do not appear on any of your lists. The 95% credible interval for the hidden number is
+    (<span id="credible-interval-lower"></span>, <span id="credible-interval-upper"></span>).
+</p>
+<p>
+    Adding this to the <span id="total-observed-figure"></span> people you have already observed gives
+    an estimated total population of around <span id="total-population"></span>, with a range of
+    <span id="lower-range"></span> to <span id="upper-range"></span>.
+</p>
+
+<h3>Technical details</h3>
+<p>
+    The table below shows the estimated model parameters on the log scale. The alpha parameter governs the size of the
+    unobserved population, and the headline estimate above is calculated from it. The beta parameters describe how
+    likely people are to appear on each individual list, and the gamma parameters describe the relationships between
+    pairs of lists. A positive gamma suggests two lists tend to pick up the same people, while a negative gamma suggests
+    they tend to capture different people. The mean and median columns give two summaries of each estimate, and the ci
+    columns give a 95% credible interval. The full set of samples underlying these summaries is included in the download.
+</p>
+<div id="results-table">
+
+</div>
+
+<h3>Interpreting your results</h3>
+<p>
+    Like all statistical estimates, these results rest on assumptions. The method assumes your lists all draw from the
+    same population, that the population is reasonably stable over the period the lists cover, and that the model
+    adequately captures how the lists relate to one another. Different but equally plausible assumptions can lead to
+    different estimates. These results are best treated as an evidence-based indication of scale rather than a precise
+    count. If the estimate will inform high-stakes decisions, such as policy, funding, or legal proceedings, we recommend
+    reviewing the analysis with a statistician. The downloaded file contains everything needed for that review, including
+    your input data and the full results.
+</p>

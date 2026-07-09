@@ -228,6 +228,8 @@ class MultipleSystemsEstimation(FormView):
                 appearance_data.append(-1)
             else:
                 appearance_data.append(int(row_data["total_appearances"]))
+        # save the total for later
+        total_observed = sum(appearance_data)
         mse_input = {
             "list_data": appearance_data,
             "censoring_lower": int(request.POST.get("censoring_lower")),
@@ -259,6 +261,7 @@ class MultipleSystemsEstimation(FormView):
             "results_display": True,
             "csv_data": csv_data,
             "task_id": task.task_id,
+            "total_observed": total_observed,
         }
         return render(request, "general/mse_calculator.html", data)
 

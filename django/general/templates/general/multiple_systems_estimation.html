@@ -3,7 +3,54 @@
 
 {% block content %}
     <h1>Multiple Systems Estimation</h1>
-    <p>Info about Multiple Systems Estimation goes here</p>
-    <p><a href="/multiplesystemsestimation/setup">Try the technique with your own data.</a></p>
-    <p><a href="/multiplesystemsestimation/examples">Try the technique with some example data.</a></p>
+
+    <h2>About this tool</h2>
+    <p>
+        When working on issues like modern slavery, drug use, homelessness, or human rights abuses, the people most
+        affected are often hidden. No single organisation sees everyone. The police know about some people, hospitals
+        know about others, charities and local authorities know about others still, and many people don't appear in
+        anyone's records at all.
+    </p>
+    <p>
+        This calculator estimates how many people are missing from all of those records. It uses a well-established
+        technique called Multiple Systems Estimation, which has been used to estimate the number of victims of modern
+        slavery in the UK and to count hidden populations in conflict zones around the world.
+    </p>
+    <h2>How it works</h2>
+    <p>
+        The method relies on a simple idea. If you have several lists of people drawn from the same population, some
+        people will appear on more than one list. The amount of overlap between the lists tells us something about how
+        visible this population is. Lots of overlap suggests most people are being seen by at least one organisation.
+        Very little overlap suggests there are many people that no one is seeing. The calculator uses these overlap
+        patterns to estimate the number of people who appear on no list at all, sometimes called the "dark figure".
+        Adding this to the number of people you have observed gives an estimate of the total population size.
+    </p>
+    <p>
+        Behind the scenes, the calculator uses a modern statistical method developed at the University of Birmingham.
+        The hard computational work has already been done in advance, so you get results in seconds rather than hours,
+        and you don't need any specialist software, powerful computers, or statistical training. The method also works
+        when some of your counts have been suppressed or redacted to protect people's identities, which is common when
+        working with sensitive administrative data.
+    </p>
+    <h2>What you need</h2>
+    <p>
+        For each list and each combination of lists, you need to know how many people appeared there. For example, how
+        many people were known only to organisation 1 , how many were known to both organisation 1 and organisation 2,
+        and so on. You never need to upload any information that could identify an individual. You can either enter
+        these counts directly on the next page or upload them as a CSV file.
+    </p>
+    <h2>What you get</h2>
+    <p>
+        The calculator gives you an estimate of the number of unobserved people, together with a range reflecting how
+        certain the estimate is. The true number is unlikely to be a single exact figure, so this range is an important
+        part of the result and we recommend reporting it alongside the estimate. You can download your results, along
+        with the data you entered, for your records.
+    </p>
+    <h2>Try Multiple Systems Estimation</h2>
+    <p>
+        <a href="/multiplesystemsestimation/setup">Try the technique with your own data.</a>
+    </p>
+    <p>
+        <a href="/multiplesystemsestimation/examples">Try the technique with some example data.</a>
+    </p>
 {% endblock %}

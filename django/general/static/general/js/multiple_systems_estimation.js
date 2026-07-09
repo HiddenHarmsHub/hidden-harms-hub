@@ -4,16 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
         showLoadingOverlay();
         let successCallback = function (response) {
             let result = response.data[0];
-            let model_type = response.data[1];
+            let modelType = response.data[1];
             document.getElementById('mse-form').style.display = 'block';
             document.getElementById('results').value = result;
-            document.getElementById('model_type').value = model_type;
-            if (model_type === 'NPE') {
-                let message = '<p>The table shows the results summary. The samples file is available in the download.</p>';
-                document.getElementById('results-display').innerHTML = message + createTable(result.split('|')[0]);
-            } else {
-                document.getElementById('results-display').innerHTML = createTable(result);
-            }          
+            document.getElementById('model_type').value = modelType;
+            let {table, alpha} = prepareResultsData(result, modelType);
+            document.getElementById('results-table').innerHTML = table;
+            document.getElementById('result-figure').innerHTML = alpha.estimate;
+            document.getElementById('credible-interval-lower').innerHTML = alpha.ciLower;
+            document.getElementById('credible-interval-upper').innerHTML = alpha.ciUpper;
+            const totalObserved = document.getElementById('total-observed').value;
+            document.getElementById('total-observed-figure') = totalObserved;
+            document.getElementById('total-population') = alpha.estimate + totalObserved;
+            document.getElementById('lower-range') = alpha.ciLower + totalObserved;
+            document.getElementById('upper-range') = alpha.ciUpper + totalObserved;
             removeLoadingOverlay();
         }
         let errorCallback = function (response) {
@@ -27,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
 });
-
 
 let getCSRFToken = function () {
     let cookieValue, cookies, cookie;
@@ -45,7 +48,11 @@ let getCSRFToken = function () {
     return cookieValue;
 };
 
-let createTable = function(data) {
+let prepareResultsData = function(data, modelType) {
+    const alphaData = {};
+    if (modelType === 'NPE') {
+        data = data.split('|')[0];
+    }
     const lines = data.split('\n');
     const html = ['<table class="results-table"><tbody>'];
     html.push('<tr>');
@@ -55,6 +62,13 @@ let createTable = function(data) {
     }
     html.push('</tr>');
     for (let i = 1; i < lines.length; i += 1) {
+        if (i === 1) {
+            // get the alpha line data for reporting results
+            const alphaLine = lines[i].split(',');
+            alphaData.estimate = Math.exp(ParseInt(alphaLine[1]));
+            alphaData.ciLower = Math.exp(ParseInt(alphaLine[2]));
+            alphaData.ciUpper = Math.exp(ParseInt(alphaLine[3]));
+        }
         if (lines[i].trim() !== '') {
             html.push('<tr>');
                 for (let tab of lines[i].split(',')) {
@@ -64,7 +78,7 @@ let createTable = function(data) {
         }
     }
     html.push('</tbody></table>');
-    return html.join('');
+    return {table: html.join(''), results: alphaData};
 };
 
 let displayError = function(data) {

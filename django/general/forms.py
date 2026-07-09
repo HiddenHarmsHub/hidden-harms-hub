@@ -5,8 +5,19 @@ from django.core.exceptions import ValidationError
 class MseSetupForm(forms.Form):
     """Form to setup the MSE main form."""
 
-    total_lists_required = forms.IntegerField(required=False, min_value=2, max_value=10)
-    file_upload = forms.FileField(required=False)
+    total_lists_required = forms.IntegerField(
+        required=False,
+        min_value=3,
+        max_value=10,
+        label="How many lists does your data contain?"
+    )
+    file_upload = forms.FileField(
+        required=False,
+        help_text=(
+            "The CSV should have one column per list plus a final Total column, matching the table layout shown on the "
+            "next page."
+        )
+    )
 
     def clean(self):
         """Checks that one of the two pieces of data needed has been provided.
