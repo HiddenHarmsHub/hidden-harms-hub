@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block header %}
+{% block head %}
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'general/css/general.css' %}">
 {% endblock %}
 
 {% block content %}
-    <h1>Hidden Harms Mapping: A Tool for Local Authorities</h1>
+    <hgroup>
+        <h1>Hidden Harms Mapping</h1>
+        <p class="subtitle">A Tool for Local Authorities</p>
+    </hgroup>
 
     <p class="intro-paragraph">
         The Harms Mapping Portal, developed by researchers at the <strong>University of Birmingham</strong>, provides
