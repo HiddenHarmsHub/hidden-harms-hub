@@ -5,9 +5,11 @@
     --light-bg: whitesmoke;
     --light-color: black;
     --light-header-bg: #9fc8c5;
-    --dark-bg: black;
+    --light-accent: #0891b2;
+    --dark-bg: #1a1a1a;
     --dark-color: whitesmoke;
     --dark-header-bg: #41716e;
+    --dark-accent: #22d3ee;
 }
 
 .visually-hidden {
@@ -18,9 +20,11 @@
     position: absolute;
     border: 1px solid black;
     background: white;
+    color: black;
     padding: 5px;
     margin: 5px;
     transform: translateY(-1800%);
+    font-size: 1.3rem;
 }
 
 .focus-only:focus {
@@ -31,7 +35,7 @@ html,
 body {
     margin: 0;
     padding: 0;
-    font-family: Verdana, Tahoma, sans-serif;
+    font-family: Inter, Tahoma, Verdana, sans-serif;
 }
 
 html {
@@ -64,6 +68,18 @@ div#content {
     flex-grow: 1;
 }
 
+#content p,
+#content ul,
+#content li {
+    max-width: 90ch;
+}
+
+#content p,
+#content li {
+    line-height: 1.75;
+    font-size: 1.05rem;
+}
+
 a {
     overflow-wrap: break-word;
 }
@@ -83,19 +99,31 @@ header * {
 header {
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 2em;
 }
 
-header #header-title {
-    font-size: 2em;
-    margin-left: 20px;
-    font-weight: bold;
+#header-title {
+font-family: "IBM Plex Sans", sans-serif;
+font-size: 2.2rem;
+font-weight: 600;
+line-height: 1.1;
+margin-left: 20px;
 }
+
+/* header #header-title {
+    font-size: 2em;
+    
+    font-weight: bold;
+} */
 
 footer {
-    font-size: 0.8em;
+    font-size: 1em;
     border-top: 1px solid light-dark(var(--light-color), var(--dark-color));
     text-align: center;
+}
+
+footer p {
+    max-width: 100%;
 }
 
 footer a {
@@ -104,7 +132,7 @@ footer a {
 }
 
 main {
-    padding: 10px;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -114,29 +142,34 @@ div#page-content {
     flex-grow: 1;
 }
 
+/* Headings */
+
 h1,
 h2,
 h3 {
     font-weight: normal;
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
     line-height: 1.3;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
 }
 
 h1 {
-    font-size: 2em;
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-top: 0;
+    padding-bottom: 0;
     border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
 }
 
 h2 {
-    font-size: 1.75em;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 8px;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    border: none;
+    position: relative;
+    padding-bottom: 0.5rem;
+    margin-top: 2rem;
 }
 
 h3 {
-    font-size: 1.4em;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
 }
 
 nav.active {
@@ -174,7 +207,8 @@ button.menu-button i {
 }
 
 #menu li {
-    padding: 0.8em;
+    padding-right: 0.8em;
+    padding-left: 0.8em;
 }
 
 #menu a {
@@ -201,8 +235,24 @@ div#content.active {
     width: 100%;
 }
 
-p.intro-paragraph {
-    font-size: 1.2em;
+#menu a {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color .2s ease;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 3px solid;
+    light-dark( var(--light-accent), var(--dark-accent));
+    outline-offset: 3px;
+}
+
+#content p.intro-paragraph {
+    font-size: 1.3rem;
+    line-height: 1.7;
 }
 
 @media (width < 800px) {
