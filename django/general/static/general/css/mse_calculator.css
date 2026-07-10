@@ -4,14 +4,14 @@
     gap: 0.5rem;
     cursor: pointer;
     font-size: 1rem;
+
     /* Remove button appearance */
     background: none;
     border: none;
     padding: 0;
     margin: 0;
+
     /* Inherit h3 styling */
-    font: inherit;
-    color: inherit;
     text-align: left;
 }
 
@@ -35,9 +35,6 @@
     font-weight: bold;
 }
 
-
-/* results tables */
-
 table,
 th,
 td {
@@ -47,7 +44,6 @@ td {
 table {
     --light-table-bg: gainsboro;
     --dark-table-bg: dimgrey;
-
     border-collapse: collapse;
 }
 
