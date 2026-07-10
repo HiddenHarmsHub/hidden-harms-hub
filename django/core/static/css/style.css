@@ -2,14 +2,21 @@
     /* set color-scheme to switch between light or dark */
     color-scheme: light dark;
 
+
+
     --light-bg: whitesmoke;
+    --light-bg-highlight: #d8d8d8;
     --light-color: black;
     --light-header-bg: #9fc8c5;
-    --light-accent: #0891b2;
+    --light-accent: #0369a1;
+    --light-header-hover: #a9cfcc;
+
     --dark-bg: #1a1a1a;
+    --dark-bg-highlight: #2c2c2c;
     --dark-color: whitesmoke;
     --dark-header-bg: #41716e;
-    --dark-accent: #22d3ee;
+    --dark-accent: #67e8f9;
+    --dark-header-hover: #487977;
 }
 
 .visually-hidden {
@@ -21,10 +28,14 @@
     border: 1px solid black;
     background: white;
     color: black;
-    padding: 5px;
+    padding: 8px;
     margin: 5px;
     transform: translateY(-1800%);
     font-size: 1.3rem;
+}
+
+.focus-only:focus-visible {
+    outline-offset: 0;
 }
 
 .focus-only:focus {
@@ -91,30 +102,25 @@ footer {
     flex-shrink: 0;
 }
 
-header,
-header * {
+#brand,
+#brand * {
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
 
-header {
+#brand {
     display: flex;
     align-items: center;
     padding: 2em;
 }
 
 #header-title {
-font-family: "IBM Plex Sans", sans-serif;
-font-size: 2.2rem;
-font-weight: 600;
-line-height: 1.1;
-margin-left: 20px;
+    font-family: "IBM Plex Sans", sans-serif;
+    background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
+    font-size: 2.2rem;
+    font-weight: 600;
+    line-height: 1.1;
+    margin-left: 20px;
 }
-
-/* header #header-title {
-    font-size: 2em;
-    
-    font-weight: bold;
-} */
 
 footer {
     font-size: 1em;
@@ -153,11 +159,26 @@ h3 {
     margin-bottom: 0.5rem;
 }
 
+hgroup h1 {
+    border-bottom: 0;
+}
+
+hgroup {
+    border-bottom: 2px solid light-dark(var(--light-bg-highlight), var(--dark-bg-highlight));
+}
+
+hgroup p.subtitle {
+    padding-top: 0;
+    margin: 0;
+    font-size: clamp(1.5rem, 4vw, 2.5rem) !important;
+}
+
 h1 {
     font-size: clamp(2rem, 5vw, 3rem);
     margin-top: 0;
     padding-bottom: 0;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid light-dark(var(--light-bg-highlight), var(--dark-bg-highlight));
+    line-height: 1.75em;;
 }
 
 h2 {
@@ -243,11 +264,15 @@ div#content.active {
     transition: background-color .2s ease;
 }
 
+#menu a:hover {
+    background-color: light-dark(var(--light-header-hover), var(--dark-header-hover));
+}
+
 a:focus-visible,
 button:focus-visible {
-    outline: 3px solid;
-    light-dark( var(--light-accent), var(--dark-accent));
-    outline-offset: 3px;
+    outline: 3px solid light-dark(var(--light-accent), var(--dark-accent));
+    outline-offset: 5px;
+    border-radius: 3px;
 }
 
 #content p.intro-paragraph {
@@ -258,6 +283,15 @@ button:focus-visible {
 @media (width < 800px) {
     #menu a {
         white-space: wrap;
+    }
+
+    #brand {
+        flex-direction: column;
+    }
+
+    #header-title {
+        margin-top: 10px;
+        margin-left: 0;
     }
 }
 
@@ -278,8 +312,13 @@ button:focus-visible {
         display: none;
     }
 
-    #logo {
-        display: none;
+    #brand {
+        flex-direction: row;
+    }
+
+    #header-title {
+        margin-left: 20px;
+        margin-top: 0;
     }
 
     div#content {

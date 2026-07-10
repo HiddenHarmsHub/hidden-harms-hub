@@ -13,15 +13,14 @@
         {% endblock %}
     </head>
     <body>
-        <header>
-            {% block header %}
-                <a class="focus-only" href="#main">Skip to main content</a>
-                <img id="logo" src="{% static 'img/hiddenharmshublogo.png' %}" alt="" height="80px"/>
-                <span id="header-title">Hidden Harms Hub</span>
-            {% endblock %}
-        </header>
+        
         <div id="content">
             <nav id="main-menu" aria-label="Main Menu">
+                <a class="focus-only" href="#main">Skip to main content</a>
+                <div id="brand">
+                    <img id="logo" src="{% static 'img/hiddenharmshublogo.png' %}" alt="" height="120px"/>
+                    <span id="header-title">Hidden<br>Harms<br>Hub</span>
+                </div>
                 <button id="menu-button" class="menu-button" aria-controls="menu" aria-label="Menu" aria-expanded="false">
                     <i class="fa fa-bars"></i>
                 </button>
@@ -34,9 +33,9 @@
                             <li>
                                 <a href="/comparativejudgement">Hidden Harms Mapping</a>
                             </li>
-                            <!-- <li>
+                            <li>
                                 <a href="/multiplesystemsestimation">Multiple Systems Estimation</a>
-                            </li> -->
+                            </li>
                         </ul>
                     </div>
                 {% endblock %}
