@@ -91,30 +91,25 @@ footer {
     flex-shrink: 0;
 }
 
-header,
-header * {
+#brand,
+#brand * {
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
 }
 
-header {
+#brand {
     display: flex;
     align-items: center;
     padding: 2em;
 }
 
 #header-title {
-font-family: "IBM Plex Sans", sans-serif;
-font-size: 2.2rem;
-font-weight: 600;
-line-height: 1.1;
-margin-left: 20px;
+    font-family: "IBM Plex Sans", sans-serif;
+    background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
+    font-size: 2.2rem;
+    font-weight: 600;
+    line-height: 1.1;
+    margin-left: 20px;
 }
-
-/* header #header-title {
-    font-size: 2em;
-    
-    font-weight: bold;
-} */
 
 footer {
     font-size: 1em;
@@ -246,7 +241,7 @@ div#content.active {
 a:focus-visible,
 button:focus-visible {
     outline: 3px solid;
-    light-dark( var(--light-accent), var(--dark-accent));
+    color: light-dark(var(--light-accent), var(--dark-accent));
     outline-offset: 3px;
 }
 
@@ -258,6 +253,9 @@ button:focus-visible {
 @media (width < 800px) {
     #menu a {
         white-space: wrap;
+    }
+    #logo {
+        display: none;
     }
 }
 
@@ -275,10 +273,6 @@ button:focus-visible {
 
 @media (width <= 480px) {
     #menu {
-        display: none;
-    }
-
-    #logo {
         display: none;
     }
 
