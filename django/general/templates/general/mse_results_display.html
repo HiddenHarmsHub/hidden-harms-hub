@@ -10,18 +10,27 @@
     an estimated total population of around <span id="total-population"></span>, with a range of
     <span id="lower-range"></span> to <span id="upper-range"></span>.
 </p>
+<div class="expander">
+    <h3>
+        <button type="button" id="technical-details-expander" aria-expanded="false" aria-controls="technical-details" class="expander-trigger">
+            <span class="arrow"></span>
+            <span>Technical details</span>
+            
+        </button>
+    </h3>
+    <div id="technical-details" role="region" aria-labelledby="technical-details-expander" hidden>
+        <p>
+            The table below shows the estimated model parameters on the log scale. The alpha parameter governs the size of the
+            unobserved population, and the headline estimate above is calculated from it. The beta parameters describe how
+            likely people are to appear on each individual list, and the gamma parameters describe the relationships between
+            pairs of lists. A positive gamma suggests two lists tend to pick up the same people, while a negative gamma suggests
+            they tend to capture different people. The mean and median columns give two summaries of each estimate, and the ci
+            columns give a 95% credible interval. The full set of samples underlying these summaries is included in the download.
+        </p>
+        <div id="results-table">
 
-<h3>Technical details</h3>
-<p>
-    The table below shows the estimated model parameters on the log scale. The alpha parameter governs the size of the
-    unobserved population, and the headline estimate above is calculated from it. The beta parameters describe how
-    likely people are to appear on each individual list, and the gamma parameters describe the relationships between
-    pairs of lists. A positive gamma suggests two lists tend to pick up the same people, while a negative gamma suggests
-    they tend to capture different people. The mean and median columns give two summaries of each estimate, and the ci
-    columns give a 95% credible interval. The full set of samples underlying these summaries is included in the download.
-</p>
-<div id="results-table">
-
+        </div>
+    </div>
 </div>
 
 <h3>Interpreting your results</h3>
@@ -34,3 +43,4 @@
     reviewing the analysis with a statistician. The downloaded file contains everything needed for that review, including
     your input data and the full results.
 </p>
+<input type="submit" value="Download input data and results" id="download-button"/>

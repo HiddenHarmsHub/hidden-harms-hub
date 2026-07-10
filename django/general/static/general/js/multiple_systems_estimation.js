@@ -5,19 +5,32 @@ document.addEventListener("DOMContentLoaded", () => {
         let successCallback = function (response) {
             let result = response.data[0];
             let modelType = response.data[1];
-            document.getElementById('mse-form').style.display = 'block';
+            
             document.getElementById('results').value = result;
             document.getElementById('model_type').value = modelType;
-            let {table, alpha} = prepareResultsData(result, modelType);
-            document.getElementById('results-table').innerHTML = table;
-            document.getElementById('result-figure').innerHTML = alpha.estimate;
-            document.getElementById('credible-interval-lower').innerHTML = alpha.ciLower;
-            document.getElementById('credible-interval-upper').innerHTML = alpha.ciUpper;
-            const totalObserved = document.getElementById('total-observed').value;
-            document.getElementById('total-observed-figure') = totalObserved;
-            document.getElementById('total-population') = alpha.estimate + totalObserved;
-            document.getElementById('lower-range') = alpha.ciLower + totalObserved;
-            document.getElementById('upper-range') = alpha.ciUpper + totalObserved;
+            const preparedData = prepareResultsData(result, modelType);
+            const totalObserved = parseInt(document.getElementById('total-observed').value);
+            document.getElementById('results-table').innerHTML = preparedData.table;
+            const unobserved = Math.round(preparedData.results.estimate);
+            document.getElementById('result-figure').textContent = unobserved;
+            document.getElementById('alpha-estimate').textContent = unobserved;
+            document.getElementById('credible-interval-lower').textContent = Math.round(preparedData.results.ciLower);
+            document.getElementById('credible-interval-upper').textContent = Math.round(preparedData.results.ciUpper);
+            document.getElementById('total-observed-figure').textContent = totalObserved;
+            document.getElementById('total-population').textContent = unobserved + totalObserved;
+            document.getElementById('lower-range').textContent = Math.round(preparedData.results.ciLower) + totalObserved;
+            document.getElementById('upper-range').textContent = Math.round(preparedData.results.ciUpper) + totalObserved;
+            document.getElementById('mse-form').style.display = 'block';
+            document.getElementById('technical-details-expander').addEventListener('click', function (event) {
+                const button = event.target.parentElement;
+                console.log('button is ' + button)
+                button.ariaExpanded = button.ariaExpanded !== 'true';
+                if (button.ariaExpanded === 'true') {
+                    document.getElementById('technical-details').removeAttribute('hidden');
+                } else {
+                    document.getElementById('technical-details').setAttribute('hidden', '');
+                }
+            });
             removeLoadingOverlay();
         }
         let errorCallback = function (response) {
@@ -29,6 +42,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback, errorCallback: errorCallback});
     }
+
+
+
+    
     
 });
 
@@ -65,9 +82,9 @@ let prepareResultsData = function(data, modelType) {
         if (i === 1) {
             // get the alpha line data for reporting results
             const alphaLine = lines[i].split(',');
-            alphaData.estimate = Math.exp(ParseInt(alphaLine[1]));
-            alphaData.ciLower = Math.exp(ParseInt(alphaLine[2]));
-            alphaData.ciUpper = Math.exp(ParseInt(alphaLine[3]));
+            alphaData.estimate = Math.exp(parseInt(alphaLine[1]));
+            alphaData.ciLower = Math.exp(parseInt(alphaLine[2]));
+            alphaData.ciUpper = Math.exp(parseInt(alphaLine[3]));
         }
         if (lines[i].trim() !== '') {
             html.push('<tr>');
