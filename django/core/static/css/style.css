@@ -75,6 +75,13 @@ a {
     overflow-wrap: break-word;
 }
 
+a:focus-visible,
+button:focus-visible {
+    outline: 3px solid light-dark(var(--light-accent), var(--dark-accent));
+    outline-offset: 5px;
+    border-radius: 3px;
+}
+
 header,
 div#content,
 div#cookie-message-popup,
@@ -257,13 +264,6 @@ div#content.active {
     display: block;
     top: 0;
     width: 100%;
-}
-
-a:focus-visible,
-button:focus-visible {
-    outline: 3px solid light-dark(var(--light-accent), var(--dark-accent));
-    outline-offset: 5px;
-    border-radius: 3px;
 }
 
 #content p.intro-paragraph {
