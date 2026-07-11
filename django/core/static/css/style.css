@@ -2,15 +2,12 @@
     /* set color-scheme to switch between light or dark */
     color-scheme: light dark;
 
-
-
     --light-bg: whitesmoke;
     --light-bg-highlight: #d8d8d8;
     --light-color: black;
     --light-header-bg: #9fc8c5;
     --light-accent: #0369a1;
     --light-header-hover: #a9cfcc;
-
     --dark-bg: #1a1a1a;
     --dark-bg-highlight: #2c2c2c;
     --dark-color: whitesmoke;
@@ -74,23 +71,6 @@ body {
     color-scheme: dark;
 }
 
-div#content {
-    display: flex;
-    flex-grow: 1;
-}
-
-#content p,
-#content ul,
-#content li {
-    max-width: 90ch;
-}
-
-#content p,
-#content li {
-    line-height: 1.75;
-    font-size: 1.05rem;
-}
-
 a {
     overflow-wrap: break-word;
 }
@@ -148,6 +128,23 @@ div#page-content {
     flex-grow: 1;
 }
 
+div#content {
+    display: flex;
+    flex-grow: 1;
+}
+
+#content p,
+#content ul,
+#content li {
+    max-width: 90ch;
+}
+
+#content p,
+#content li {
+    line-height: 1.75;
+    font-size: 1.05rem;
+}
+
 /* Headings */
 
 h1,
@@ -157,6 +154,14 @@ h3 {
     line-height: 1.3;
     margin-top: 2rem;
     margin-bottom: 0.5rem;
+}
+
+h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-top: 0;
+    padding-bottom: 0;
+    border-bottom: 2px solid light-dark(var(--light-bg-highlight), var(--dark-bg-highlight));
+    line-height: 1.75em;;
 }
 
 hgroup h1 {
@@ -171,14 +176,6 @@ hgroup p.subtitle {
     padding-top: 0;
     margin: 0;
     font-size: clamp(1.5rem, 4vw, 2.5rem) !important;
-}
-
-h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin-top: 0;
-    padding-bottom: 0;
-    border-bottom: 2px solid light-dark(var(--light-bg-highlight), var(--dark-bg-highlight));
-    line-height: 1.75em;;
 }
 
 h2 {
@@ -241,10 +238,15 @@ button.menu-button i {
     text-decoration: none;
     white-space: nowrap;
     font-size: 1.2em;
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    transition: background-color .2s ease;
 }
 
 #menu a:hover {
     text-decoration: underline;
+    background-color: light-dark(var(--light-header-hover), var(--dark-header-hover));
 }
 
 div#content.active {
@@ -255,18 +257,6 @@ div#content.active {
     display: block;
     top: 0;
     width: 100%;
-}
-
-#menu a {
-    display: block;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background-color .2s ease;
-}
-
-#menu a:hover {
-    background-color: light-dark(var(--light-header-hover), var(--dark-header-hover));
 }
 
 a:focus-visible,
