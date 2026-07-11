@@ -24,16 +24,29 @@
             </div>
             <h2>Input data</h2>
         {% else %}
-            <h2>Data entry</h2>
-            <p>
-                Enter your data in the table below. Each row represents a different combination of lists. The X marks show
-                which lists are involved in that combination. For example, the first row asks how many people appeared on
-                list 1 only, while a row with an X under both list 1 and list 2 asks how many people appeared on both of
-                those lists but no others. Enter a count in the Total box for every row. If no people fall into a particular
-                combination, enter 0. If you are using a screen reader, the fields for entering the totals are labelled with
-                the list combinations e.g. "Total entries on list 1 only" or "Total entries on list 2, list 3
-                and list 4 only".
-            </p>
+            {% if example %}
+                <h2>Example Data</h2>
+                <p>
+                    The data for your chosen example is shown in the table below. Each row represents a different combination
+                    of lists. The X marks show which lists are involved in that combination. For example, the first row
+                    asks how many people appeared on list 1 only, while a row with an X under both list 1 and list 2 asks
+                    how many people appeared on both of those lists but no others. If you are using a screen reader, the
+                    fields for entering the totals are labelled with the list combinations e.g. "Total entries on list 1
+                    only" or "Total entries on list 2, list 3 and list 4 only".
+                </p>
+
+            {% else %}
+                <h2>Data entry</h2>
+                <p>
+                    Enter your data in the table below. Each row represents a different combination of lists. The X marks show
+                    which lists are involved in that combination. For example, the first row asks how many people appeared on
+                    list 1 only, while a row with an X under both list 1 and list 2 asks how many people appeared on both of
+                    those lists but no others. Enter a count in the Total box for every row. If no people fall into a particular
+                    combination, enter 0. If you are using a screen reader, the fields for entering the totals are labelled with
+                    the list combinations e.g. "Total entries on list 1 only" or "Total entries on list 2, list 3
+                    and list 4 only".
+                </p>
+            {% endif %}
             <h3>Censoring</h3>
             <p>
                 Sometimes counts in administrative data are suppressed to protect people's identities. For instance, a

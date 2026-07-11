@@ -43,10 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
         taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback, errorCallback: errorCallback});
     }
 
-
-
-    
-    
 });
 
 let getCSRFToken = function () {
@@ -83,8 +79,13 @@ let prepareResultsData = function(data, modelType) {
             // get the alpha line data for reporting results
             const alphaLine = lines[i].split(',');
             alphaData.estimate = Math.exp(parseInt(alphaLine[1]));
-            alphaData.ciLower = Math.exp(parseInt(alphaLine[2]));
-            alphaData.ciUpper = Math.exp(parseInt(alphaLine[3]));
+            if (modelType === 'NPE') {
+                alphaData.ciLower = Math.exp(parseInt(alphaLine[4]));
+                alphaData.ciUpper = Math.exp(parseInt(alphaLine[5]));
+            } else {
+                alphaData.ciLower = Math.exp(parseInt(alphaLine[2]));
+                alphaData.ciUpper = Math.exp(parseInt(alphaLine[3]));
+            }
         }
         if (lines[i].trim() !== '') {
             html.push('<tr>');
