@@ -96,6 +96,7 @@ footer {
 #header-title {
     font-family: "IBM Plex Sans", sans-serif;
     background-color: light-dark(var(--light-header-bg), var(--dark-header-bg));
+    color: light-dark(var(--light-color), var(--dark-color));
     font-size: 2.2rem;
     font-weight: 600;
     line-height: 1.1;
@@ -151,7 +152,6 @@ button:focus-visible {
     outline-offset: 5px;
     border-radius: 3px;
 }
-
 
 /* Headings */
 
