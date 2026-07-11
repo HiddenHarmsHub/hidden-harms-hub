@@ -13,7 +13,7 @@ class TestMseTasks(TestCase):
 
     def setUp(self):
         """Add test url which will never be hit due to mocking."""
-        self.test_url = "localhost:5000/calculate_mse"
+        self.test_url = "localhost:5000"
         settings.MSE_CALCULATOR_URL = self.test_url
 
     @patch("general.tasks.requests.post")
@@ -42,7 +42,10 @@ class TestMseTasks(TestCase):
         }
         task_result = calculate_mse(test_input)
         mock_post.assert_called_once_with(
-            self.test_url, data=json.dumps(test_input), headers={"Content-type": "application/json"}, timeout=200
+            f'{self.test_url}/calculatemse',
+            data=json.dumps(test_input),
+            headers={"Content-type": "application/json"},
+            timeout=200
         )
         self.assertEqual(task_result[0], response_text)
         self.assertEqual(task_result[1], "NBE")
