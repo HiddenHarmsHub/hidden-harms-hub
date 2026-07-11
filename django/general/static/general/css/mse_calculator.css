@@ -13,6 +13,8 @@
 
     /* Inherit h3 styling */
     text-align: left;
+    font: inherit;
+    color: inherit;
 }
 
 /* Create the arrow */
@@ -30,7 +32,11 @@
     transform: rotate(45deg);
 }
 
-#result-statement {
+.expanded-section {
+    padding-left: 3rem;
+}
+
+span#result-statement {
     font-size: 1.2rem;
     font-weight: bold;
 }

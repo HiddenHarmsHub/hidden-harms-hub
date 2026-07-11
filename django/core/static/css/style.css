@@ -187,6 +187,7 @@ h2 {
     position: relative;
     padding-bottom: 0.5rem;
     margin-top: 2rem;
+    border-bottom: 1px solid light-dark(var(--light-bg-highlight), var(--dark-bg-highlight));
 }
 
 h3 {
