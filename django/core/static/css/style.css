@@ -5,15 +5,17 @@
     --light-bg: whitesmoke;
     --light-bg-highlight: #d8d8d8;
     --light-color: black;
-    --light-header-bg: #9fc8c5;
+    --light-header-bg: #bfd1cf;
     --light-accent: #0369a1;
     --light-header-hover: #a9cfcc;
+    --light-contrast-color: #f2eee4;
     --dark-bg: #1a1a1a;
     --dark-bg-highlight: #2c2c2c;
     --dark-color: whitesmoke;
     --dark-header-bg: #41716e;
     --dark-accent: #67e8f9;
     --dark-header-hover: #487977;
+    --dark-contrast-color: #516a79;
 }
 
 .visually-hidden {
