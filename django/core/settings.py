@@ -127,7 +127,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SECRET_KEY = None
 try:
     from .local_settings import *  # NOQA
-except ImportError:
+except ImportError as e:
+    print(e)
     sys.exit("Unable to import local_settings.py (refer to local_settings.example.py for help)")
 
 # Ensure the SECRET_KEY is supplied in local_settings.py - and trust that the other settings are there too.
@@ -151,52 +152,52 @@ if not DEBUG:  # NOQA
 
 # Logging
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "filters": {
-        "require_debug_false": {
-            "()": "django.utils.log.RequireDebugFalse",
-        },
-        "require_debug_true": {
-            "()": "django.utils.log.RequireDebugTrue",
-        },
-    },
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
-        },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
-        },
-    },
-    "handlers": {
-        "stream": {
-            "class": "logging.StreamHandler",
-            "level": "DEBUG" if DEBUG else "INFO",  # NOQA
-            "formatter": "verbose",
-        },
-        "file": {
-            "level": "DEBUG",
-            "filters": ["require_debug_true"],
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(BASE_DIR, "django.log"),
-            "formatter": "verbose",
-            "maxBytes": 104857600,  # 100*1024*1024 bytes (100MB)
-        },
-        "mail_admins": {
-            "level": "ERROR",
-            "filters": ["require_debug_false"],
-            "class": "django.utils.log.AdminEmailHandler",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["stream", "file", "mail_admins"],
-            # 'level': 'DEBUG' if DEBUG else 'INFO',  # NOQA
-            "propagate": "True",
-        },
-    },
-}
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "filters": {
+#         "require_debug_false": {
+#             "()": "django.utils.log.RequireDebugFalse",
+#         },
+#         "require_debug_true": {
+#             "()": "django.utils.log.RequireDebugTrue",
+#         },
+#     },
+#     "formatters": {
+#         "verbose": {
+#             "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+#             "style": "{",
+#         },
+#         "simple": {
+#             "format": "{levelname} {message}",
+#             "style": "{",
+#         },
+#     },
+#     "handlers": {
+#         "stream": {
+#             "class": "logging.StreamHandler",
+#             "level": "DEBUG" if DEBUG else "INFO",  # NOQA
+#             "formatter": "verbose",
+#         },
+#         "file": {
+#             "level": "DEBUG",
+#             "filters": ["require_debug_true"],
+#             "class": "logging.handlers.RotatingFileHandler",
+#             "filename": os.path.join(BASE_DIR, "django.log"),
+#             "formatter": "verbose",
+#             "maxBytes": 104857600,  # 100*1024*1024 bytes (100MB)
+#         },
+#         "mail_admins": {
+#             "level": "ERROR",
+#             "filters": ["require_debug_false"],
+#             "class": "django.utils.log.AdminEmailHandler",
+#         },
+#     },
+#     "loggers": {
+#         "django": {
+#             "handlers": ["stream", "file", "mail_admins"],
+#             # 'level': 'DEBUG' if DEBUG else 'INFO',  # NOQA
+#             "propagate": "True",
+#         },
+#     },
+# }
