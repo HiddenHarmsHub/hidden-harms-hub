@@ -3,7 +3,6 @@ from datetime import timedelta
 
 import requests
 from celery import shared_task
-from django.conf import settings
 from django.utils import timezone
 from django_celery_results.models import TaskResult
 
@@ -22,7 +21,7 @@ def calculate_mse(mse_input):
         requests.exceptions.ConnectionError: Raised if the MSE server could not be contacted.
         requests.exceptions.HTTPError: Raised if the MSE server raised an internal error.
     """
-    mse_url = f"{settings.MSE_CALCULATOR_URL}/calculatemse"
+    mse_url = "http://127.0.0.1:8085/calculatemse"  # f"{settings.MSE_CALCULATOR_URL}/calculatemse"
     headers = {"Content-type": "application/json"}
     try:
         response = requests.post(mse_url, data=json.dumps(mse_input), headers=headers, timeout=200)
