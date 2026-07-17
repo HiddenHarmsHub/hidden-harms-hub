@@ -1,6 +1,6 @@
 #technical-details-expander {
-    display: flex;
-    align-items: center;
+    display: inline-flex;
+    align-items: baseline;
     gap: 0.5rem;
     cursor: pointer;
 
@@ -16,14 +16,39 @@
     color: inherit;
 }
 
+.expander {
+    background: light-dark(var(--light-contrast-color, var(--dark-contrast-color)));
+    border-left: 1em solid light-dark(var(--light-contrast-color), var(--dark-contrast-color));
+    cursor: pointer;
+}
+
+.expander h3 {
+    margin: 0;
+    padding: 1rem;
+    background: light-dark(var(--light-contrast-color), var(--dark-contrast-color));
+}
+
+
+.expander h3 button,
+.expander h3 span {
+    background: light-dark(var(--light-contrast-color), var(--dark-contrast-color));
+}
+
+.expander span.hint {
+    font-size: 0.7em;
+    text-align: bottom;
+}
+
+
 /* Create the arrow */
 .arrow {
     width: 10px;
     height: 10px;
-    border-right: 2px solid black;
-    border-bottom: 2px solid black;
+    border-right: 2px solid light-dark(var(--light-color), var(--dark-color));
+    border-bottom: 2px solid light-dark(var(--light-color), var(--dark-color));
     transform: rotate(-45deg);
     transition: transform 0.3s ease;
+    align-self: center;
 }
 
 /* Expanded state */
@@ -32,7 +57,7 @@
 }
 
 .expanded-section {
-    padding-left: 3rem;
+    padding-left: 0.5rem;
 }
 
 span#result-statement {
@@ -48,6 +73,7 @@ td {
 
 table {
     border-collapse: collapse;
+    padding-bottom: 1rem;
 
     --light-table-bg: gainsboro;
     --dark-table-bg: dimgrey;
