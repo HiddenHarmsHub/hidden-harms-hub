@@ -78,11 +78,12 @@ let prepareResultsData = function(data, modelType) {
         if (i === 1) {
             // get the alpha line data for reporting results
             const alphaLine = lines[i].split(',');
-            alphaData.estimate = Math.exp(parseInt(alphaLine[1]));
             if (modelType === 'NPE') {
-                alphaData.ciLower = Math.exp(parseInt(alphaLine[4]));
-                alphaData.ciUpper = Math.exp(parseInt(alphaLine[5]));
+                alphaData.estimate = Math.exp(parseInt(alphaLine[2]));
+                alphaData.ciLower = Math.exp(parseInt(alphaLine[3]));
+                alphaData.ciUpper = Math.exp(parseInt(alphaLine[4]));
             } else {
+                alphaData.estimate = Math.exp(parseInt(alphaLine[1]));
                 alphaData.ciLower = Math.exp(parseInt(alphaLine[2]));
                 alphaData.ciUpper = Math.exp(parseInt(alphaLine[3]));
             }
