@@ -4,16 +4,33 @@ document.addEventListener("DOMContentLoaded", () => {
         showLoadingOverlay();
         let successCallback = function (response) {
             let result = response.data[0];
-            let model_type = response.data[1];
-            document.getElementById('mse-form').style.display = 'block';
+            let modelType = response.data[1];
+            
             document.getElementById('results').value = result;
-            document.getElementById('model_type').value = model_type;
-            if (model_type === 'NPE') {
-                let message = '<p>The table shows the results summary. The samples file is available in the download.</p>';
-                document.getElementById('results-display').innerHTML = message + createTable(result.split('|')[0]);
-            } else {
-                document.getElementById('results-display').innerHTML = createTable(result);
-            }          
+            document.getElementById('model_type').value = modelType;
+            const preparedData = prepareResultsData(result, modelType);
+            const totalObserved = parseInt(document.getElementById('total-observed').value);
+            document.getElementById('results-table').innerHTML = preparedData.table;
+            const unobserved = Math.round(preparedData.results.estimate);
+            document.getElementById('result-figure').textContent = unobserved;
+            document.getElementById('alpha-estimate').textContent = unobserved;
+            document.getElementById('credible-interval-lower').textContent = Math.round(preparedData.results.ciLower);
+            document.getElementById('credible-interval-upper').textContent = Math.round(preparedData.results.ciUpper);
+            document.getElementById('total-observed-figure').textContent = totalObserved;
+            document.getElementById('total-population').textContent = unobserved + totalObserved;
+            document.getElementById('lower-range').textContent = Math.round(preparedData.results.ciLower) + totalObserved;
+            document.getElementById('upper-range').textContent = Math.round(preparedData.results.ciUpper) + totalObserved;
+            document.getElementById('mse-form').style.display = 'block';
+            document.getElementById('technical-details-expander').addEventListener('click', function (event) {
+                const button = event.target.parentElement;
+                console.log('button is ' + button)
+                button.ariaExpanded = button.ariaExpanded !== 'true';
+                if (button.ariaExpanded === 'true') {
+                    document.getElementById('technical-details').removeAttribute('hidden');
+                } else {
+                    document.getElementById('technical-details').setAttribute('hidden', '');
+                }
+            });
             removeLoadingOverlay();
         }
         let errorCallback = function (response) {
@@ -25,9 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         taskChecker.pollTaskState(document.getElementById('task-id').value, {successCallback: successCallback, errorCallback: errorCallback});
     }
-    
-});
 
+});
 
 let getCSRFToken = function () {
     let cookieValue, cookies, cookie;
@@ -45,7 +61,11 @@ let getCSRFToken = function () {
     return cookieValue;
 };
 
-let createTable = function(data) {
+let prepareResultsData = function(data, modelType) {
+    const alphaData = {};
+    if (modelType === 'NPE') {
+        data = data.split('|')[0];
+    }
     const lines = data.split('\n');
     const html = ['<table class="results-table"><tbody>'];
     html.push('<tr>');
@@ -55,6 +75,19 @@ let createTable = function(data) {
     }
     html.push('</tr>');
     for (let i = 1; i < lines.length; i += 1) {
+        if (i === 1) {
+            // get the alpha line data for reporting results
+            const alphaLine = lines[i].split(',');
+            if (modelType === 'NPE') {
+                alphaData.estimate = Math.exp(parseInt(alphaLine[2]));
+                alphaData.ciLower = Math.exp(parseInt(alphaLine[3]));
+                alphaData.ciUpper = Math.exp(parseInt(alphaLine[4]));
+            } else {
+                alphaData.estimate = Math.exp(parseInt(alphaLine[1]));
+                alphaData.ciLower = Math.exp(parseInt(alphaLine[2]));
+                alphaData.ciUpper = Math.exp(parseInt(alphaLine[3]));
+            }
+        }
         if (lines[i].trim() !== '') {
             html.push('<tr>');
                 for (let tab of lines[i].split(',')) {
@@ -64,7 +97,7 @@ let createTable = function(data) {
         }
     }
     html.push('</tbody></table>');
-    return html.join('');
+    return {table: html.join(''), results: alphaData};
 };
 
 let displayError = function(data) {

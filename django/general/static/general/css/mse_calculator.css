@@ -1,3 +1,40 @@
+#technical-details-expander {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+
+    /* Remove button appearance */
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+
+    /* Inherit h3 styling */
+    text-align: left;
+}
+
+/* Create the arrow */
+.arrow {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    transform: rotate(-45deg);
+    transition: transform 0.3s ease;
+}
+
+/* Expanded state */
+#technical-details-expander[aria-expanded="true"] .arrow {
+    transform: rotate(45deg);
+}
+
+#result-statement {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
 table,
 th,
 td {
@@ -5,10 +42,10 @@ td {
 }
 
 table {
+    border-collapse: collapse;
+
     --light-table-bg: gainsboro;
     --dark-table-bg: dimgrey;
-
-    border-collapse: collapse;
 }
 
 th,

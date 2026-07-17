@@ -218,7 +218,7 @@ class TestMseView(TestCase):
         self.assertEqual(response_string.count("<th"), 3)
         self.assertEqual(response_string.count("<tr"), 4)
         first_line_string = (
-            '<input type="text" aria-label="Total entries on list 1" id="id_form-0-total_appearances" '
+            '<input type="text" aria-label="Total entries on list 1 only" id="id_form-0-total_appearances" '
             'name="form-0-total_appearances" value="20"'
         )
         self.assertTrue(first_line_string in re.sub(r"\s+", " ", response_string).strip())
@@ -246,7 +246,7 @@ class TestMseView(TestCase):
         self.assertEqual(response_string.count("<th"), 5)
         self.assertEqual(response_string.count("<tr"), 16)
         first_line_string = (
-            '<input type="text" aria-label="Total entries on list 1" id="id_form-0-total_appearances" '
+            '<input type="text" aria-label="Total entries on list 1 only" id="id_form-0-total_appearances" '
             'name="form-0-total_appearances" value="1131"'
         )
         self.assertTrue(first_line_string in re.sub(r"\s+", " ", response_string).strip())

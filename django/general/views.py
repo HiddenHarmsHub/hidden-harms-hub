@@ -139,6 +139,7 @@ class MultipleSystemsEstimation(FormView):
             return HttpResponseRedirect(reverse("general:mse"))
         if request.session["mode"] not in ["new", "upload", "example"]:
             return render(request, "general/mse_error.html")
+        example = False
         MseFormSet = formset_factory(MseDetailsForm, formset=BaseMseFormSet, extra=0)  # NoQA
         if request.session["mode"] == "new":
             try:
@@ -187,6 +188,7 @@ class MultipleSystemsEstimation(FormView):
                 lists, initial = self._calculate_initial_data(total_lists)
                 initial, censoring_settings = self._add_uploaded_totals(initial, rows, lists)
                 request.session.pop("example", None)
+                example = True
             except Exception:
                 request.session.pop("mode", None)
                 request.session.pop("example", None)
@@ -195,7 +197,7 @@ class MultipleSystemsEstimation(FormView):
         form = MseForm(initial={"total_lists": total_lists})
         options_form = MseOptionsForm(initial=censoring_settings)
         formset = MseFormSet(initial=initial)
-        data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists}
+        data = {"formset": formset, "form": form, "options_form": options_form, "lists": lists, "example": example}
         return render(request, "general/mse_calculator.html", data)
 
     def post(self, request):
@@ -228,6 +230,8 @@ class MultipleSystemsEstimation(FormView):
                 appearance_data.append(-1)
             else:
                 appearance_data.append(int(row_data["total_appearances"]))
+        # save the total for later
+        total_observed = sum(appearance_data)
         mse_input = {
             "list_data": appearance_data,
             "censoring_lower": int(request.POST.get("censoring_lower")),
@@ -259,6 +263,7 @@ class MultipleSystemsEstimation(FormView):
             "results_display": True,
             "csv_data": csv_data,
             "task_id": task.task_id,
+            "total_observed": total_observed,
         }
         return render(request, "general/mse_calculator.html", data)
 
