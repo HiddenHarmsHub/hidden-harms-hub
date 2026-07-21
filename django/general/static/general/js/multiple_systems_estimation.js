@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('mse-form').style.display = 'block';
             document.getElementById('technical-details-expander').addEventListener('click', function (event) {
                 const button = event.target.parentElement;
-                console.log('button is ' + button)
                 button.ariaExpanded = button.ariaExpanded !== 'true';
                 if (button.ariaExpanded === 'true') {
                     document.getElementById('technical-details').removeAttribute('hidden');

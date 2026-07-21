@@ -9,6 +9,7 @@ authors = [
 dependencies = [
 	"Django~=5.2.0",
 	"requests",
+	"django-environ",
 	"django-celery-results",
 	"django-celery-beat",
 ]
