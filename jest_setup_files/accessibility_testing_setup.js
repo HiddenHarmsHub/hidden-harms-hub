@@ -1,7 +1,6 @@
 /* global require, expect, beforeAll, afterAll */
 const pa11y = require('pa11y');
 const cliReporter = require('pa11y/lib/reporters/cli');
-const puppeteer = require('puppeteer');
 
 const chromeOptions = {"args": ["--no-sandbox"], "headless": "new"};
 
@@ -10,9 +9,11 @@ const defaultOptions = {
     "ignore": ["frame-tested"],
 }
 
-let browser;
+let puppeteer, browser;
+
 
 beforeAll(async () => {
+    puppeteer = (await import('puppeteer')).default;
     browser = await puppeteer.launch(chromeOptions);
 });
 
