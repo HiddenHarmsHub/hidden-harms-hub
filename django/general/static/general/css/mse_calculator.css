@@ -28,7 +28,6 @@
     background: light-dark(var(--light-contrast-color), var(--dark-contrast-color));
 }
 
-
 .expander h3 button,
 .expander h3 span {
     background: light-dark(var(--light-contrast-color), var(--dark-contrast-color));
@@ -36,9 +35,7 @@
 
 .expander span.hint {
     font-size: 0.7em;
-    text-align: bottom;
 }
-
 
 /* Create the arrow */
 .arrow {
@@ -154,11 +151,17 @@ div#spinner {
     display: block;
     width: 48px;
     height: 48px;
-    background: rgb(0 0 0 / 30%);
+    background: light-dark(rgb(0 0 0 / 30%), rgb(225 225 225 / 30%));
     background-image: url("../img/loading.png");
 }
 
 @keyframes flower-12l-48x48 {
     from { background-position: 0 0; }
     to { background-position: 0 -576px; }
+}
+
+@media (prefers-color-scheme: dark) {
+    .flower-12l-48x48 {
+        filter: invert(1);
+    }
 }
